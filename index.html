@@ -10,33 +10,16 @@
 <style>
 /* Layout concept: a notebook-style planner on faint graph paper. Weeks stack as sections, each day is a card with a big date block; today gets a highlighter-yellow date block. Fixed dock at the bottom holds Suggestions and PDF export. */
 :root{
-  --paper:#eef1f8; --grid:#e4e9f4; --card:#ffffff; --tint:#e8ecf7;
-  --ink:#17214a; --ink2:#566086; --line:#d9deee;
-  --marker:#ffd23f; --marker-ink:#3b2f00;
-  --ok:#1b8068; --ok-bg:#dcf2ea; --warn:#a84e07; --warn-bg:#fcead3;
-  --shadow:0 1px 0 rgba(23,33,74,.05),0 10px 22px -16px rgba(23,33,74,.35);
+  --paper:#f1e6d3; --grid:#e8dbc2; --card:#ffffff; --tint:#f1e6d3; --sand:#e0cfa9;
+  --ink:#3e2a1c; --ink2:#7a6552; --line:#dccfb5;
+  --marker:#8a5a35; --marker-ink:#ffffff;
+  --ok:#5b7a3d; --ok-bg:#e4e9cd; --warn:#a8461a; --warn-bg:#f6dcc4;
+  --shadow:0 1px 0 rgba(62,42,28,.05),0 10px 22px -16px rgba(62,42,28,.35);
   --fb:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
   --fd:"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#0e1325; --grid:#131a31; --card:#172039; --tint:#202b4d;
-    --ink:#e9edfb; --ink2:#9ba7cc; --line:#2a3558;
-    --marker:#ffd23f; --marker-ink:#3b2f00;
-    --ok:#52d4ae; --ok-bg:#12352f; --warn:#f4a65d; --warn-bg:#3b2a16;
-    --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 22px -16px rgba(0,0,0,.7);
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#0e1325; --grid:#131a31; --card:#172039; --tint:#202b4d;
-  --ink:#e9edfb; --ink2:#9ba7cc; --line:#2a3558;
-  --marker:#ffd23f; --marker-ink:#3b2f00;
-  --ok:#52d4ae; --ok-bg:#12352f; --warn:#f4a65d; --warn-bg:#3b2a16;
-  --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 22px -16px rgba(0,0,0,.7);
-  color-scheme:dark;
-}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{color-scheme:light}
 body{margin:0}
 body{
@@ -58,7 +41,7 @@ button{cursor:pointer}
 .hero{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .hero h1{margin:0;font-family:var(--fd);font-weight:700;font-size:34px;line-height:1.2;text-wrap:balance}
-.hero h1 span{background:linear-gradient(transparent 62%,var(--marker) 62%,var(--marker) 92%,transparent 92%);padding:0 4px}
+.hero h1 span{background:linear-gradient(transparent 62%,var(--sand) 62%,var(--sand) 92%,transparent 92%);padding:0 4px}
 .range{margin:4px 0 0;color:var(--ink2);font-size:14px}
 .pct{font-family:var(--fd);font-weight:700;font-size:44px;line-height:1;display:flex;align-items:baseline;gap:2px;font-variant-numeric:tabular-nums}
 .pct span{font-size:20px;color:var(--ink2)}
@@ -130,7 +113,7 @@ button{cursor:pointer}
 
 /* toast */
 .toast{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));max-width:min(92vw,520px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-size:14.5px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
-.toast button{background:none;border:0;color:var(--marker);font-weight:700;padding:0;text-decoration:underline}
+.toast button{background:none;border:0;color:var(--paper);font-weight:700;padding:0;text-decoration:underline}
 
 /* suggestions sheet */
 .sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
@@ -144,7 +127,7 @@ button{cursor:pointer}
 .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:520px){.fields{grid-template-columns:1fr}}
 .fields label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink2)}
-.fields input,.fields select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);min-width:0;width:100%}
+.fields input,.fields select{-webkit-text-fill-color:var(--ink);opacity:1;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);min-width:0;width:100%}
 .grp h3{margin:0 0 8px;font-size:14px;color:var(--ink2);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;text-align:right;font-size:14.5px;line-height:1.45;max-width:100%}
@@ -518,7 +501,7 @@ button{cursor:pointer}
     ]);}catch(e){}
   }
   function drawPages(){
-    var W=1240,H=1754,M=76,INK='#17214a',MUTED='#5a6488',LINE='#d5daea',TINT='#eef1f9',OK='#1f8a70',OKBG='#e1f4ee',MARK='#ffd23f';
+    var W=1240,H=1754,M=76,INK='#3e2a1c',MUTED='#7a6552',LINE='#d6c5a0',TINT='#e9dcc2',PAGE='#f4ecda',OK='#5b7a3d',OKBG='#e6ebd2',MARK='#d9c6a0';
     var pages=[],cv,ctx;
     var DATEW=230,PADR=22,BOX=28,LH=46;
     var s=totals();
@@ -527,7 +510,7 @@ button{cursor:pointer}
     function newPage(isFirst){
       cv=document.createElement('canvas');cv.width=W;cv.height=H;
       ctx=cv.getContext('2d');
-      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle=PAGE;ctx.fillRect(0,0,W,H);
       ctx.direction='rtl';ctx.textAlign='right';ctx.textBaseline='alphabetic';
       pages.push(cv);
       if(isFirst) return drawHead();
@@ -571,6 +554,7 @@ button{cursor:pointer}
       if(y+h>BOTTOM) y=newPage(false);
       var total=d.tasks.length,done=d.tasks.filter(function(k){return k.d;}).length,complete=total>0&&done===total;
       /* date column */
+      ctx.fillStyle='#ffffff';ctx.fillRect(M,y,W-2*M,h);
       ctx.fillStyle=complete?OKBG:TINT;ctx.fillRect(W-M-DATEW,y,DATEW,h);
       ctx.strokeStyle=LINE;ctx.lineWidth=2;ctx.strokeRect(M,y,W-2*M,h);
       ctx.beginPath();ctx.moveTo(W-M-DATEW,y);ctx.lineTo(W-M-DATEW,y+h);ctx.stroke();
