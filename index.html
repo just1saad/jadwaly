@@ -115,25 +115,18 @@ button{cursor:pointer}
 .toast{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));max-width:min(92vw,520px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-size:14.5px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
 .toast button{background:none;border:0;color:var(--paper);font-weight:700;padding:0;text-decoration:underline}
 
-/* suggestions sheet */
-.sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
-.scrim{position:absolute;inset:0;background:rgba(10,14,30,.55)}
-.panel{position:relative;width:100%;max-width:600px;max-height:88dvh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px;direction:rtl}
-@media (min-width:700px){.sheet{align-items:center}.panel{border-radius:20px;max-height:84dvh}}
-.panel header{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.panel h2{margin:0;font-family:var(--fd);font-size:24px;font-weight:700}
-.x{width:38px;height:38px;border:0;border-radius:10px;background:var(--tint);display:grid;place-items:center;padding:0}
-.x svg{width:18px;height:18px}
-.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media (max-width:520px){.fields{grid-template-columns:1fr}}
-.fields label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink2)}
-.fields input,.fields select{-webkit-text-fill-color:var(--ink);opacity:1;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);min-width:0;width:100%}
-.grp h3{margin:0 0 8px;font-size:14px;color:var(--ink2);font-weight:600}
+/* quick ideas */
+.sg{display:flex;flex-direction:column;gap:8px}
+.sgbtn{align-self:flex-start;background:none;border:0;color:var(--ink2);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:4px 2px}
+.sgbtn svg{width:17px;height:17px;flex:none}
+.sgbtn[aria-expanded="true"]{color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;text-align:right;font-size:14.5px;line-height:1.45;max-width:100%}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;text-align:right;font-size:14px;line-height:1.45;max-width:100%;overflow-wrap:anywhere}
+.chip::before{content:"+";font-weight:700;color:var(--marker);margin-inline-end:6px}
 .chip:hover{border-color:var(--ink2)}
-.chip.added{background:var(--ok-bg);color:var(--ok);border-color:transparent}
-.hint{margin:0;font-size:13.5px;color:var(--ink2)}
+.chip:active{transform:scale(.97)}
+.chip.more{background:transparent;border-style:dashed;color:var(--ink2);font-weight:600}
+.chip.more::before{content:none}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -146,10 +139,6 @@ button{cursor:pointer}
 
 <div class="dock">
   <div class="dock-in">
-    <button class="btn" id="btn-sg" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>
-      اقتراحات
-    </button>
     <button class="btn main" id="btn-pdf" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
       <span id="pdf-label">تصدير PDF</span>
@@ -158,27 +147,7 @@ button{cursor:pointer}
 </div>
 
 <div id="toast" class="toast" hidden></div>
-
-<div id="sheet" class="sheet" hidden>
-  <div class="scrim" data-close="1"></div>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sg-title" tabindex="-1">
-    <header>
-      <h2 id="sg-title">اقتراحات لجدولك</h2>
-      <button class="x" type="button" data-close="1" aria-label="إغلاق">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"/></svg>
-      </button>
-    </header>
-    <div class="fields">
-      <label for="sg-subject">اسم المادة (اختياري)
-        <input id="sg-subject" type="text" placeholder="مثلاً: الفيزياء" autocomplete="off">
-      </label>
-      <label for="sg-day">أضف إلى يوم
-        <select id="sg-day"></select>
-      </label>
-    </div>
-    <div id="sg-list"></div>
-  </div>
-</div>
+<input type="file" id="restore-file" accept="application/json,.json" hidden>
 
 <script>
 (function(){
@@ -223,7 +192,7 @@ button{cursor:pointer}
   var state=loadLocal()||seed();
   var dirty=false, dbRef=null, saving=false, pending=false, warned=false, timer=null;
   var downloads=null;
-  var ui={collapsed:new Set(), sgDay:0, sgSubject:''};
+  var ui={collapsed:new Set(), sgOpen:new Set(), sgMore:new Set()};
   var undoFn=null, toastTimer=null, refocus=null, firstScroll=true;
 
   function initCollapse(){
@@ -251,6 +220,7 @@ button{cursor:pointer}
 
   /* ---------- icons ---------- */
   var ICON_CHECK='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 10.5l3.6 3.6L15.5 6.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_BULB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>';
   var ICON_X='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
   var ICON_CHEV='<svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
 
@@ -313,7 +283,7 @@ button{cursor:pointer}
       '</button>'+
       '<div class="dbody"'+(collapsed?' hidden':'')+'>'+tasks+
         '<form class="add" data-i="'+i+'"><input id="add-'+i+'" name="t" type="text" placeholder="أضف مهمة…" autocomplete="off" aria-label="مهمة جديدة ليوم '+label(d.date)+'">'+
-        '<button type="submit" aria-label="إضافة">+</button></form>'+
+        '<button type="submit" aria-label="إضافة">+</button></form>'+sgHtml(i)+
       '</div></section>';
   }
   function renderApp(){
@@ -327,6 +297,10 @@ button{cursor:pointer}
       '<button class="btn" type="button" data-act="addday" data-n="1">+ يوم</button>'+
       '<button class="btn" type="button" data-act="addday" data-n="7">+ 7 أيام</button>'+
       (n>1?'<button class="btn ghost" type="button" data-act="rmlast">حذف آخر يوم</button>':'')+
+    '</div>'+
+    '<div class="extend"><p>نقل مهامك لجهاز أو رابط ثاني: احفظ نسخة من الرابط القديم، ثم استرجعها في الرابط الجديد.</p>'+
+      '<button class="btn" type="button" data-act="backup">حفظ نسخة احتياطية</button>'+
+      '<button class="btn" type="button" data-act="restore">استرجاع نسخة</button>'+
     '</div>';
     document.getElementById('app').innerHTML=html;
   }
@@ -355,6 +329,31 @@ button{cursor:pointer}
   }
 
   /* ---------- actions ---------- */
+  function saveBlob(blob,name){
+    if(downloads) return downloads.save({filename:name,data:blob});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
+    return Promise.resolve();
+  }
+  document.getElementById('restore-file').addEventListener('change',function(e){
+    var f=e.target.files&&e.target.files[0]; if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      try{
+        var o=JSON.parse(rd.result),st=o&&o.state?o.state:o;
+        if(!st||!Array.isArray(st.days)||!st.days.length) throw 0;
+        var days=st.days.map(function(d){
+          if(!d||!/^\d{4}-\d{2}-\d{2}$/.test(d.date)) throw 0;
+          return {date:d.date,tasks:(Array.isArray(d.tasks)?d.tasks:[]).map(function(k){return {id:uid6(),t:String((k&&k.t)||'').slice(0,300),d:!!(k&&k.d)};}).filter(function(k){return k.t;})};
+        });
+        var prev=state;
+        state={v:1,days:days};persist();initCollapse();renderAll();
+        toast('تم استرجاع النسخة','تراجع',function(){state=prev;persist();initCollapse();renderAll();});
+      }catch(err){toast('الملف ما يبدو نسخة من الجدول.');}
+    };
+    rd.readAsText(f);e.target.value='';
+  });
   var app=document.getElementById('app');
   app.addEventListener('click',function(e){
     var b=e.target.closest('[data-act]'); if(!b) return;
@@ -374,6 +373,29 @@ button{cursor:pointer}
       }
       return;
     }
+    if(act==='sgtoggle'||act==='sgmore'){
+      var dd=state.days[+b.dataset.i].date,set=act==='sgtoggle'?ui.sgOpen:ui.sgMore;
+      if(set.has(dd)) set.delete(dd); else set.add(dd);
+      renderApp();return;
+    }
+    if(act==='sgadd'){
+      var si=+b.dataset.i,it=SG[+b.dataset.k];
+      if(it.s){
+        var inp=document.getElementById('add-'+si);inp.value=it.t.replace(/…$/,'');inp.focus();
+        var L=inp.value.length;try{inp.setSelectionRange(L,L);}catch(x){}
+        return;
+      }
+      var dy=state.days[si],nt={id:uid6(),t:it.t,d:false};
+      dy.tasks.push(nt);persist();renderAll();
+      toast('أضفت: '+(it.t.length>28?it.t.slice(0,28)+'…':it.t),'تراجع',function(){dy.tasks=dy.tasks.filter(function(x){return x!==nt;});persist();renderAll();});
+      return;
+    }
+    if(act==='backup'){
+      var blob=new Blob([JSON.stringify({app:'study-plan',v:1,exportedAt:new Date().toISOString(),state:state})],{type:'application/json'});
+      saveBlob(blob,'نسخة-جدول-مذاكرتي.json').then(function(){toast('تم حفظ النسخة');}).catch(function(e){if(!(e&&e.code==='declined'))toast('ما قدرت أحفظ النسخة.');});
+      return;
+    }
+    if(act==='restore'){document.getElementById('restore-file').click();return;}
     if(act==='addday'){
       var n=+b.dataset.n,last=state.days[state.days.length-1].date;
       for(var j=1;j<=n;j++) state.days.push({date:addDays(last,j),tasks:[]});
@@ -413,82 +435,54 @@ button{cursor:pointer}
     el.textContent=v;
   });
 
-  /* ---------- suggestions ---------- */
-  var sheet=document.getElementById('sheet'), sgTrigger=null;
-  function groups(s){
-    var g=[];
-    if(s) g.push({t:'لمادة '+s,l:[
-      'مراجعة ملخص '+s+' (45 دقيقة)',
-      'حل أسئلة اختبارات سابقة في '+s,
-      'اختبر نفسك في '+s+' بدون ما تشوف الملاحظات',
-      'اكتب 10 أسئلة متوقعة من '+s,
-      'اشرح درس '+s+' بصوت عالي كأنك تعلّم أحد',
-      'راجع أخطائك في '+s,
-      'بطاقات حفظ (فلاش كاردز) لـ '+s
-    ]});
-    g.push({t:'طرق مذاكرة',l:[
-      'جلسة بومودورو: 25 دقيقة مذاكرة و5 راحة × 4',
-      'استرجاع نشط: أغلق الكتاب واكتب كل اللي تتذكره',
-      'مراجعة متباعدة: ارجع لدروس قبل 3 أيام',
-      'ملخص صفحة واحدة لكل وحدة'
-    ]});
-    g.push({t:'قبل الاختبار',l:[
-      'اختبار تجريبي كامل بنفس وقت الاختبار',
-      'دفتر الأخطاء: راجع أكثر الأخطاء تكراراً',
-      'مراجعة القوانين والتعريفات المهمة',
-      'جهّز الهوية والأدوات ومكان الاختبار'
-    ]});
-    g.push({t:'راحتك',l:[
-      'نوم 7 ساعات على الأقل',
-      'مشي أو رياضة 20 دقيقة',
-      'وجبة خفيفة وماء قبل المذاكرة',
-      'ساعة بدون جوال قبل النوم',
-      'يوم راحة: مراجعة خفيفة فقط'
-    ]});
-    return g;
-  }
-  var sgItems=[];
-  function renderSg(){
-    var s=ui.sgSubject.trim(),g=groups(s);sgItems=[];
-    var html='';
-    if(!s) html+='<p class="hint">اكتب اسم مادتك فوق وتطلع لك اقتراحات خاصة فيها. اضغط على أي اقتراح يُضاف لليوم المختار.</p>';
-    g.forEach(function(grp){
-      html+='<div class="grp"><h3>'+esc(grp.t)+'</h3><div class="chips">'+grp.l.map(function(x){
-        sgItems.push(x);return '<button type="button" class="chip" data-s="'+(sgItems.length-1)+'">'+esc(x)+'</button>';
-      }).join('')+'</div></div>';
+  /* ---------- quick ideas ---------- */
+  var SG=[
+    {g:'study',t:'جلسة بومودورو: 25 دقيقة مذاكرة و5 راحة × 4'},
+    {g:'study',t:'استرجاع نشط: أغلق الكتاب واكتب كل اللي تتذكره'},
+    {g:'study',t:'حل 10 أسئلة تدريب'},
+    {g:'study',t:'مراجعة ملخص أمس (30 دقيقة)'},
+    {g:'study',t:'مراجعة ملخص …',s:1},
+    {g:'study',t:'حل أسئلة اختبارات سابقة في …',s:1},
+    {g:'study',t:'اشرح الدرس بصوت عالي كأنك تعلّم أحد'},
+    {g:'study',t:'ملخص صفحة واحدة للوحدة'},
+    {g:'study',t:'مراجعة متباعدة: ارجع لدروس قبل 3 أيام'},
+    {g:'study',t:'بطاقات حفظ (فلاش كاردز) لـ …',s:1},
+    {g:'rest',t:'مشي أو رياضة 20 دقيقة'},
+    {g:'rest',t:'نوم 7 ساعات على الأقل'},
+    {g:'rest',t:'مراجعة خفيفة 30 دقيقة'},
+    {g:'rest',t:'ساعة بدون جوال قبل النوم'},
+    {g:'rest',t:'وجبة خفيفة وماء قبل المذاكرة'},
+    {g:'rest',t:'ترتيب مكان المذاكرة'},
+    {g:'exam',t:'اختبار تجريبي كامل بنفس وقت الاختبار'},
+    {g:'exam',t:'راجع الأخطاء اللي طلعت لك'},
+    {g:'exam',t:'مراجعة القوانين والتعريفات المهمة'},
+    {g:'exam',t:'جهّز الهوية والأدوات ومكان الاختبار'},
+    {g:'exam',t:'نم بدري'}
+  ];
+  function sgFor(i){
+    var d=state.days[i],n=state.days.length;
+    var type=(n>3&&i>=n-2)?'exam':(wd(d.date)===5?'rest':'study');
+    var have={};d.tasks.forEach(function(k){have[k.t]=1;});
+    var main=[],more=[];
+    [type].concat(['study','rest','exam'].filter(function(x){return x!==type;})).forEach(function(g){
+      SG.forEach(function(it,k){
+        if(it.g!==g||(!it.s&&have[it.t])) return;
+        (g===type&&main.length<6?main:more).push(k);
+      });
     });
-    document.getElementById('sg-list').innerHTML=html;
+    return {main:main,more:more};
   }
-  function renderSgDays(){
-    var sel=document.getElementById('sg-day'),t=today();
-    sel.innerHTML=state.days.map(function(d,i){return '<option value="'+i+'">'+label(d.date)+(d.date===t?' (اليوم)':'')+'</option>';}).join('');
-    if(ui.sgDay>=state.days.length) ui.sgDay=0;
-    sel.value=String(ui.sgDay);
-  }
-  function openSg(){
-    var t=today(),ti=state.days.findIndex(function(d){return d.date===t;});
-    ui.sgDay=ti>=0?ti:0;
-    sgTrigger=document.activeElement;
-    renderSgDays();renderSg();
-    sheet.hidden=false;
-    sheet.querySelector('.panel').focus();
-  }
-  function closeSg(){sheet.hidden=true;if(sgTrigger&&sgTrigger.focus)sgTrigger.focus();}
-  document.getElementById('btn-sg').addEventListener('click',openSg);
-  sheet.addEventListener('click',function(e){
-    if(e.target.closest('[data-close]')){closeSg();return;}
-    var c=e.target.closest('.chip');
-    if(c){
-      var d=state.days[ui.sgDay];
-      d.tasks.push({id:uid6(),t:sgItems[+c.dataset.s],d:false});
-      persist();renderAll();
-      c.classList.add('added');
-      toast('أضفتها إلى '+label(d.date));
+  function sgHtml(i){
+    var d=state.days[i],open=ui.sgOpen.has(d.date),f=sgFor(i);
+    var h='<div class="sg"><button type="button" class="sgbtn" data-act="sgtoggle" data-i="'+i+'" aria-expanded="'+(open?'true':'false')+'">'+ICON_BULB+(open?'إخفاء الأفكار':'أفكار سريعة')+'</button>';
+    if(open){
+      var showMore=ui.sgMore.has(d.date),ids=showMore?f.main.concat(f.more):f.main;
+      h+='<div class="chips">'+ids.map(function(k){
+        return '<button type="button" class="chip" data-act="sgadd" data-i="'+i+'" data-k="'+k+'">'+esc(SG[k].t)+'</button>';
+      }).join('')+(f.more.length?'<button type="button" class="chip more" data-act="sgmore" data-i="'+i+'">'+(showMore?'أقل':'المزيد')+'</button>':'')+'</div>';
     }
-  });
-  document.getElementById('sg-subject').addEventListener('input',function(e){ui.sgSubject=e.target.value;renderSg();});
-  document.getElementById('sg-day').addEventListener('change',function(e){ui.sgDay=+e.target.value;});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!sheet.hidden)closeSg();});
+    return h+'</div>';
+  }
 
   /* ---------- PDF export ---------- */
   var FB='"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif', FD='"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif';
@@ -663,6 +657,7 @@ button{cursor:pointer}
 
   /* ---------- boot ---------- */
   initCollapse();
+  ui.sgOpen.add(today());
   renderAll();
   requestAnimationFrame(function(){ if(firstScroll){firstScroll=false;scrollToday();} });
 
