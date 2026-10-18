@@ -214,15 +214,18 @@ svg{display:block}
 <input type="file" id="restore-file" accept="application/json,.json" hidden>
 
 <script>
-/* ===== إعدادات تسجيل الدخول (Firebase) =====
-   انسخ القيم من لوحة Firebase (إعدادات المشروع > تطبيقات الويب) وضعها هنا.
-   إذا تركتها فاضية يشتغل الجدول بدون تسجيل دخول. */
-var FIREBASE_CONFIG={
-  apiKey:"",
-  authDomain:"",
-  projectId:"",
-  appId:""
-};
+/* ===== الحسابات =====
+   كل حساب: u اسم المستخدم (بأحرف إنجليزية صغيرة)، salt وhash لكلمة المرور (مشفّرة، مو مكتوبة صريحة)،
+   plan الجدول الابتدائي اللي ينحمّل أول مرة تدخل على جهاز جديد.
+   كيف تغيّر كلمة المرور: شوف README. */
+var ACCOUNTS=[
+  {
+    u:"saad",
+    salt:"e45a6828c9ee1eb9a35b3a33465b2e08",
+    hash:"2fe3aff5d078dd583a5f10a96f56ed3fb8e3681e19e9fefdf231d8397ea61c65",
+    plan:{"v":1,"days":[{"date":"2026-10-17","tasks":[{"id":"8gh0ss","t":"خلص تأسيس المواد كاملًا","d":true},{"id":"28gdtt","t":"المقطع الاول تأسيس المهارات","d":true}]},{"date":"2026-10-18","tasks":[{"id":"qxkux8","t":"المقطع الثاني تأسيس المهارات","d":false},{"id":"kerfg6","t":"المقطع الثالث تأسيس المهارات","d":false},{"id":"djnrvg","t":"المقطع الرابع تأسيس المهارات","d":false}]},{"date":"2026-10-19","tasks":[{"id":"o0xdjd","t":"المقطع الاول زبدة الكيمياء","d":false},{"id":"ipk3z2","t":"المقطع الثاني زبدة الكيمياء","d":false},{"id":"ltavw3","t":"المقطع الثالث زبدة الكيمياء","d":false},{"id":"4vnhl0","t":"المقطع الرابع زبدة الكيمياء","d":false}]},{"date":"2026-10-20","tasks":[{"id":"8wcspq","t":"المقطع الاول زبدة الفيزياء","d":false},{"id":"z9d5au","t":"المقطع الثاني زبدة الفيزياء","d":false},{"id":"kwkyxg","t":"المقطع الاول زبدة الرياضيات","d":false},{"id":"rrhg5h","t":"المقطع الثاني زبدة الرياضيات","d":false}]},{"date":"2026-10-21","tasks":[{"id":"einjox","t":"حل تجميعات المبكر يلو","d":false},{"id":"x3p6fm","t":"حل تجميعات محمد للمهارات","d":false}]},{"date":"2026-10-22","tasks":[{"id":"ju3e11","t":"إعادة تجميعات يلو رياضيات","d":false}]},{"date":"2026-10-23","tasks":[{"id":"lih304","t":"إعادة تجميعات يلو رياضيات ٢","d":false}]},{"date":"2026-10-24","tasks":[{"id":"vw0isi","t":"إعادة تجميعات يلو كيمياء ١","d":false},{"id":"yqdxs1","t":"إعادة تجميعات يلو كيمياء ٢","d":false}]},{"date":"2026-10-25","tasks":[{"id":"lrtnl3","t":"إعادة تجميعات يلو كيمياء ٣","d":false},{"id":"vyd1gh","t":"إعادة تجميعات يلو كيمياء ٤","d":false}]},{"date":"2026-10-26","tasks":[{"id":"31hs6v","t":"إعادة تجميعات يلو فيزياء ١","d":false},{"id":"ed7hf2","t":"إعادة تجميعات يلو فيزياء ٢","d":false}]},{"date":"2026-10-27","tasks":[{"id":"52gn1h","t":"إعادة تجميعات يلو احياء ١","d":false},{"id":"qj93lb","t":"إعادة تجميعات يلو احياء ٢","d":false}]},{"date":"2026-10-28","tasks":[{"id":"g97aru","t":"إعادة تجميعات يلو احياء ٣","d":false},{"id":"ft2v0k","t":"إعادة تجميعات يلو احياء ٤","d":false}]},{"date":"2026-10-29","tasks":[{"id":"ry8l5c","t":"إعادة تجميعات يلو علم بيئة","d":false},{"id":"ge9s9i","t":"إعادة تجميعات يلو المهارات","d":false}]},{"date":"2026-10-30","tasks":[{"id":"6ytuf4","t":"مراجعة الاسئله الصعبه","d":false},{"id":"zxazzp","t":"إعادة تجميعات يلو المبكر","d":false}]},{"date":"2026-10-31","tasks":[{"id":"xlkreb","t":"مراجعه رياضيات","d":false}]},{"date":"2026-11-01","tasks":[{"id":"j2vqpx","t":"مراجعه كيمياء","d":false}]},{"date":"2026-11-02","tasks":[{"id":"yzjf98","t":"مراجعه فيزياء","d":false}]},{"date":"2026-11-03","tasks":[{"id":"0zm9ep","t":"مراجعة احياء","d":false}]},{"date":"2026-11-04","tasks":[{"id":"b0dxro","t":"مراجعه الاسئله","d":false}]},{"date":"2026-11-05","tasks":[{"id":"zsxr4b","t":"مراجعه الاسئله","d":false}]},{"date":"2026-11-06","tasks":[{"id":"wgxmpy","t":"مراجعه الاسئله","d":false}]},{"date":"2026-11-07","tasks":[{"id":"mfdadt","t":"مراجعه الاسئله","d":false}]},{"date":"2026-11-08","tasks":[{"id":"1jd750","t":"مراجعة شاملة للملخصات","d":false}]}]}
+  }
+];
 (function(){
   var KEY='study-plan-v1';
   var START='2026-10-17', END='2026-11-08';
@@ -259,15 +262,22 @@ var FIREBASE_CONFIG={
     }
     return {v:1,days:days};
   }
-  function loadLocal(){
-    try{var s=localStorage.getItem(KEY);if(s){var o=JSON.parse(s);if(o&&Array.isArray(o.days)&&o.days.length)return o;}}catch(e){}
-    return null;
+  var SESSIONKEY='study-plan-session';
+  function findAcc(u){u=(u||'').toLowerCase();for(var i=0;i<ACCOUNTS.length;i++)if(ACCOUNTS[i].u===u)return ACCOUNTS[i];return null;}
+  function readKey(k){try{var t=localStorage.getItem(k);if(t){var o=JSON.parse(t);if(o&&Array.isArray(o.days)&&o.days.length)return o;}}catch(e){}return null;}
+  function loadFor(u){
+    var acc=findAcc(u);
+    if(acc){
+      var o=readKey(KEY+':'+acc.u);if(o)return o;
+      if(acc===ACCOUNTS[0]){var old=readKey(KEY)||readKey(KEY+':student');if(old)return old;}
+      if(acc.plan&&Array.isArray(acc.plan.days)&&acc.plan.days.length)return clone(acc.plan);
+    }
+    return seed();
   }
-  var state=loadLocal()||seed();
-  var REVKEY='study-plan-rev',ACCT='study-plan-acct',SKIPKEY='study-plan-skip';
-  var localRev=0;try{localRev=+(localStorage.getItem(REVKEY)||0);}catch(e){}
-  function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(REVKEY,String(localRev));}catch(e){}}
-  function persist(){localRev=Date.now();saveLocal();schedulePush();}
+  var session=null;try{session=localStorage.getItem(SESSIONKEY);}catch(e){}
+  if(!findAcc(session))session=null;
+  var state=loadFor(session);
+  function persist(){if(!session)return;try{localStorage.setItem(KEY+':'+session,JSON.stringify(state));}catch(e){}}
   function todayIndex(){var t=today();for(var i=0;i<state.days.length;i++)if(state.days[i].date===t)return i;return -1;}
   function defaultSel(){
     var ti=todayIndex();if(ti>=0)return ti;
@@ -400,7 +410,7 @@ var FIREBASE_CONFIG={
         '<label for="rng-to">إلى تاريخ<input type="date" id="rng-to" value="'+(ui.rt||state.days[state.days.length-1].date)+'"></label></div>'+
         '<div class="rpv" id="rng-preview" aria-live="polite"></div>'+
         '<button type="button" class="btn primary" id="rng-apply" data-act="applyrange"><span>تطبيق الفترة</span></button></section>'+
-      '<section class="sect"><p style="text-align:center;margin:0">'+(cloud.user?'مهامك تُحفظ في حسابك وتلقاها على أي جهاز.':'تقدمك يُحفظ تلقائياً في هذا المتصفح.')+'</p></section>';
+      '<section class="sect"><p style="text-align:center;margin:0">تقدمك يُحفظ تلقائياً في هذا المتصفح.</p></section>';
   }
 
   function centerPill(strip){
@@ -465,8 +475,8 @@ var FIREBASE_CONFIG={
     }
     if(act==='applyrange'){applyRange();return;}
     if(act==='restore'){document.getElementById('restore-file').click();return;}
-    if(act==='logout'){logout(b);return;}
-    if(act==='login'){openLogin();return;}
+    if(act==='logout'){logout();return;}
+    if(act==='backup'){backup();return;}
     if(act==='pdf'){exportPdf(b);return;}
   });
   view.addEventListener('submit',function(e){
@@ -551,136 +561,55 @@ var FIREBASE_CONFIG={
     setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
   }
 
-  /* ---------- account + sync (Firebase) ---------- */
-  var CFG_OK=!!(FIREBASE_CONFIG&&FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.projectId);
-  var cloud={user:null,db:null,auth:null,timer:null,busy:false,again:false,status:'idle',lastPull:0};
-  var lg={mode:'in',email:''};
+  /* ---------- account ---------- */
   var login=document.getElementById('login');
-  function skipped(){try{return sessionStorage.getItem(SKIPKEY)==='1';}catch(e){return false;}}
-  function knownAcct(){try{return localStorage.getItem(ACCT);}catch(e){return null;}}
-  function syncText(){return {saving:'جاري الحفظ…',ok:'تمت المزامنة',err:'ما قدرت أزامن، بجرب مرة ثانية'}[cloud.status]||'';}
-  function setSync(st){cloud.status=st;var el=document.getElementById('sync-status');if(el)el.textContent=syncText();}
-  function docRef(){return cloud.db.collection('users').doc(cloud.user.uid);}
-  function schedulePush(){
-    if(!cloud.user)return;
-    setSync('saving');clearTimeout(cloud.timer);cloud.timer=setTimeout(push,800);
+  function hex2buf(h){var a=new Uint8Array(h.length/2);for(var i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a;}
+  function buf2hex(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');}
+  async function hashPw(pw,saltHex){
+    var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+    var bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:hex2buf(saltHex),iterations:100000,hash:'SHA-256'},key,256);
+    return buf2hex(bits);
   }
-  async function push(){
-    if(!cloud.user)return;
-    if(cloud.busy){cloud.again=true;return;}
-    cloud.busy=true;
-    try{await docRef().set({json:JSON.stringify(state),rev:localRev});setSync('ok');}
-    catch(e){setSync('err');}
-    cloud.busy=false;
-    if(cloud.again){cloud.again=false;push();}
+  function lmsg(t){var el=document.getElementById('lmsg');if(el)el.textContent=t||'';}
+  function showLogin(){
+    login.hidden=false;
+    login.innerHTML='<div class="lbox"><div class="lbrand"><h1><span>جدول مذاكرتي</span></h1><p>سجّل دخولك للمتابعة.</p></div>'+
+      '<form class="card lcard lf" id="lform" novalidate>'+
+        '<label for="l-user">اسم المستخدم<input id="l-user" type="text" dir="ltr" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"></label>'+
+        '<label for="l-pass">كلمة المرور<input id="l-pass" type="password" dir="ltr" autocomplete="current-password"></label>'+
+        '<div class="lmsg" id="lmsg" role="alert"></div>'+
+        '<button type="submit" class="btn primary" id="l-submit"><span>دخول</span></button>'+
+      '</form></div>';
   }
-  async function pull(initial){
-    if(!cloud.user)return;
-    cloud.lastPull=Date.now();
-    try{
-      var snap=await docRef().get();
-      if(!snap.exists){push();return;}
-      var d=snap.data(),rev=+d.rev||0;
-      if(rev>localRev){
-        var remote=JSON.parse(d.json);
-        if(remote&&Array.isArray(remote.days)&&remote.days.length){
-          var prev=state,prevRev=localRev,changed=JSON.stringify(remote)!==JSON.stringify(state);
-          state=remote;localRev=rev;saveLocal();ui.sel=defaultSel();ui.center=true;render();setSync('ok');
-          if(changed&&initial&&prevRev>0) toast('حمّلت جدولك من حسابك','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
-        }
-      }else if(rev<localRev){push();}
-      else setSync('ok');
-    }catch(e){setSync('err');}
-  }
-  function loadScript(src){return new Promise(function(res,rej){var el=document.createElement('script');el.src=src;el.onload=res;el.onerror=function(){rej(new Error('load'));};document.head.appendChild(el);});}
-  function initCloud(){
-    var base='https://www.gstatic.com/firebasejs/10.12.2/';
-    var p=loadScript(base+'firebase-app-compat.js').then(function(){
-      return Promise.all([loadScript(base+'firebase-auth-compat.js'),loadScript(base+'firebase-firestore-compat.js')]);
-    }).then(function(){
-      firebase.initializeApp(FIREBASE_CONFIG);
-      cloud.auth=firebase.auth();cloud.db=firebase.firestore();
-    });
-    return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},12000);})]);
-  }
-  var AUTH_ERR={
-    'auth/invalid-email':'البريد غير صحيح.',
-    'auth/missing-password':'اكتب كلمة المرور.',
-    'auth/invalid-credential':'البريد أو كلمة المرور غير صحيحة.',
-    'auth/wrong-password':'البريد أو كلمة المرور غير صحيحة.',
-    'auth/user-not-found':'البريد أو كلمة المرور غير صحيحة.',
-    'auth/email-already-in-use':'هذا البريد مسجل من قبل، سجّل دخولك.',
-    'auth/weak-password':'كلمة المرور ضعيفة، استخدم 6 خانات أو أكثر.',
-    'auth/too-many-requests':'محاولات كثيرة، جرّب بعد شوي.',
-    'auth/network-request-failed':'ما فيه اتصال بالإنترنت.',
-    'auth/operation-not-allowed':'طريقة الدخول هذي غير مفعّلة في Firebase.',
-    'auth/unauthorized-domain':'هذا الرابط غير مضاف في Firebase (Authorized domains).',
-    'auth/popup-closed-by-user':'','auth/cancelled-popup-request':''
-  };
-  function authMsg(err){var c=err&&err.code;return c in AUTH_ERR?AUTH_ERR[c]:'صار خطأ، جرّب مرة ثانية.';}
-  var G_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
-  function loginHtml(){
-    var up=lg.mode==='up';
-    return '<div class="lbox"><div class="lbrand"><h1><span>جدول مذاكرتي</span></h1><p>سجّل دخولك عشان مهامك تنحفظ وتلقاها على أي جهاز.</p></div>'+
-      '<div class="card lcard">'+
-        '<button type="button" class="gbtn" data-l="google">'+G_SVG+'<span>المتابعة باستخدام Google</span></button>'+
-        '<div class="sep"><span>أو بالبريد</span></div>'+
-        '<div class="seg"><button type="button" data-l="mode" data-m="in" aria-pressed="'+(!up)+'">تسجيل الدخول</button><button type="button" data-l="mode" data-m="up" aria-pressed="'+up+'">حساب جديد</button></div>'+
-        '<form class="lf" id="lform" novalidate>'+
-          '<label for="l-email">البريد الإلكتروني<input id="l-email" type="email" dir="ltr" autocomplete="email" inputmode="email" value="'+esc(lg.email)+'"></label>'+
-          '<label for="l-pass">كلمة المرور<input id="l-pass" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'"></label>'+
-          '<div class="lmsg" id="lmsg" role="alert"></div>'+
-          '<button type="submit" class="btn primary" id="l-submit"><span>'+(up?'إنشاء الحساب':'دخول')+'</span></button>'+
-        '</form>'+
-        (up?'':'<button type="button" class="link" data-l="reset">نسيت كلمة المرور؟</button>')+
-      '</div>'+
-      '<button type="button" class="link center" data-l="skip">تخطي الآن، استخدم الجدول بدون حساب</button></div>';
-  }
-  function showLoginLoading(){
-    login.dataset.state='loading';login.hidden=false;
-    login.innerHTML='<div class="lbox"><div class="lbrand"><h1><span>جدول مذاكرتي</span></h1><p>جاري التحميل…</p></div></div>';
-  }
-  function showLoginForm(){login.dataset.state='form';login.hidden=false;login.innerHTML=loginHtml();}
-  function lmsg(t,ok){var el=document.getElementById('lmsg');if(el){el.textContent=t||'';el.className='lmsg'+(ok?' ok':'');}}
-  function lbusy(b){var el=document.getElementById('l-submit');if(el)el.disabled=b;}
-  function openLogin(){
-    if(!cloud.auth){toast('ما قدرت أتصل بخدمة الحساب. تأكد من الإنترنت وحدّث الصفحة.');return;}
-    try{sessionStorage.removeItem(SKIPKEY);}catch(e){}
-    showLoginForm();
-  }
-  login.addEventListener('click',function(e){
-    var b=e.target.closest('[data-l]');if(!b)return;
-    var a=b.dataset.l;
-    if(a==='mode'){
-      var em=document.getElementById('l-email');if(em)lg.email=em.value;
-      lg.mode=b.dataset.m;showLoginForm();return;
-    }
-    if(a==='pick'){document.getElementById('restore-file').click();return;}
-    if(a==='fresh'){login.hidden=true;return;}
-    if(a==='skip'){try{sessionStorage.setItem(SKIPKEY,'1');}catch(x){}login.hidden=true;if(ui.tab==='more')render();return;}
-    if(a==='google'){
-      var pr=new firebase.auth.GoogleAuthProvider();
-      cloud.auth.signInWithPopup(pr).catch(function(err){
-        if(err&&(err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment')) return cloud.auth.signInWithRedirect(pr);
-        var m=authMsg(err);if(m)lmsg(m);
-      });
-      return;
-    }
-    if(a==='reset'){
-      var email=document.getElementById('l-email').value.trim();
-      if(!email){lmsg('اكتب بريدك أولاً.');return;}
-      cloud.auth.sendPasswordResetEmail(email).then(function(){lmsg('أرسلت لك رابط تعيين كلمة المرور على بريدك.',true);},function(err){lmsg(authMsg(err));});
-    }
-  });
-  login.addEventListener('submit',function(e){
+  login.addEventListener('submit',async function(e){
     e.preventDefault();
-    var email=document.getElementById('l-email').value.trim(),pass=document.getElementById('l-pass').value;
-    lg.email=email;
-    if(!email||!pass){lmsg('اكتب البريد وكلمة المرور.');return;}
-    lmsg('');lbusy(true);
-    var p=lg.mode==='up'?cloud.auth.createUserWithEmailAndPassword(email,pass):cloud.auth.signInWithEmailAndPassword(email,pass);
-    p.catch(function(err){lmsg(authMsg(err));}).then(function(){lbusy(false);});
+    var u=document.getElementById('l-user').value.trim().toLowerCase(),p=document.getElementById('l-pass').value;
+    var btn=document.getElementById('l-submit');
+    if(!u||!p){lmsg('اكتب اسم المستخدم وكلمة المرور.');return;}
+    if(!(window.crypto&&crypto.subtle)){lmsg('المتصفح ما يدعم التحقق. افتح الرابط بـ https.');return;}
+    btn.disabled=true;lmsg('');
+    var acc=findAcc(u),ok=false;
+    try{var h=await hashPw(p,(acc||ACCOUNTS[0]).salt);ok=!!acc&&h===acc.hash;}catch(err){}
+    if(!ok){await new Promise(function(r){setTimeout(r,600);});lmsg('اسم المستخدم أو كلمة المرور غير صحيحة.');btn.disabled=false;return;}
+    session=acc.u;try{localStorage.setItem(SESSIONKEY,session);}catch(x){}
+    state=loadFor(session);ui.tab='day';ui.sel=defaultSel();ui.center=true;
+    login.hidden=true;login.innerHTML='';render();window.scrollTo(0,0);
   });
+  function logout(){
+    try{localStorage.removeItem(SESSIONKEY);}catch(e){}
+    location.reload();
+  }
+  function accountCard(){
+    return '<section class="card sect"><h3>الحساب</h3><p class="acct" dir="auto">'+esc(session||'')+'</p>'+
+      '<p>مهامك محفوظة في هذا المتصفح. لنقلها لجهاز ثاني احفظ نسخة واسترجعها هناك.</p>'+
+      '<div class="btns"><button type="button" class="btn" data-act="backup"><span>حفظ نسخة احتياطية</span></button>'+
+      '<button type="button" class="btn" data-act="restore"><span>استرجاع نسخة</span></button>'+
+      '<button type="button" class="btn ghost" data-act="logout"><span>تسجيل الخروج</span></button></div></section>';
+  }
+  function backup(){
+    var blob=new Blob([JSON.stringify({app:'study-plan',v:1,exportedAt:new Date().toISOString(),state:state})],{type:'application/json'});
+    saveBlob(blob,'نسخة-جدول-مذاكرتي.json');toast('تم حفظ النسخة');
+  }
   function restoreFile(file,ok,fail){
     var rd=new FileReader();
     rd.onload=function(){
@@ -701,57 +630,10 @@ var FIREBASE_CONFIG={
   }
   document.getElementById('restore-file').addEventListener('change',function(e){
     var f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
-    var onboarding=login.dataset.state==='onboard'&&!login.hidden;
     restoreFile(f,function(prev){
-      login.hidden=true;
-      toast(cloud.user?'تم استرجاع النسخة وحفظها في حسابك':'تم استرجاع النسخة','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
-    },function(){
-      if(onboarding)lmsg('الملف ما يبدو نسخة من الجدول. جرّب ملف ثاني.');else toast('الملف ما يبدو نسخة من الجدول.');
-    });
+      toast('تم استرجاع النسخة','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
+    },function(){toast('الملف ما يبدو نسخة من الجدول.');});
   });
-  function showOnboard(){
-    login.dataset.state='onboard';login.hidden=false;
-    login.innerHTML='<div class="lbox"><div class="lbrand"><h1><span>أهلاً بك</span></h1><p>تم إنشاء حسابك. عندك نسخة احتياطية من جدولك؟</p></div>'+
-      '<div class="card lcard">'+
-        '<button type="button" class="btn primary" data-l="pick"><span>نعم، اختر ملف النسخة</span></button>'+
-        '<button type="button" class="btn" data-l="fresh"><span>لا، أكمل بدون نسخة</span></button>'+
-        '<div class="lmsg" id="lmsg" role="alert"></div>'+
-      '</div></div>';
-  }
-  function isFirstSignIn(u){
-    try{
-      var key='study-plan-onb-'+u.uid;
-      if(localStorage.getItem(key))return false;
-      var m=u.metadata||{},c=Date.parse(m.creationTime),l=Date.parse(m.lastSignInTime);
-      if(isFinite(c)&&isFinite(l)&&Math.abs(l-c)<10000){localStorage.setItem(key,'1');return true;}
-    }catch(e){}
-    return false;
-  }
-  function onAuth(user){
-    cloud.user=user||null;
-    if(user){
-      try{localStorage.setItem(ACCT,user.email||user.displayName||'1');}catch(e){}
-      if(isFirstSignIn(user))showOnboard();else login.hidden=true;
-      if(ui.tab==='more')render();pull(true);
-    }else{
-      try{localStorage.removeItem(ACCT);}catch(e){}
-      if(!skipped())showLoginForm();else if(ui.tab==='more')render();
-    }
-  }
-  function accountCard(){
-    if(!CFG_OK) return '<section class="card sect"><h3>الحساب</h3><p>تسجيل الدخول غير مفعّل بعد. أضف إعدادات Firebase داخل ملف index.html (الخطوات في README).</p></section>';
-    if(cloud.user) return '<section class="card sect"><h3>الحساب</h3><p class="acct" dir="auto">'+esc(cloud.user.email||cloud.user.displayName||'')+'</p><p class="sync" id="sync-status">'+syncText()+'</p><div class="btns"><button type="button" class="btn" data-act="restore"><span>استرجاع نسخة احتياطية</span></button><button type="button" class="btn" data-act="logout"><span>تسجيل الخروج</span></button></div></section>';
-    return '<section class="card sect"><h3>الحساب</h3><p>أنت تستخدم الجدول بدون حساب، ومهامك محفوظة في هذا المتصفح فقط.</p><button type="button" class="btn primary" data-act="login"><span>تسجيل الدخول</span></button></section>';
-  }
-  async function logout(btn){
-    btn.disabled=true;
-    clearTimeout(cloud.timer);
-    try{await docRef().set({json:JSON.stringify(state),rev:localRev});}
-    catch(e){toast('ما قدرت أحفظ آخر تغييراتك. تأكد من الإنترنت قبل ما تطلع.');btn.disabled=false;return;}
-    try{localStorage.removeItem(KEY);localStorage.removeItem(REVKEY);localStorage.removeItem(ACCT);sessionStorage.removeItem(SKIPKEY);}catch(e){}
-    try{await cloud.auth.signOut();}catch(e){}
-    location.reload();
-  }
 
   /* ---------- PDF ---------- */
   var FB='"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif', FD='"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif';
@@ -916,17 +798,10 @@ var FIREBASE_CONFIG={
 
   /* ---------- boot ---------- */
   render();
+  if(!session)showLogin();
   document.addEventListener('visibilitychange',function(){
-    if(document.hidden)return;
-    if(cloud.user&&Date.now()-cloud.lastPull>20000){pull(false);return;}
-    if(document.activeElement===document.body||!document.activeElement)render();
+    if(!document.hidden&&session&&(document.activeElement===document.body||!document.activeElement))render();
   });
-  if(CFG_OK){
-    if(!skipped()&&!knownAcct())showLoginLoading();
-    initCloud().then(function(){cloud.auth.onAuthStateChanged(onAuth);}).catch(function(){
-      if(login.dataset.state==='loading'){login.hidden=true;toast('ما قدرت أتصل بخدمة الحساب. شغّلت الجدول بدون حساب.');}
-    });
-  }
 })();
 </script>
 </body>
