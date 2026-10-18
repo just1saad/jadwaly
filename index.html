@@ -142,6 +142,42 @@ svg{display:block}
 .btn.primary:disabled{opacity:.7}
 .btn.ghost{background:transparent;color:var(--warn);border-color:transparent}
 
+.dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dates label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink2);min-width:0}
+.dates input{display:block;-webkit-appearance:none;appearance:none;width:100%;min-width:0;max-width:100%;overflow:hidden;height:50px;padding:0 12px;border:1px solid var(--line);border-radius:14px;background:var(--sand2);font-size:16px;color:var(--ink);text-align:right}
+.dates input::-webkit-date-and-time-value{text-align:right;min-width:0;margin:0}
+.dates input::-webkit-datetime-edit{padding:0}
+.dates input:focus{background:#fff;border-color:var(--brown)}
+.rpv{margin:12px 0;font-size:14.5px;border-radius:12px;padding:10px 12px;background:var(--sand2);color:var(--ink)}
+.rpv.warn{background:var(--warn-bg);color:var(--warn)}
+
+/* login */
+.login{position:fixed;inset:0;z-index:60;background:var(--paper);display:grid;place-items:center;overflow-y:auto;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lbox{width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px}
+.lbrand{text-align:center}
+.lbrand h1{margin:0;font-family:var(--fd);font-weight:700;font-size:40px;line-height:1.2}
+.lbrand h1 span{background:linear-gradient(transparent 64%,var(--sand) 64%,var(--sand) 94%,transparent 94%);padding:0 6px}
+.lbrand p{margin:8px 0 0;color:var(--ink2);font-size:15px}
+.lcard{display:flex;flex-direction:column;gap:14px}
+.gbtn{width:100%;height:52px;border:1px solid var(--line);border-radius:14px;background:#fff;display:flex;gap:10px;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.gbtn svg{width:22px;height:22px}
+.sep{display:flex;align-items:center;gap:10px;color:var(--ink2);font-size:13px}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--sand2);border-radius:14px;padding:4px}
+.seg button{border:0;background:transparent;border-radius:11px;height:42px;font-weight:600;font-size:15px;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(62,42,28,.18)}
+.lf{display:flex;flex-direction:column;gap:12px}
+.lf label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink2)}
+.lf input{height:50px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:var(--sand2);font-size:16px;color:var(--ink);width:100%;min-width:0;text-align:left}
+.lf input:focus{background:#fff;border-color:var(--brown)}
+.lmsg{min-height:20px;font-size:14px;color:var(--warn)}
+.lmsg.ok{color:var(--ok)}
+.link{background:none;border:0;color:var(--brown);font-weight:600;font-size:14.5px;padding:4px;text-decoration:underline}
+.link.center{align-self:center;color:var(--ink2)}
+.acct{font-weight:600;color:var(--ink)!important;margin-bottom:4px!important;overflow-wrap:anywhere}
+.sync{font-size:13.5px!important;margin-bottom:12px!important}
+
 /* tabs + toast */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
   padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
@@ -174,9 +210,19 @@ svg{display:block}
 </nav>
 
 <div id="toast" class="toast" hidden></div>
+<div id="login" class="login" hidden></div>
 <input type="file" id="restore-file" accept="application/json,.json" hidden>
 
 <script>
+/* ===== إعدادات تسجيل الدخول (Firebase) =====
+   انسخ القيم من لوحة Firebase (إعدادات المشروع > تطبيقات الويب) وضعها هنا.
+   إذا تركتها فاضية يشتغل الجدول بدون تسجيل دخول. */
+var FIREBASE_CONFIG={
+  apiKey:"",
+  authDomain:"",
+  projectId:"",
+  appId:""
+};
 (function(){
   var KEY='study-plan-v1';
   var START='2026-10-17', END='2026-11-08';
@@ -197,7 +243,8 @@ svg{display:block}
   function uid6(){return Math.random().toString(36).slice(2,8);}
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function clone(o){return JSON.parse(JSON.stringify(o));}
-  function noun(n){return n===1?'مهمة':'مهام';}
+  function noun(n){return (n===1||n>10)?'مهمة':'مهام';}
+  function dayW(n){return (n>=2&&n<=10)?'أيام':'يوم';}
 
   /* ---------- state ---------- */
   function seed(){
@@ -217,7 +264,10 @@ svg{display:block}
     return null;
   }
   var state=loadLocal()||seed();
-  function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var REVKEY='study-plan-rev',ACCT='study-plan-acct',SKIPKEY='study-plan-skip';
+  var localRev=0;try{localRev=+(localStorage.getItem(REVKEY)||0);}catch(e){}
+  function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(REVKEY,String(localRev));}catch(e){}}
+  function persist(){localRev=Date.now();saveLocal();schedulePush();}
   function todayIndex(){var t=today();for(var i=0;i<state.days.length;i++)if(state.days[i].date===t)return i;return -1;}
   function defaultSel(){
     var ti=todayIndex();if(ti>=0)return ti;
@@ -228,7 +278,7 @@ svg{display:block}
     state.days.forEach(function(d){d.tasks.forEach(function(k){total++;if(k.d)done++;else if(d.date<t)late++;});});
     return {total:total,done:done,late:late};
   }
-  var ui={tab:'day',sel:defaultSel(),center:true};
+  var ui={tab:'day',sel:defaultSel(),center:true,rf:null,rt:null};
   var refocus=null,toastTimer=null;
 
   /* ---------- icons ---------- */
@@ -343,15 +393,14 @@ svg{display:block}
     return h;
   }
   function moreView(){
-    return '<section class="card sect"><h3>تصدير الجدول</h3><p>ملف PDF بصفحة وحدة A4 بالعرض، جاهز تطبعه وتعلقه.</p>'+
+    return accountCard()+'<section class="card sect"><h3>تصدير الجدول</h3><p>ملف PDF بصفحة وحدة A4 بالعرض، جاهز تطبعه وتعلقه.</p>'+
         '<button type="button" class="btn primary" data-act="pdf">'+I_DOWN+'<span>تحميل الجدول PDF</span></button></section>'+
-      '<section class="card sect"><h3>تمديد الجدول</h3><p>تحتاج أيام زيادة؟ أضفها بعد آخر يوم.</p>'+
-        '<div class="btns"><button type="button" class="btn" data-act="addday" data-n="1">+ يوم</button>'+
-        '<button type="button" class="btn" data-act="addday" data-n="7">+ 7 أيام</button>'+
-        (state.days.length>1?'<button type="button" class="btn ghost" data-act="rmlast">حذف آخر يوم</button>':'')+'</div></section>'+
-      '<section class="card sect"><h3>نسخة احتياطية</h3><p>تنقل مهامك لجهاز أو رابط ثاني: احفظ نسخة من القديم، ثم استرجعها في الجديد.</p>'+
-        '<div class="btns"><button type="button" class="btn" data-act="backup">حفظ نسخة</button><button type="button" class="btn" data-act="restore">استرجاع نسخة</button></div></section>'+
-      '<section class="sect"><p style="text-align:center;margin:0">تقدمك يُحفظ تلقائياً في هذا المتصفح.</p></section>';
+      '<section class="card sect"><h3>فترة الجدول</h3><p>حدد أول يوم وآخر يوم. الأيام اللي تبقى داخل الفترة تحتفظ بمهامها.</p>'+
+        '<div class="dates"><label for="rng-from">من تاريخ<input type="date" id="rng-from" value="'+(ui.rf||state.days[0].date)+'"></label>'+
+        '<label for="rng-to">إلى تاريخ<input type="date" id="rng-to" value="'+(ui.rt||state.days[state.days.length-1].date)+'"></label></div>'+
+        '<div class="rpv" id="rng-preview" aria-live="polite"></div>'+
+        '<button type="button" class="btn primary" id="rng-apply" data-act="applyrange"><span>تطبيق الفترة</span></button></section>'+
+      '<section class="sect"><p style="text-align:center;margin:0">'+(cloud.user?'مهامك تُحفظ في حسابك وتلقاها على أي جهاز.':'تقدمك يُحفظ تلقائياً في هذا المتصفح.')+'</p></section>';
   }
 
   function centerPill(strip){
@@ -370,6 +419,7 @@ svg{display:block}
       if(b.dataset.tab===ui.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
     });
     var s=totals();document.getElementById('top-pct').textContent=(s.total?Math.round(s.done/s.total*100):0)+'%';
+    updateRange();
     if(refocus){var el=document.getElementById(refocus);refocus=null;if(el)el.focus();}
   }
   function go(tab,sel){
@@ -413,22 +463,10 @@ svg{display:block}
       toast('نقلت '+moved+' '+noun(moved)+' لليوم','تراجع',function(){state=snap;persist();render();});
       return;
     }
-    if(act==='addday'){
-      var cnt=+b.dataset.n,last=state.days[n-1].date;
-      for(var q=1;q<=cnt;q++) state.days.push({date:addDays(last,q),tasks:[]});
-      persist();render();toast('أضفت '+(cnt===1?'يوم':cnt+' أيام')+' للجدول');return;
-    }
-    if(act==='rmlast'){
-      if(n<2)return;
-      var rem=state.days.pop();persist();render();
-      toast('حذفت '+label(rem.date),'تراجع',function(){state.days.push(rem);persist();render();});
-      return;
-    }
-    if(act==='backup'){
-      var blob=new Blob([JSON.stringify({app:'study-plan',v:1,exportedAt:new Date().toISOString(),state:state})],{type:'application/json'});
-      saveBlob(blob,'نسخة-جدول-مذاكرتي.json');toast('تم حفظ النسخة');return;
-    }
+    if(act==='applyrange'){applyRange();return;}
     if(act==='restore'){document.getElementById('restore-file').click();return;}
+    if(act==='logout'){logout(b);return;}
+    if(act==='login'){openLogin();return;}
     if(act==='pdf'){exportPdf(b);return;}
   });
   view.addEventListener('submit',function(e){
@@ -462,14 +500,188 @@ svg{display:block}
     go(b.dataset.tab,null);
   });
 
+  /* ---------- schedule range ---------- */
+  var DATE_RE=/^\d{4}-\d{2}-\d{2}$/;
+  function rangePlan(from,to){
+    if(!DATE_RE.test(from||'')||!DATE_RE.test(to||'')) return {err:'اختر تاريخ البداية وتاريخ النهاية.'};
+    if(to<from) return {err:'تاريخ النهاية لازم يكون بعد تاريخ البداية.'};
+    var n=diff(from,to)+1;
+    if(n>120) return {err:'الحد الأقصى 120 يوم.'};
+    var have={},dates=[],added=0,set={},removed=0,lost=0;
+    state.days.forEach(function(d){have[d.date]=d;});
+    for(var i=0;i<n;i++){var dt=addDays(from,i);dates.push(dt);set[dt]=1;if(!have[dt])added++;}
+    state.days.forEach(function(d){if(!set[d.date]){removed++;lost+=d.tasks.length;}});
+    return {n:n,dates:dates,have:have,added:added,removed:removed,lost:lost,same:added===0&&removed===0};
+  }
+  function updateRange(){
+    var pv=document.getElementById('rng-preview'),btn=document.getElementById('rng-apply');
+    if(!pv||!btn)return;
+    var p=rangePlan(document.getElementById('rng-from').value,document.getElementById('rng-to').value);
+    var h='',cls='rpv',ok=false;
+    if(p.err){cls+=' warn';h=p.err;}
+    else if(p.same){h='هذي هي الفترة الحالية ('+p.n+' يوم).';}
+    else{
+      ok=true;h='يصير الجدول '+p.n+' '+dayW(p.n)+'.';
+      if(p.added)h+=' يُضاف '+p.added+' '+((p.added>=2&&p.added<=10)?'أيام جديدة':'يوم جديد')+'.';
+      if(p.removed){cls+=' warn';h+=' يُحذف '+p.removed+' '+dayW(p.removed)+(p.lost?' فيها '+p.lost+' '+noun(p.lost):'')+'.';}
+    }
+    pv.className=cls;pv.textContent=h;btn.disabled=!ok;
+  }
+  function applyRange(){
+    var p=rangePlan(document.getElementById('rng-from').value,document.getElementById('rng-to').value);
+    if(p.err||p.same)return;
+    var snap=clone(state);
+    state.days=p.dates.map(function(dt){return p.have[dt]||{date:dt,tasks:[]};});
+    persist();ui.sel=defaultSel();ui.center=true;ui.rf=ui.rt=null;render();
+    toast('تم تحديث الجدول: '+p.n+' '+dayW(p.n),'تراجع',function(){state=snap;persist();ui.sel=defaultSel();ui.center=true;ui.rf=ui.rt=null;render();});
+  }
+  view.addEventListener('input',function(e){
+    if(e.target.id==='rng-from'){ui.rf=e.target.value;updateRange();}
+    else if(e.target.id==='rng-to'){ui.rt=e.target.value;updateRange();}
+  });
+  view.addEventListener('change',function(e){
+    if(e.target.id==='rng-from'){ui.rf=e.target.value;updateRange();}
+    else if(e.target.id==='rng-to'){ui.rt=e.target.value;updateRange();}
+  });
+
   /* ---------- files ---------- */
   function saveBlob(blob,name){
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
   }
-  document.getElementById('restore-file').addEventListener('change',function(e){
-    var f=e.target.files&&e.target.files[0];if(!f)return;
+
+  /* ---------- account + sync (Firebase) ---------- */
+  var CFG_OK=!!(FIREBASE_CONFIG&&FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.projectId);
+  var cloud={user:null,db:null,auth:null,timer:null,busy:false,again:false,status:'idle',lastPull:0};
+  var lg={mode:'in',email:''};
+  var login=document.getElementById('login');
+  function skipped(){try{return sessionStorage.getItem(SKIPKEY)==='1';}catch(e){return false;}}
+  function knownAcct(){try{return localStorage.getItem(ACCT);}catch(e){return null;}}
+  function syncText(){return {saving:'جاري الحفظ…',ok:'تمت المزامنة',err:'ما قدرت أزامن، بجرب مرة ثانية'}[cloud.status]||'';}
+  function setSync(st){cloud.status=st;var el=document.getElementById('sync-status');if(el)el.textContent=syncText();}
+  function docRef(){return cloud.db.collection('users').doc(cloud.user.uid);}
+  function schedulePush(){
+    if(!cloud.user)return;
+    setSync('saving');clearTimeout(cloud.timer);cloud.timer=setTimeout(push,800);
+  }
+  async function push(){
+    if(!cloud.user)return;
+    if(cloud.busy){cloud.again=true;return;}
+    cloud.busy=true;
+    try{await docRef().set({json:JSON.stringify(state),rev:localRev});setSync('ok');}
+    catch(e){setSync('err');}
+    cloud.busy=false;
+    if(cloud.again){cloud.again=false;push();}
+  }
+  async function pull(initial){
+    if(!cloud.user)return;
+    cloud.lastPull=Date.now();
+    try{
+      var snap=await docRef().get();
+      if(!snap.exists){push();return;}
+      var d=snap.data(),rev=+d.rev||0;
+      if(rev>localRev){
+        var remote=JSON.parse(d.json);
+        if(remote&&Array.isArray(remote.days)&&remote.days.length){
+          var prev=state,prevRev=localRev,changed=JSON.stringify(remote)!==JSON.stringify(state);
+          state=remote;localRev=rev;saveLocal();ui.sel=defaultSel();ui.center=true;render();setSync('ok');
+          if(changed&&initial&&prevRev>0) toast('حمّلت جدولك من حسابك','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
+        }
+      }else if(rev<localRev){push();}
+      else setSync('ok');
+    }catch(e){setSync('err');}
+  }
+  function loadScript(src){return new Promise(function(res,rej){var el=document.createElement('script');el.src=src;el.onload=res;el.onerror=function(){rej(new Error('load'));};document.head.appendChild(el);});}
+  function initCloud(){
+    var base='https://www.gstatic.com/firebasejs/10.12.2/';
+    var p=loadScript(base+'firebase-app-compat.js').then(function(){
+      return Promise.all([loadScript(base+'firebase-auth-compat.js'),loadScript(base+'firebase-firestore-compat.js')]);
+    }).then(function(){
+      firebase.initializeApp(FIREBASE_CONFIG);
+      cloud.auth=firebase.auth();cloud.db=firebase.firestore();
+    });
+    return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},12000);})]);
+  }
+  var AUTH_ERR={
+    'auth/invalid-email':'البريد غير صحيح.',
+    'auth/missing-password':'اكتب كلمة المرور.',
+    'auth/invalid-credential':'البريد أو كلمة المرور غير صحيحة.',
+    'auth/wrong-password':'البريد أو كلمة المرور غير صحيحة.',
+    'auth/user-not-found':'البريد أو كلمة المرور غير صحيحة.',
+    'auth/email-already-in-use':'هذا البريد مسجل من قبل، سجّل دخولك.',
+    'auth/weak-password':'كلمة المرور ضعيفة، استخدم 6 خانات أو أكثر.',
+    'auth/too-many-requests':'محاولات كثيرة، جرّب بعد شوي.',
+    'auth/network-request-failed':'ما فيه اتصال بالإنترنت.',
+    'auth/operation-not-allowed':'طريقة الدخول هذي غير مفعّلة في Firebase.',
+    'auth/unauthorized-domain':'هذا الرابط غير مضاف في Firebase (Authorized domains).',
+    'auth/popup-closed-by-user':'','auth/cancelled-popup-request':''
+  };
+  function authMsg(err){var c=err&&err.code;return c in AUTH_ERR?AUTH_ERR[c]:'صار خطأ، جرّب مرة ثانية.';}
+  var G_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
+  function loginHtml(){
+    var up=lg.mode==='up';
+    return '<div class="lbox"><div class="lbrand"><h1><span>جدول مذاكرتي</span></h1><p>سجّل دخولك عشان مهامك تنحفظ وتلقاها على أي جهاز.</p></div>'+
+      '<div class="card lcard">'+
+        '<button type="button" class="gbtn" data-l="google">'+G_SVG+'<span>المتابعة باستخدام Google</span></button>'+
+        '<div class="sep"><span>أو بالبريد</span></div>'+
+        '<div class="seg"><button type="button" data-l="mode" data-m="in" aria-pressed="'+(!up)+'">تسجيل الدخول</button><button type="button" data-l="mode" data-m="up" aria-pressed="'+up+'">حساب جديد</button></div>'+
+        '<form class="lf" id="lform" novalidate>'+
+          '<label for="l-email">البريد الإلكتروني<input id="l-email" type="email" dir="ltr" autocomplete="email" inputmode="email" value="'+esc(lg.email)+'"></label>'+
+          '<label for="l-pass">كلمة المرور<input id="l-pass" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'"></label>'+
+          '<div class="lmsg" id="lmsg" role="alert"></div>'+
+          '<button type="submit" class="btn primary" id="l-submit"><span>'+(up?'إنشاء الحساب':'دخول')+'</span></button>'+
+        '</form>'+
+        (up?'':'<button type="button" class="link" data-l="reset">نسيت كلمة المرور؟</button>')+
+      '</div>'+
+      '<button type="button" class="link center" data-l="skip">تخطي الآن، استخدم الجدول بدون حساب</button></div>';
+  }
+  function showLoginLoading(){
+    login.dataset.state='loading';login.hidden=false;
+    login.innerHTML='<div class="lbox"><div class="lbrand"><h1><span>جدول مذاكرتي</span></h1><p>جاري التحميل…</p></div></div>';
+  }
+  function showLoginForm(){login.dataset.state='form';login.hidden=false;login.innerHTML=loginHtml();}
+  function lmsg(t,ok){var el=document.getElementById('lmsg');if(el){el.textContent=t||'';el.className='lmsg'+(ok?' ok':'');}}
+  function lbusy(b){var el=document.getElementById('l-submit');if(el)el.disabled=b;}
+  function openLogin(){
+    if(!cloud.auth){toast('ما قدرت أتصل بخدمة الحساب. تأكد من الإنترنت وحدّث الصفحة.');return;}
+    try{sessionStorage.removeItem(SKIPKEY);}catch(e){}
+    showLoginForm();
+  }
+  login.addEventListener('click',function(e){
+    var b=e.target.closest('[data-l]');if(!b)return;
+    var a=b.dataset.l;
+    if(a==='mode'){
+      var em=document.getElementById('l-email');if(em)lg.email=em.value;
+      lg.mode=b.dataset.m;showLoginForm();return;
+    }
+    if(a==='pick'){document.getElementById('restore-file').click();return;}
+    if(a==='fresh'){login.hidden=true;return;}
+    if(a==='skip'){try{sessionStorage.setItem(SKIPKEY,'1');}catch(x){}login.hidden=true;if(ui.tab==='more')render();return;}
+    if(a==='google'){
+      var pr=new firebase.auth.GoogleAuthProvider();
+      cloud.auth.signInWithPopup(pr).catch(function(err){
+        if(err&&(err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment')) return cloud.auth.signInWithRedirect(pr);
+        var m=authMsg(err);if(m)lmsg(m);
+      });
+      return;
+    }
+    if(a==='reset'){
+      var email=document.getElementById('l-email').value.trim();
+      if(!email){lmsg('اكتب بريدك أولاً.');return;}
+      cloud.auth.sendPasswordResetEmail(email).then(function(){lmsg('أرسلت لك رابط تعيين كلمة المرور على بريدك.',true);},function(err){lmsg(authMsg(err));});
+    }
+  });
+  login.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=document.getElementById('l-email').value.trim(),pass=document.getElementById('l-pass').value;
+    lg.email=email;
+    if(!email||!pass){lmsg('اكتب البريد وكلمة المرور.');return;}
+    lmsg('');lbusy(true);
+    var p=lg.mode==='up'?cloud.auth.createUserWithEmailAndPassword(email,pass):cloud.auth.signInWithEmailAndPassword(email,pass);
+    p.catch(function(err){lmsg(authMsg(err));}).then(function(){lbusy(false);});
+  });
+  function restoreFile(file,ok,fail){
     var rd=new FileReader();
     rd.onload=function(){
       try{
@@ -481,11 +693,65 @@ svg{display:block}
         });
         var prev=state;
         state={v:1,days:days};persist();ui.sel=defaultSel();ui.center=true;render();
-        toast('تم استرجاع النسخة','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
-      }catch(err){toast('الملف ما يبدو نسخة من الجدول.');}
+        ok(prev);
+      }catch(err){fail();}
     };
-    rd.readAsText(f);e.target.value='';
+    rd.onerror=fail;
+    rd.readAsText(file);
+  }
+  document.getElementById('restore-file').addEventListener('change',function(e){
+    var f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+    var onboarding=login.dataset.state==='onboard'&&!login.hidden;
+    restoreFile(f,function(prev){
+      login.hidden=true;
+      toast(cloud.user?'تم استرجاع النسخة وحفظها في حسابك':'تم استرجاع النسخة','تراجع',function(){state=prev;persist();ui.sel=defaultSel();ui.center=true;render();});
+    },function(){
+      if(onboarding)lmsg('الملف ما يبدو نسخة من الجدول. جرّب ملف ثاني.');else toast('الملف ما يبدو نسخة من الجدول.');
+    });
   });
+  function showOnboard(){
+    login.dataset.state='onboard';login.hidden=false;
+    login.innerHTML='<div class="lbox"><div class="lbrand"><h1><span>أهلاً بك</span></h1><p>تم إنشاء حسابك. عندك نسخة احتياطية من جدولك؟</p></div>'+
+      '<div class="card lcard">'+
+        '<button type="button" class="btn primary" data-l="pick"><span>نعم، اختر ملف النسخة</span></button>'+
+        '<button type="button" class="btn" data-l="fresh"><span>لا، أكمل بدون نسخة</span></button>'+
+        '<div class="lmsg" id="lmsg" role="alert"></div>'+
+      '</div></div>';
+  }
+  function isFirstSignIn(u){
+    try{
+      var key='study-plan-onb-'+u.uid;
+      if(localStorage.getItem(key))return false;
+      var m=u.metadata||{},c=Date.parse(m.creationTime),l=Date.parse(m.lastSignInTime);
+      if(isFinite(c)&&isFinite(l)&&Math.abs(l-c)<10000){localStorage.setItem(key,'1');return true;}
+    }catch(e){}
+    return false;
+  }
+  function onAuth(user){
+    cloud.user=user||null;
+    if(user){
+      try{localStorage.setItem(ACCT,user.email||user.displayName||'1');}catch(e){}
+      if(isFirstSignIn(user))showOnboard();else login.hidden=true;
+      if(ui.tab==='more')render();pull(true);
+    }else{
+      try{localStorage.removeItem(ACCT);}catch(e){}
+      if(!skipped())showLoginForm();else if(ui.tab==='more')render();
+    }
+  }
+  function accountCard(){
+    if(!CFG_OK) return '<section class="card sect"><h3>الحساب</h3><p>تسجيل الدخول غير مفعّل بعد. أضف إعدادات Firebase داخل ملف index.html (الخطوات في README).</p></section>';
+    if(cloud.user) return '<section class="card sect"><h3>الحساب</h3><p class="acct" dir="auto">'+esc(cloud.user.email||cloud.user.displayName||'')+'</p><p class="sync" id="sync-status">'+syncText()+'</p><div class="btns"><button type="button" class="btn" data-act="restore"><span>استرجاع نسخة احتياطية</span></button><button type="button" class="btn" data-act="logout"><span>تسجيل الخروج</span></button></div></section>';
+    return '<section class="card sect"><h3>الحساب</h3><p>أنت تستخدم الجدول بدون حساب، ومهامك محفوظة في هذا المتصفح فقط.</p><button type="button" class="btn primary" data-act="login"><span>تسجيل الدخول</span></button></section>';
+  }
+  async function logout(btn){
+    btn.disabled=true;
+    clearTimeout(cloud.timer);
+    try{await docRef().set({json:JSON.stringify(state),rev:localRev});}
+    catch(e){toast('ما قدرت أحفظ آخر تغييراتك. تأكد من الإنترنت قبل ما تطلع.');btn.disabled=false;return;}
+    try{localStorage.removeItem(KEY);localStorage.removeItem(REVKEY);localStorage.removeItem(ACCT);sessionStorage.removeItem(SKIPKEY);}catch(e){}
+    try{await cloud.auth.signOut();}catch(e){}
+    location.reload();
+  }
 
   /* ---------- PDF ---------- */
   var FB='"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif', FD='"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif';
@@ -651,8 +917,16 @@ svg{display:block}
   /* ---------- boot ---------- */
   render();
   document.addEventListener('visibilitychange',function(){
-    if(!document.hidden&&(document.activeElement===document.body||!document.activeElement)) render();
+    if(document.hidden)return;
+    if(cloud.user&&Date.now()-cloud.lastPull>20000){pull(false);return;}
+    if(document.activeElement===document.body||!document.activeElement)render();
   });
+  if(CFG_OK){
+    if(!skipped()&&!knownAcct())showLoginLoading();
+    initCloud().then(function(){cloud.auth.onAuthStateChanged(onAuth);}).catch(function(){
+      if(login.dataset.state==='loading'){login.hidden=true;toast('ما قدرت أتصل بخدمة الحساب. شغّلت الجدول بدون حساب.');}
+    });
+  }
 })();
 </script>
 </body>
