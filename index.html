@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>رفيق المذاكرة</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -14,7 +14,7 @@
 </script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden}
+html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden;position:fixed;width:100%;height:100%}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 #stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
@@ -374,7 +374,6 @@ async function openPdf(file){
 
 $('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.toggle('on')};
 
-// زر التسجيل السريع في شاشة الدراسة
 $('#studyRecFab').onclick=()=>{
   go('recordings');
   startAudioRecording();
@@ -476,7 +475,6 @@ function initAnnotationLayer(canvas,pageNo,file){
     snapshotAnnotation(canvas);
     canvas.addEventListener('pointerdown',e=>{
       if(!['pen','hl','er'].includes(activeTool))return;
-      // ميزة راحة اليد: إذا كانت مفعلة، تجاهل أي لمس بالإصبع وسمح فقط بالقلم أو الماوس
       if(palmRejection && e.pointerType==='touch') return;
       
       e.preventDefault();
@@ -676,8 +674,8 @@ async function renderQuizHome(){
   `;
 
   $('#startPdfQuizBtn').onclick=async()=>{
-    const fileId=$('#quizFileSelect'].value;
-    const type=$('#quizTypeSelect'].value;
+    const fileId=$('#quizFileSelect').value;
+    const type=$('#quizTypeSelect').value;
     const file=files.find(f=>f.id===fileId);
     if(!file) return;
 
@@ -723,9 +721,8 @@ async function renderQuizHome(){
 }
 
 function generateSmartQuestions(text, type){
-  // تصفية وتنظيف الجمل المفيدة من النص
   const rawSentences=text.replace(/\s+/g,' ').split(/[.!?؟؛\n]+/).map(s=>s.trim()).filter(s=>s.length>=22);
-  const sentences=[...new Set(rawSentences)]; // إزالة التكرار لمنع تكرار الأسئلة
+  const sentences=[...new Set(rawSentences)];
   const stopWords=new Set(['من','في','على','إلى','عن','هذا','هذه','ذلك','التي','الذي','هو','هي','ثم','كما','كان','كانت','مع','ما','لا','قد','أن','إن','بين','عند','كل','تم','يتم','the','and','for','with','that','this','from','are','was','were']);
   
   const allWords=[...new Set((text.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{5,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase())))];
@@ -735,17 +732,14 @@ function generateSmartQuestions(text, type){
     const words=(sent.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{5,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase()));
     if(words.length===0) return;
 
-    // اختيار كلمة مفتاحية أساسية من الجملة لتكون هي الإجابة
     const keyword=words[Math.floor(words.length/2)];
     const questionPrompt=sent.replace(keyword, '________');
 
-    // توليد خيارات خاطئة ذكية ومختلفة تماماً عن الإجابة الصحيحة
     const distractors=allWords.filter(w=>w.toLowerCase()!==keyword.toLowerCase()&&!sent.toLowerCase().includes(w.toLowerCase()));
     const shuffledDistractors=distractors.sort(()=>Math.random()-.5).slice(0,3);
     
     const options=[keyword, ...shuffledDistractors].sort(()=>Math.random()-.5);
     
-    // شرح دقيق للسبب بناءً على سياق الجملة الأصلية
     const explanation=`السبب من النص: "${sent}" حيث تمثل الكلمة المفقودة العنصر الأساسي في هذه القاعدة أو المعلومة.`;
 
     if(type==='mcq'){
@@ -762,7 +756,6 @@ function generateSmartQuestions(text, type){
         explanation: `المرجع الأساسي في الملف: ${sent}`
       });
     }else{
-      // Flashcards ذكية وغير مكشوفة
       questions.push({
         q: `ما هي القاعدة أو المصطلح الأساسي المرتبط بالعبارة التالية؟\n\n«${sent.replace(keyword, '[...]')}»`,
         answer: `الإجابة / المصطلح المفتاحي: ${keyword}\n\nالتوضيح الكامل: ${sent}`,
@@ -847,7 +840,6 @@ function runQuizSession(questions, type, index, score){
           else if(b.dataset.opt===chosen && !correct) b.classList.add('no');
         });
         
-        // إظهار الشرح والتوضيح بعد الإجابة
         $('#explanationText').textContent = item.explanation;
         $('#explanationBox').classList.remove('hide');
 
@@ -904,7 +896,6 @@ function selectRecording(id){
   renderRecList();
   $('#recTitle').textContent=rec.title;
   
-  // عرض المقاطع الزمنية بشكل تفاعلي
   const segBox=$('#transcriptSegmentsBox');
   if(rec.segments && rec.segments.length > 0){
     segBox.innerHTML = rec.segments.map(seg=>`
@@ -947,7 +938,6 @@ document.addEventListener('click',e=>{
 $('#saveRecTextBtn').onclick=async()=>{
   const rec=recState.recordings.find(r=>r.id===recState.selectedId);
   if(!rec) return;
-  // تحديث النص العام
   const segBox=$('#transcriptSegmentsBox');
   rec.transcript = segBox.innerText;
   await storeAction('recordings','readwrite','put',rec);
@@ -1068,7 +1058,7 @@ $('#homeRecBtn').onclick=()=>{
 };
 
 /* ==========================================
-   7. التنقل والتحجيم
+   7. التنقل والتحجيم المتوافق مع الجوال والآيباد
    ========================================== */
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
@@ -1083,14 +1073,23 @@ document.addEventListener('click',e=>{
 });
 
 function fit(){
-  const k = Math.min(window.innerWidth / 1194, window.innerHeight / 834);
   const st = document.getElementById('stage');
-  st.style.transform = 'scale(' + k + ')';
-  st.style.left = (window.innerWidth - 1194 * k) / 2 + 'px';
-  st.style.top = (window.innerHeight - 834 * k) / 2 + 'px';
+  const baseWidth = 1194;
+  const baseHeight = 834;
+  
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const scale = Math.min(vw / baseWidth, vh / baseHeight);
+
+  st.style.position = 'absolute';
+  st.style.width = baseWidth + 'px';
+  st.style.height = baseHeight + 'px';
+  st.style.transformOrigin = 'top left';
+  st.style.transform = 'scale(' + scale + ')';
+  st.style.left = Math.max(0, (vw - baseWidth * scale) / 2) + 'px';
+  st.style.top = Math.max(0, (vh - baseHeight * scale) / 2) + 'px';
 }
-window.addEventListener('resize', fit);
-fit();
 
 window.addEventListener('resize', fit);
 window.addEventListener('orientationchange', () => setTimeout(fit, 150));
