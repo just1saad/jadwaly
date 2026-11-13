@@ -49,7 +49,6 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<!-- القائمة الجانبية -->
 <template id="sidebarTemplate">
   <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
@@ -111,14 +110,13 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
    
-   <!-- بطاقة التفريغ الصوتي الفوري المباشر في الصفحة الرئيسية -->
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2>🎙️ التفريغ الصوتي الفوري</h2>
       <button id="homeLiveMicBtn" class="btn pri" style="background:#E8590C;color:#fff;height:36px;font-size:13px;border-radius:18px">بدء الاستماع</button>
     </div>
-    <div class="mut" id="homeLiveStatus" style="font-size:12px;color:#C7D0E4">اضغط بدء الاستماع لتتحدث ويكتب النص هنا فوراً...</div>
-    <textarea id="homeLiveBox" class="inp" style="flex:1;min-height:90px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);resize:none" placeholder="الكلام المفرغ سيظهر هنا تلقائياً..."></textarea>
+    <div class="mut" id="homeLiveStatus" style="font-size:12px;color:#C7D0E4">اضغط بدء الاستماع وتحدث بوضوح...</div>
+    <textarea id="homeLiveBox" class="inp" style="flex:1;min-height:90px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);resize:none" placeholder="كلمة بكلمة ستظهر هنا فوراً..."></textarea>
     <div style="display:flex;justify-content:flex-end">
       <button id="saveHomeLiveBtn" class="btn pri" style="height:34px;font-size:13px;background:#0B5F58">حفظ في التسجيلات</button>
     </div>
@@ -214,7 +212,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     </div>
     <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px">
       <h2>🤖 المساعد الذكي والحاسبة</h2>
-      <input id="aiMathInput" class="inp" placeholder="اكتب سؤالاً أو معادلة (مثال: 50 * 3 + 20)...">
+      <input id="aiMathInput" class="inp" placeholder="اكتب سؤالاً أو معادلة...">
       <button class="btn pri" id="askAiBtn">حساب / استشارة ذكية</button>
       <div id="aiResultBox" class="mut" style="font-size:15px;line-height:1.8;background:#F9FAFB;padding:12px;border-radius:8px">ستظهر النتيجة هنا...</div>
     </div>
@@ -533,7 +531,7 @@ function initAnnotationLayer(canvas,pageNo,file){
 updateAnnotationTools();
 
 /* ==========================================
-   تفريغ الصوت الفوري والمباشر (Inline SpeechRecognition)
+   تفريغ الصوت الفوري: كلمة بكلمة وبشكل لحظي
    ========================================== */
 function initHomeLiveTranscription(){
   const startBtn = document.getElementById('homeLiveMicBtn');
@@ -545,7 +543,7 @@ function initHomeLiveTranscription(){
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if(!SpeechRec){
-    statusEl.textContent = 'متصفحك لا يدعم التعرف الصوتي المباشر. استخدم Safari.';
+    statusEl.textContent = 'متصفحك لا يدعم التعرف الصوتي المباشر.';
     startBtn.disabled = true;
     return;
   }
@@ -553,21 +551,23 @@ function initHomeLiveTranscription(){
   let recognition = new SpeechRec();
   recognition.lang = 'ar-SA';
   recognition.continuous = true;
-  recognition.interimResults = true;
-  let isListening = false;
+  recognition.interimResults = true; // تمكين النتائج المؤقتة لكتابة كل كلمة فوراً
+  let userWantsListening = false;
+  let finalizedTranscript = '';
 
   startBtn.onclick = () => {
-    if(!isListening){
+    if(!userWantsListening){
+      userWantsListening = true;
+      finalizedTranscript = textBox.value ? textBox.value + ' ' : '';
       try{
         recognition.start();
-        isListening = true;
         startBtn.textContent = 'إيقاف الاستماع';
         startBtn.style.background = '#B42318';
-        statusEl.textContent = '🎙️ جاري الاستماع الفوري... تحدث الآن';
+        statusEl.textContent = '🎙️ جاري الاستماع الفوري... (يكتب كلمة بكلمة)';
       }catch(err){console.log(err);}
     } else {
+      userWantsListening = false;
       try{ recognition.stop(); }catch(e){}
-      isListening = false;
       startBtn.textContent = 'بدء الاستماع';
       startBtn.style.background = '#E8590C';
       statusEl.textContent = 'تم إيقاف الاستماع.';
@@ -575,24 +575,31 @@ function initHomeLiveTranscription(){
   };
 
   recognition.onresult = (e) => {
-    let finalTxt = '';
-    for(let i=e.resultIndex; i<e.results.length; i++){
+    let interimText = '';
+    let currentFinal = '';
+    for(let i = e.resultIndex; i < e.results.length; ++i){
       if(e.results[i].isFinal){
-        finalTxt += e.results[i][0].transcript + ' ';
+        currentFinal += e.results[i][0].transcript + ' ';
+      } else {
+        interimText += e.results[i][0].transcript;
       }
     }
-    if(finalTxt){
-      textBox.value += (textBox.value ? ' ' : '') + finalTxt;
+    if(currentFinal){
+      finalizedTranscript += currentFinal;
     }
+    // عرض النص المثبت مضافاً إليه الكلمات اللحظية المؤقتة لتظهر الكتابة فوراً
+    textBox.value = finalizedTranscript + interimText;
   };
 
   recognition.onerror = (e) => {
-    statusEl.textContent = '⚠️ خطأ في الاستماع: ' + e.error;
+    statusEl.textContent = '⚠️ تنبيه: ' + e.error + ' (جاري الاستمرار...)';
   };
 
   recognition.onend = () => {
-    if(isListening){
-      try{ recognition.start(); }catch(e){}
+    if(userWantsListening){
+      try {
+        recognition.start();
+      } catch(e) {}
     }
   };
 
@@ -610,13 +617,11 @@ function initHomeLiveTranscription(){
     await storeAction('recordings','readwrite','put',newRec);
     alert('تم حفظ النص المفرغ في التسجيلات بنجاح!');
     textBox.value = '';
+    finalizedTranscript = '';
     loadRecordings();
   };
 }
 
-/* ==========================================
-   إدارة دفاتر الملاحظات والجدول
-   ========================================== */
 async function loadNotebooks(){
   const notes=await storeAction('notebooks','readonly','getAll');
   const grid=document.getElementById('notebooksGrid');
@@ -704,9 +709,6 @@ function renderScheduleView(){
   }
 }
 
-/* ==========================================
-   إصلاح قسم الاختبارات والبطاقات بالكامل
-   ========================================== */
 async function renderQuizHome(){
   const qMain = document.getElementById('qMain');
   if(!qMain) return;
@@ -896,9 +898,6 @@ function runQuizSession(questions, type, index, score){
   }
 }
 
-/* ==========================================
-   إصلاح أدوات الذكاء الاصطناعي والحاسبة
-   ========================================== */
 const doTranslateBtn = document.getElementById('doTranslateBtn');
 if(doTranslateBtn){
   doTranslateBtn.onclick = () => {
@@ -915,7 +914,6 @@ if(askAiBtn){
     if(!q) return alert('اكتب سؤالاً أو معادلة');
     let res = '';
     try {
-      // حاسبة آمنة للمعادلات البسيطة
       if(/^[0-9+\-*/().\s]+$/.test(q)){
         res = `النتيجة الحسابية: ${eval(q)}`;
       } else {
@@ -928,9 +926,6 @@ if(askAiBtn){
   };
 }
 
-/* ==========================================
-   التسجيلات ومزامنة القوائم
-   ========================================== */
 async function loadRecordings(){
   const recs = await storeAction('recordings','readonly','getAll');
   const listEl = document.getElementById('recList');
