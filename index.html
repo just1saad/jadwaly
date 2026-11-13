@@ -6,6 +6,7 @@
 <title>رفيق المذاكرة - Study Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
   if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -79,7 +80,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     <span>التسجيلات الصوتية</span>
   </button>
   <button class="nav" data-go="tools">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0l2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 l2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     <span>الأدوات والذكاء الاصطناعي</span>
   </button>
   <button class="nav" data-go="community">
@@ -713,7 +714,7 @@ function renderScheduleView(){
 }
 
 /* ==========================================
-   نظام الاختبارات والبطاقات (نظيف تماماً بدون تداخل القوائم)
+   نظام الاختبارات والبطاقات (مع دعم OCR التلقائي)
    ========================================== */
 function renderQuizHome(){
   const qMain = document.getElementById('qMain');
@@ -759,15 +760,36 @@ function renderQuizHome(){
     const file = files.find(f => f.id === selectedFileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF وتوليد الأسئلة الذكية…</div>`;
+    qMain.innerHTML=`<div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF واستخراج النصوص…</div>`;
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
       let fullText = '';
+      
+      // أولاً: محاولة استخراج النص بالطريقة العادية
       for(let i=1; i<=doc.numPages; i++){
         const page = await doc.getPage(i);
         const textContent = await page.getTextContent();
         fullText += ' ' + textContent.items.map(it => it.str).join(' ');
+      }
+
+      // إذا كان النص قليلاً جداً أو فارغاً (الملف عبارة عن صور مسح ضوئي Scanned)
+      if(fullText.trim().length < 50 && window.Tesseract){
+        qMain.innerHTML=`<div style="margin:auto;text-align:center;color:#566178">الملف عبارة عن صور، جاري استخدام الذكاء البصري (OCR) لقراءة النص العربي...</div>`;
+        fullText = '';
+        for(let i=1; i<=doc.numPages; i++){
+          const page = await doc.getPage(i);
+          const vp = page.getViewport({scale: 1.5});
+          const canvas = document.createElement('canvas');
+          canvas.width = vp.width;
+          canvas.height = vp.height;
+          await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+          
+          const worker = await Tesseract.createWorker('ara');
+          const ret = await worker.recognize(canvas);
+          await worker.terminate();
+          fullText += ' ' + ret.data.text;
+        }
       }
 
       const questions = generateSmartQuestions(fullText, type);
