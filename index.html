@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>رفيق التحصيلي</title>
+<title>رفيق المذاكرة</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- مكتبة عارض ملفات PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   if (window.pdfjsLib) {
@@ -15,7 +14,8 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden}
-button{font-family:inherit;cursor:pointer}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
 #stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
 .scr{position:absolute;inset:0;display:none}
 .scr.on{display:flex}
@@ -35,13 +35,16 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .tb.on{background:#0B5F58;color:#fff}
 .sw{width:24px;height:24px;border-radius:12px;border:0;flex:none;padding:0}
 .sw.on{box-shadow:0 0 0 3px #fff,0 0 0 5px #14213D}
-.opt{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:17px;font-weight:600;width:100%;text-align:right}
+.opt{display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:16px;font-weight:600;width:100%;text-align:right}
 .opt:hover{border-color:#9bb}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
 .chip{padding:8px 16px;border-radius:20px;border:1px solid #D5DBE7;background:#fff;font-size:14px;color:#14213D}
 .chip.on{background:#14213D;color:#fff;border-color:#14213D}
 @keyframes p{50%{opacity:.35}}.rec{animation:p 1s infinite}
 .hide{display:none!important}
+.modal-bg{position:absolute;inset:0;background:rgba(20,33,61,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-box{background:#fff;border-radius:20px;padding:24px;width:460px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
+.inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
 </style>
 </head>
 <body>
@@ -51,20 +54,20 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 <div class="scr on" id="home" data-side>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><h1>أهلاً بك، رفيق التحصيلي</h1><div class="mut" style="font-size:15px;margin-top:4px">نظم مذاكرتك واحفظ ملفاتك بكل أمان</div></div>
-    <button class="btn sec" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
+    <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك الخاصة لتنظيم الدراسة، الملفات، والتسجيلات</div></div>
+    <button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
   </div>
   <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px">
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
-    <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة</h2><span style="font-size:13px;color:#C7D0E4">يُفرَّغ مباشرة على الجهاز</span></div>
-    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px" id="homeLiveText">[هنا يظهر النص أثناء التسجيل مباشرة…]</div>
-    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:52px;border-radius:26px;padding:0 24px"><i data-i="dot"></i>ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4">سجل صوتك بكل سهولة</span></div>
+    <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة</h2><span style="font-size:13px;color:#C7D0E4">تسجيل وتفريغ مباشر</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;max-height:78px;overflow:auto" id="homeLiveText">اضغط «ابدأ التسجيل» لبدء التسجيل الصوتي والتفريغ النصي…</div>
+    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:48px;border-radius:24px;padding:0 22px"><i data-i="dot"></i>ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز للتسجيل</span></div>
    </div>
-   <div class="card" style="padding:22px"><div style="display:flex;justify-content:space-between"><h2>جدول اليوم</h2><a href="#" data-go="schedule" style="color:#0B5F58;font-weight:600;font-size:14px;text-decoration:none">عرض الكل</a></div><div id="todayList"></div></div>
+   <div class="card" style="padding:22px;display:flex;flex-direction:column"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><h2>جدول اليوم</h2><a href="#" data-go="schedule" style="color:#0B5F58;font-weight:600;font-size:14px;text-decoration:none">إدارة الجدول</a></div><div id="todayList" style="flex:1;overflow:auto"></div></div>
   </div>
-  <h2>موادك</h2>
+  <h2>ملخص مكتبتك</h2>
   <div id="subjGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px"></div>
-  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px"><div style="width:44px;height:44px;border-radius:12px;background:#E6EDFB;color:#1D4ED8;display:flex;align-items:center;justify-content:center"><i data-i="pen"></i></div><div style="flex:1"><div style="font-size:15px;font-weight:700">الملف الحالي</div><div class="mut" id="homeCurrentFile">اختر ملفاً من المكتبة للبدء</div></div><button class="btn pri" id="homeOpenLast" style="display:none">افتح</button></div>
+  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px"><div style="width:44px;height:44px;border-radius:12px;background:#E6EDFB;color:#1D4ED8;display:flex;align-items:center;justify-content:center"><i data-i="pen"></i></div><div style="flex:1"><div style="font-size:15px;font-weight:700">آخر ملف مفتوح</div><div class="mut" id="homeCurrentFile">لم تفتح أي ملف بعد</div></div><button class="btn pri" id="homeOpenLast" style="display:none">افتح</button></div>
  </div>
 </div>
 
@@ -72,17 +75,23 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 <div class="scr" id="library" data-side>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة</h1><button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button></div>
-  <div style="display:flex;gap:10px"><button class="chip on">الكل</button><button class="chip">الرياضيات</button><button class="chip">الفيزياء</button><button class="chip">الكيمياء</button><button class="chip">الأحياء</button></div>
-  <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;max-height:600px;padding:4px"></div>
+  <div style="display:flex;gap:10px" id="libFilters">
+    <button class="chip on" data-filter="الكل">الكل</button>
+    <button class="chip" data-filter="الرياضيات">الرياضيات</button>
+    <button class="chip" data-filter="الفيزياء">الفيزياء</button>
+    <button class="chip" data-filter="الكيمياء">الكيمياء</button>
+    <button class="chip" data-filter="الأحياء">الأحياء</button>
+    <button class="chip" data-filter="عام">عام</button>
+  </div>
+  <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
 <!-- SCHEDULE -->
 <div class="scr" id="schedule" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>الجدول</h1><button class="btn pri" id="addScheduleBtn"><i data-i="plus"></i>إضافة جلسة</button></div>
-  <div class="card" style="padding:16px;flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:10px" id="week"></div>
-  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px"><i data-i="spark"></i><div style="flex:1;font-size:15px"><b>اقتراح المساعد:</b> <span class="mut" style="font-size:15px">ركز اليوم على مراجعة الأساسيات وحل التجميعات.</span></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>الجدول الأسبوعي</h1><button class="btn pri" id="addScheduleBtn"><i data-i="plus"></i>إضافة جلسة</button></div>
+  <div class="card" style="padding:16px;flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:10px;overflow:auto" id="week"></div>
  </div>
 </div>
 
@@ -94,13 +103,33 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 <!-- RECORDINGS -->
 <div class="scr" id="recordings" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><i data-i="dot"></i><span>تسجيل جديد</span></button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><i data-i="dot"></i><span>تسجيل جديد</span></button></div>
   <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
-   <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px" id="recList"></div>
+   <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto" id="recList"></div>
    <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;min-height:0">
-    <div id="liveBox" class="hide" style="background:#14213D;color:#fff;border-radius:14px;padding:16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="rec" style="width:12px;height:12px;border-radius:6px;background:#E8590C"></span><b id="timer">00:00</b><span style="font-size:13px;color:#C7D0E4">التسجيل الصوتي يعمل</span></div><div style="line-height:1.9;font-size:15px" id="recLiveContent">التسجيل قيد العمل...</div></div>
-    <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="recTitle">تسجيل صوتي جديد</h2><div style="display:flex;gap:8px"><button class="btn sec">ملخص</button><button class="btn pri" data-go="quizzes">اختبرني</button></div></div>
-    <div style="background:#F3F5F9;border-radius:14px;padding:16px;height:70px;display:flex;align-items:center;gap:14px"><button class="fab"><i data-i="play"></i></button><svg style="flex:1" height="40" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 20h400" stroke="#D5DBE7"/><path id="wave" stroke="#0B5F58" stroke-width="3" stroke-linecap="round"/></svg><span class="mut" id="recDuration">00:00</span></div>
+    <div id="liveBox" class="hide" style="background:#14213D;color:#fff;border-radius:14px;padding:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="rec" style="width:12px;height:12px;border-radius:6px;background:#E8590C"></span>
+        <b id="timer">00:00</b>
+        <span style="font-size:13px;color:#C7D0E4" id="speechStatusBadge">جاري الاستماع والتفريغ…</span>
+      </div>
+      <div style="line-height:1.9;font-size:15px;max-height:100px;overflow:auto" id="recLiveContent">تحدث الآن ليظهر النص هنا…</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 id="recTitle">اختر تسجيلاً أو ابدأ تسجيلاً جديداً</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn sec hide" id="delRecBtn" style="color:#B42318">حذف</button>
+        <button class="btn pri hide" id="quizFromRecBtn">اختبرني من النص</button>
+      </div>
+    </div>
+    <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
+      <label class="mut" style="font-weight:700">النص المفرّغ (قابل للتعديل والحفظ):</label>
+      <textarea id="recTranscriptArea" class="inp" style="flex:1;resize:none;line-height:1.9;font-size:15px" placeholder="سيظهر التفريغ الصوتي هنا، ويمكنك الكتابة أو التعديل عليه…"></textarea>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn sec hide" id="saveRecTextBtn">حفظ التعديلات على النص</button>
+      </div>
+    </div>
    </div>
   </div>
  </div>
@@ -117,219 +146,34 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
  </div>
  <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
    <button class="fab" id="bPages" aria-label="الصفحات"><i data-i="grid"></i></button>
-   <button class="fab" id="bRec" aria-label="تسجيل"><i data-i="mic"></i></button>
    <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
  </div>
  <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 12px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
  <div id="pagesDr" class="hide" style="position:absolute;top:70px;bottom:12px;right:12px;width:130px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
  <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px">
   <h2 style="font-size:16px">مساعد المذاكرة</h2>
-  <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">ملخص الصفحة</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">عرض تفاصيل الصفحة الحالية وتلخيصها هنا.</div></div>
-  <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">اختبرني على هذا الملف</button>
-  <div style="flex:1"></div><div class="mut" style="display:flex;gap:8px;align-items:center"><i data-i="lock" data-s="16"></i>الملف على جهازك فقط</div>
+  <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
+  <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">إنشاء اختبار تدريبي</button>
+  <div style="flex:1"></div><div class="mut" style="display:flex;gap:8px;align-items:center"><i data-i="lock" data-s="16"></i>جميع بياناتك محفوظة على جهازك</div>
  </div>
 </div>
+
+<!-- MODAL CONTAINER -->
+<div id="modalRoot" class="modal-bg hide"></div>
 
 </div>
 
 <script>
-/* --- نظام إدارة البيانات (IndexedDB لملفات الـ PDF) --- */
-const DB_NAME = 'tahseeli-study-app';
-const DB_VERSION = 1;
-const STORE = 'files';
-
-let appState = {
-  files: [],
-  currentFile: null,
-  pdfDoc: null,
-  pageNum: 1,
-  numPages: 0,
-  rendering: false
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const SUBJ_META={
+  'الرياضيات':['#1D4ED8','#E6EDFB'],
+  'الفيزياء':['#0B5F58','#E4F2F0'],
+  'الكيمياء':['#9A3412','#FBEBE0'],
+  'الأحياء':['#6D28D9','#EEE8FA'],
+  'عام':['#44506A','#EEF1F6']
 };
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE, { keyPath: 'id' });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function dbAction(mode, action, value) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE, mode);
-    const store = tx.objectStore(STORE);
-    const req = action === 'getAll' ? store.getAll() : action === 'delete' ? store.delete(value) : store.put(value);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-    tx.oncomplete = () => db.close();
-  });
-}
-
-function makeId() {
-  return crypto.randomUUID ? crypto.randomUUID() : 'f-' + Date.now();
-}
-
-// عنصر إدخال الملفات المخفي
-const hiddenFileInput = document.createElement('input');
-hiddenFileInput.type = 'file';
-hiddenFileInput.accept = 'application/pdf,.pdf';
-hiddenFileInput.style.display = 'none';
-document.body.appendChild(hiddenFileInput);
-
-hiddenFileInput.addEventListener('change', async () => {
-  const file = hiddenFileInput.files[0];
-  if (!file) return;
-  try {
-    const record = {
-      id: makeId(),
-      name: file.name,
-      size: file.size,
-      data: await file.arrayBuffer()
-    };
-    await dbAction('readwrite', 'put', record);
-    await refreshLibrary();
-    alert('تم استيراد وحفظ ملف الـ PDF بنجاح!');
-    openPdfRecord(record);
-  } catch (err) {
-    console.error(err);
-    alert('تعذر حفظ الملف، قد تكون المساحة ممتلئة.');
-  }
-});
-
-document.addEventListener('click', e => {
-  if (e.target.closest('[data-import-pdf]')) {
-    e.preventDefault();
-    hiddenFileInput.value = '';
-    hiddenFileInput.click();
-  }
-});
-
-async function refreshLibrary() {
-  try {
-    appState.files = await dbAction('readonly', 'getAll');
-  } catch(e) {
-    appState.files = [];
-  }
-  
-  const libGrid = $('#libGrid');
-  if (!libGrid) return;
-  
-  if (appState.files.length === 0) {
-    libGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">مكتبتك فارغة حالياً. اضغط على "استيراد PDF" لإضافة أول ملف.</div>';
-    return;
-  }
-
-  libGrid.innerHTML = appState.files.map(file => `
-    <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px;position:relative">
-      <div style="aspect-ratio:3/4;border-radius:10px;background:#E4F2F0;color:#0B5F58;display:flex;align-items:center;justify-content:center;cursor:pointer" data-open-file="${file.id}">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>
-      </div>
-      <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${file.name}">${file.name}</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn pri" style="flex:1;height:32px;font-size:13px;justify-content:center" data-open-file="${file.id}">افتح</button>
-        <button class="btn sec" style="height:32px;font-size:13px;color:#B42318;border-color:#FDECEA" data-del-file="${file.id}">حذف</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-document.addEventListener('click', async e => {
-  const openBtn = e.target.closest('[data-open-file]');
-  if (openBtn) {
-    const fileId = openBtn.dataset.openFile;
-    const file = appState.files.find(f => f.id === fileId);
-    if (file) openPdfRecord(file);
-    return;
-  }
-  const delBtn = e.target.closest('[data-del-file]');
-  if (delBtn) {
-    const fileId = delBtn.dataset.delFile;
-    if (confirm('هل تريد حذف هذا الملف؟')) {
-      await dbAction('readwrite', 'delete', fileId);
-      await refreshLibrary();
-    }
-  }
-});
-
-async function openPdfRecord(file) {
-  appState.currentFile = file;
-  appState.pageNum = 1;
-  go('study');
-  
-  const paper = $('#paper');
-  paper.innerHTML = '<div style="margin:auto;color:#566178">جاري تحميل ملف الـ PDF...</div>';
-  
-  try {
-    const typedarray = new Uint8Array(file.data);
-    appState.pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
-    appState.numPages = appState.pdfDoc.numPages;
-    
-    $('#pdfFileTitleBanner').textContent = `${file.name} · 1 / ${appState.numPages}`;
-    $('#homeCurrentFile').textContent = `${file.name} · صفحة 1 / ${appState.numPages}`;
-    $('#homeOpenLast').style.display = 'inline-flex';
-    $('#homeOpenLast').onclick = () => openPdfRecord(file);
-    
-    renderPage(appState.pageNum);
-    buildThumbnails();
-  } catch (err) {
-    console.error(err);
-    paper.innerHTML = '<div style="margin:auto;color:#B42318">تعذر عرض ملف PDF. تأكد من سلامة الملف.</div>';
-  }
-}
-
-async function renderPage(num) {
-  if (!appState.pdfDoc || appState.rendering) return;
-  appState.rendering = true;
-  
-  const page = await appState.pdfDoc.getPage(num);
-  const viewport = page.getViewport({ scale: 1.3 });
-  
-  const paper = $('#paper');
-  paper.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:10px;">
-      <canvas id="pdfCanvas" style="box-shadow:0 4px 16px rgba(0,0,0,0.15);background:#fff;max-width:100%"></canvas>
-    </div>
-  `;
-  
-  const canvas = $('#pdfCanvas');
-  const context = canvas.getContext('2d');
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
-  
-  await page.render({ canvasContext: context, viewport: viewport }).promise;
-  appState.rendering = false;
-  
-  $('#pdfFileTitleBanner').textContent = `${appState.currentFile.name} · ${appState.pageNum} / ${appState.numPages}`;
-  $('#aiPageSummary').textContent = `أنت الآن في الصفحة رقم ${appState.pageNum} من إجمالي ${appState.numPages} صفحات في هذا الملف.`;
-}
-
-function buildThumbnails() {
-  const pagesDr = $('#pagesDr');
-  if (!appState.pdfDoc) return;
-  let html = '';
-  for (let i = 1; i <= appState.numPages; i++) {
-    html += `<div class="pdf-thumb" data-p="${i}" style="aspect-ratio:3/4;border-radius:8px;background:#fff;border:1px solid ${i === appState.pageNum ? '#0B5F58' : '#D5DBE7'};display:flex;align-items:center;justify-content:center;font-size:12px;color:#566178;cursor:pointer">${i}</div>`;
-  }
-  pagesDr.innerHTML = html;
-  
-  pagesDr.querySelectorAll('.pdf-thumb').forEach(th => {
-    th.onclick = () => {
-      appState.pageNum = +th.dataset.p;
-      renderPage(appState.pageNum);
-      buildThumbnails();
-    };
-  });
-}
-
-/* --- التصميم والأيقونات والواجهات المأخوذة من full.html --- */
 const IC={
 home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
 lib:'<path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/>',
@@ -341,10 +185,6 @@ dot:'<circle cx="12" cy="12" r="6" fill="currentColor"/>',
 pen:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>',
 hl:'<path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/>',
 er:'<path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/>',
-sel:'<path d="M5 5h3M11 5h3M17 5h2v2M19 11v3M19 17v2h-2M14 19h-3M8 19H5v-2M5 14v-3M5 8V5"/>',
-txt:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
-undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
-redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
 back:'<path d="M9 6l6 6-6 6"/>',
 grid:'<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
 spark:'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
@@ -354,103 +194,590 @@ file:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>',
 check:'<path d="M5 12l5 5 9-10"/>'};
 
 function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const SUBJ=[['الرياضيات','#1D4ED8','#E6EDFB'],['الفيزياء','#0B5F58','#E4F2F0'],['الكيمياء','#9A3412','#FBEBE0'],['الأحياء','#6D28D9','#EEE8FA']];
 const NAV=[['home','الرئيسية','home'],['library','المكتبة','lib'],['schedule','الجدول','cal'],['quizzes','الاختبارات','q'],['recordings','التسجيلات','mic']];
 
-// بناء الشريط الجانبي للشاشات
+// بناء الشريط الجانبي باسم "رفيق المذاكرة"
 $$('[data-side]').forEach(sc=>{
   const id=sc.id;
   const s=document.createElement('div');
   s.className='side';
-  s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ت</div><b style="font-size:18px">رفيق التحصيلي</b></div>'+NAV.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>كل ملفاتك محفوظة على جهازك فقط</span></div>';
+  s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div><b style="font-size:18px">رفيق المذاكرة</b></div>'+NAV.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>كل ملفاتك وتسجيلاتك محفوظة على جهازك فقط</span></div>';
   sc.prepend(s);
 });
-
 $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
 
-// بيانات جدول اليوم
-$('#todayList').innerHTML=[['٤:٠٠ م','مراجعة الرياضيات','حل تجميعات القسم الكمي'],['٥:٣٠ م','اختبار قصير — الفيزياء','الفصل الأول والثاني'],['٧:٠٠ م','مراجعة الكيمياء','الجدول الدوري والتفاعلات']].map(r=>'<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #EDF0F5"><b style="width:64px;font-size:14px;color:#0B5F58">'+r[0]+'</b><div><div style="font-size:15px;font-weight:600">'+r[1]+'</div><div class="mut">'+r[2]+'</div></div></div>').join('');
-
-$('#subjGrid').innerHTML=SUBJ.map(s=>'<div class="card" style="padding:16px;text-align:right;display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:10px;background:'+s[2]+';color:'+s[1]+';display:flex;align-items:center;justify-content:center">'+ico('file',22)+'</div><b style="font-size:17px">'+s[0]+'</b></div><div class="mut">جاهز للمراجعة</div><div style="height:6px;border-radius:3px;background:#E9ECF3"><div style="height:6px;width:60%;border-radius:3px;background:'+s[1]+'"></div></div></div>').join('');
-
-// جدول الأسبوع
-const D=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
-$('#week').innerHTML=D.map((d,i)=>'<div style="display:flex;flex-direction:column;gap:8px"><div style="text-align:center;font-weight:700;font-size:14px;padding:6px;border-radius:10px;'+(i==3?'background:#0B5F58;color:#fff':'background:#F3F5F9')+'">'+d+'</div>'+[0,1].map(k=>{const s=SUBJ[(i+k)%4];return '<div style="background:'+s[2]+';color:'+s[1]+';border-radius:10px;padding:10px;font-size:13px;font-weight:600;line-height:1.6">'+s[0]+'<div style="font-weight:400;color:#44506A">مذاكرة وتجميعات</div></div>'}).join('')+'</div>').join('');
-
-// الاختبارات
-const Q={opts:['القانون الأول لنيوتن','قانون حفظ الأبخرة','قانون الجذب العام','قانون الزخم'],ans:0};
-function qList(){
-  $('#qMain').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات التدريبية</h1></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">'+SUBJ.map(s=>'<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:10px;align-items:center"><div style="width:40px;height:40px;border-radius:10px;background:'+s[2]+';color:'+s[1]+';display:flex;align-items:center;justify-content:center">'+ico('q',22)+'</div><b style="font-size:17px">اختبار '+s[0]+'</b></div><div class="mut">١٠ أسئلة شاملة</div><button class="btn pri qStart" style="justify-content:center">ابدأ الاختبار</button></div>').join('')+'</div>';
-  $$('.qStart').forEach(b=>b.onclick=()=>qRun(0));
+function openModal(html){
+  const root=$('#modalRoot');
+  root.innerHTML=`<div class="modal-box">${html}</div>`;
+  root.classList.remove('hide');
 }
-function qRun(n){
-  const T=3;
-  if(n>=T){
-    $('#qMain').innerHTML='<div class="card" style="margin:auto;padding:40px;width:520px;text-align:center;display:flex;flex-direction:column;gap:14px"><div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">'+ico('check',36)+'</div><h1>أنهيت الاختبار بنجاح!</h1><div class="mut" style="font-size:16px">ممتاز، واصل تقدمك نحو القمة.</div><button class="btn pri" id="qBack">العودة للاختبارات</button></div>';
-    $('#qBack').onclick=qList;
+function closeModal(){
+  $('#modalRoot').classList.add('hide');
+}
+$('#modalRoot').addEventListener('click',e=>{
+  if(e.target===$('#modalRoot')) closeModal();
+});
+
+function makeId(){return crypto.randomUUID?crypto.randomUUID():'id-'+Date.now()+'-'+Math.random().toString(16).slice(2)}
+function esc(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML}
+
+/* ==========================================
+   1. قاعدة البيانات المحلية (IndexedDB) للملفات والتسجيلات
+   ========================================== */
+const DB_NAME='rafeeq-almudhakara-db';
+const DB_VER=2;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains('files')) db.createObjectStore('files',{keyPath:'id'});
+      if(!db.objectStoreNames.contains('recordings')) db.createObjectStore('recordings',{keyPath:'id'});
+    };
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  });
+}
+
+async function storeAction(storeName,mode,action,val){
+  const db=await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(storeName,mode);
+    const st=tx.objectStore(storeName);
+    const req=action==='getAll'?st.getAll():action==='delete'?st.delete(val):st.put(val);
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+    tx.oncomplete=()=>db.close();
+  });
+}
+
+/* ==========================================
+   2. استيراد وعرض ملفات PDF
+   ========================================== */
+let pdfState={files:[],filter:'الكل',current:null,doc:null,page:1,total:0,rendering:false};
+
+const pdfInput=document.createElement('input');
+pdfInput.type='file';
+pdfInput.accept='application/pdf,.pdf';
+pdfInput.style.display='none';
+document.body.appendChild(pdfInput);
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-import-pdf]')){
+    e.preventDefault();
+    pdfInput.value='';
+    pdfInput.click();
+  }
+});
+
+pdfInput.addEventListener('change',()=>{
+  const file=pdfInput.files[0];
+  if(!file) return;
+  openModal(`
+    <h2>تصنيف الملف المستورد</h2>
+    <div class="mut">${esc(file.name)}</div>
+    <label style="font-size:14px;font-weight:600">اختر المادة:</label>
+    <select id="impSubj" class="inp">
+      <option value="عام">عام</option>
+      <option value="الرياضيات">الرياضيات</option>
+      <option value="الفيزياء">الفيزياء</option>
+      <option value="الكيمياء">الكيمياء</option>
+      <option value="الأحياء">الأحياء</option>
+    </select>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn pri" id="confirmImportBtn">حفظ وفتح</button>
+    </div>
+  `);
+  $('#confirmImportBtn').onclick=async()=>{
+    const subject=$('#impSubj').value;
+    const buffer=await file.arrayBuffer();
+    const rec={id:makeId(),name:file.name,subject,size:file.size,data:buffer};
+    await storeAction('files','readwrite','put',rec);
+    closeModal();
+    await loadLibrary();
+    openPdf(rec);
+  };
+});
+
+async function loadLibrary(){
+  pdfState.files=await storeAction('files','readonly','getAll');
+  renderSubjectStats();
+  renderLibraryGrid();
+}
+
+function renderSubjectStats(){
+  const mainSubjs=['الرياضيات','الفيزياء','الكيمياء','الأحياء'];
+  $('#subjGrid').innerHTML=mainSubjs.map(name=>{
+    const count=pdfState.files.filter(f=>f.subject===name).length;
+    const [fg,bg]=SUBJ_META[name];
+    return `<div class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${bg};color:${fg};display:flex;align-items:center;justify-content:center">${ico('file',22)}</div>
+        <b style="font-size:17px">${name}</b>
+      </div>
+      <div class="mut">${count===0?'لا توجد ملفات بعد':count+' ملفات محفوظة'}</div>
+    </div>`;
+  }).join('');
+}
+
+$('#libFilters').addEventListener('click',e=>{
+  const chip=e.target.closest('[data-filter]');
+  if(!chip) return;
+  $$('#libFilters .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on');
+  pdfState.filter=chip.dataset.filter;
+  renderLibraryGrid();
+});
+
+function renderLibraryGrid(){
+  const list=pdfState.filter==='الكل'?pdfState.files:pdfState.files.filter(f=>f.subject===pdfState.filter);
+  const grid=$('#libGrid');
+  if(!list.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:#566178">لا توجد ملفات PDF هنا. اضغط «استيراد PDF» لإضافة ملفاتك.</div>';
     return;
   }
-  $('#qMain').innerHTML='<div style="display:flex;align-items:center;gap:14px"><button class="fab" id="qX">'+ico('back',22)+'</button><div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:'+((n+1)/T*100)+'%"></div></div><b>'+(n+1)+' / '+T+'</b></div><div style="max-width:760px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center"><div class="card" style="padding:28px;font-size:20px;line-height:1.9;font-weight:600">أي من الخيارات التالية يمثل القانون الأساسي للحركة؟</div>'+Q.opts.map((o,i)=>'<button class="opt" data-k="'+i+'"><b style="width:36px;height:36px;border-radius:18px;background:#EEF1F6;display:flex;align-items:center;justify-content:center;flex:none">'+'أبجد'[i]+'</b>'+o+'</button>').join('')+'<div id="qFb" class="card hide" style="padding:16px;background:#F3F5F9"><b>الشرح:</b> <span class="mut" style="font-size:15px">الإجابة الصحيحة هي الخيار الأول.</span></div><button class="btn pri hide" id="qNext" style="align-self:flex-start">التالي</button></div>';
-  $('#qX').onclick=qList;
-  let done=0;
-  $$('.opt').forEach(b=>b.onclick=()=>{
-    if(done)return;done=1;
-    $$('.opt').forEach(x=>{if(+x.dataset.k==Q.ans)x.classList.add('ok')});
-    if(+b.dataset.k!=Q.ans)b.classList.add('no');
-    $('#qFb').classList.remove('hide');
-    $('#qNext').classList.remove('hide');
-  });
-  $('#qNext').onclick=()=>qRun(n+1);
+  grid.innerHTML=list.map(f=>{
+    const [fg,bg]=SUBJ_META[f.subject]||SUBJ_META['عام'];
+    return `<div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+      <div style="aspect-ratio:3/4;border-radius:10px;background:${bg};color:${fg};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:6px" data-open-pdf="${f.id}">
+        ${ico('file',36)}
+        <span style="font-size:12px;font-weight:700">${esc(f.subject)}</span>
+      </div>
+      <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(f.name)}">${esc(f.name)}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn pri" style="flex:1;height:32px;font-size:13px;justify-content:center" data-open-pdf="${f.id}">افتح</button>
+        <button class="btn sec" style="height:32px;font-size:13px;color:#B42318" data-del-pdf="${f.id}">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
 }
-qList();
 
-// التسجيلات الصوتية
-let recInterval=null, recSec=0, isRecording=false;
-function updateTimer(){
-  const m=String(Math.floor(recSec/60)).padStart(2,'0'), s=String(recSec%60).padStart(2,'0');
-  $('#timer').textContent=m+':'+s;
-  $('#recDuration').textContent=m+':'+s;
-}
-function toggleRecording(){
-  isRecording=!isRecording;
-  if(isRecording){
-    recSec=0; updateTimer();
-    recInterval=setInterval(()=>{recSec++; updateTimer();},1000);
-    $('#liveBox').classList.remove('hide');
-    $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف التسجيل</span>';
-    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
-  } else {
-    clearInterval(recInterval);
-    $('#liveBox').classList.add('hide');
-    $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
-    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+document.addEventListener('click',async e=>{
+  const o=e.target.closest('[data-open-pdf]');
+  if(o){
+    const f=pdfState.files.find(x=>x.id===o.dataset.openPdf);
+    if(f) openPdf(f);
+    return;
+  }
+  const d=e.target.closest('[data-del-pdf]');
+  if(d){
+    if(confirm('هل تريد حذف هذا الملف؟')){
+      await storeAction('files','readwrite','delete',d.dataset.delPdf);
+      await loadLibrary();
+    }
+  }
+});
+
+async function openPdf(file){
+  pdfState.current=file;
+  pdfState.page=1;
+  go('study');
+  const paper=$('#paper');
+  paper.innerHTML='<div style="margin:auto;color:#566178">جاري فتح الملف…</div>';
+  try{
+    pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
+    pdfState.total=pdfState.doc.numPages;
+    $('#homeCurrentFile').textContent=`${file.name} (${pdfState.total} صفحات)`;
+    $('#homeOpenLast').style.display='inline-flex';
+    $('#homeOpenLast').onclick=()=>openPdf(file);
+    renderPdfPage(1);
+    renderThumbnails();
+  }catch(err){
+    console.error(err);
+    paper.innerHTML='<div style="margin:auto;color:#B42318">تعذر عرض الملف.</div>';
   }
 }
-$('#recBtn').onclick=toggleRecording;
-$('#homeRecBtn').onclick=()=>{ go('recordings'); toggleRecording(); };
 
-// أدوات التصفح والدراسة
-const TL=[['pen','قلم'],['hl','تظليل'],['er','ممحاة']], COL=['#14213D','#1D4ED8','#C2410C','#0B5F58'];
-let tool='pen', col=COL[0];
+async function renderPdfPage(num){
+  if(!pdfState.doc||pdfState.rendering) return;
+  pdfState.rendering=true;
+  const page=await pdfState.doc.getPage(num);
+  const vp=page.getViewport({scale:1.35});
+  $('#paper').innerHTML='<div style="display:flex;justify-content:center;padding:16px"><canvas id="pdfCanvas" style="box-shadow:0 4px 16px rgba(0,0,0,.15);max-width:100%"></canvas></div>';
+  const canvas=$('#pdfCanvas');
+  canvas.width=vp.width;
+  canvas.height=vp.height;
+  await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+  pdfState.rendering=false;
+  $('#pdfFileTitleBanner').textContent=`${pdfState.current.name} · ${pdfState.page} / ${pdfState.total}`;
+  $('#aiPageSummary').textContent=`الملف: ${pdfState.current.name}\nالمادة: ${pdfState.current.subject}\nالصفحة الحالية: ${pdfState.page} من ${pdfState.total}`;
+}
+
+function renderThumbnails(){
+  const dr=$('#pagesDr');
+  let h='';
+  for(let i=1;i<=pdfState.total;i++){
+    h+=`<div class="p-th" data-p="${i}" style="aspect-ratio:3/4;border-radius:8px;background:#fff;border:2px solid ${i===pdfState.page?'#0B5F58':'#D5DBE7'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer">${i}</div>`;
+  }
+  dr.innerHTML=h;
+  dr.querySelectorAll('.p-th').forEach(el=>el.onclick=()=>{
+    pdfState.page=+el.dataset.p;
+    renderPdfPage(pdfState.page);
+    renderThumbnails();
+  });
+}
+
+/* ==========================================
+   3. الجدول الأسبوعي الحقيقي (إضافة جلسة وحفظها)
+   ========================================== */
+const SCHED_KEY='rafeeq-schedule-v1';
+function getSessions(){
+  try{return JSON.parse(localStorage.getItem(SCHED_KEY)||'[]')}catch{return[]}
+}
+function saveSessions(list){
+  localStorage.setItem(SCHED_KEY,JSON.stringify(list));
+  renderSchedule();
+}
+
+$('#addScheduleBtn').onclick=()=>{
+  openModal(`
+    <h2>إضافة جلسة مذاكرة</h2>
+    <label style="font-size:14px;font-weight:600">عنوان الجلسة / الموضوع:</label>
+    <input id="sesTitle" class="inp" placeholder="مثال: مراجعة الفصل الأول">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <label style="font-size:14px;font-weight:600">اليوم:</label>
+        <select id="sesDay" class="inp">${DAYS.map(d=>`<option value="${d}">${d}</option>`).join('')}</select>
+      </div>
+      <div>
+        <label style="font-size:14px;font-weight:600">المادة:</label>
+        <select id="sesSubj" class="inp">
+          <option value="عام">عام</option>
+          <option value="الرياضيات">الرياضيات</option>
+          <option value="الفيزياء">الفيزياء</option>
+          <option value="الكيمياء">الكيمياء</option>
+          <option value="الأحياء">الأحياء</option>
+        </select>
+      </div>
+    </div>
+    <label style="font-size:14px;font-weight:600">الوقت:</label>
+    <input id="sesTime" type="time" class="inp" value="16:00">
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn pri" id="saveSesBtn">إضافة للجدول</button>
+    </div>
+  `);
+  $('#saveSesBtn').onclick=()=>{
+    const title=$('#sesTitle').value.trim();
+    if(!title){alert('اكتب عنوان الجلسة أولاً');return;}
+    const list=getSessions();
+    list.push({id:makeId(),title,day:$('#sesDay').value,subject:$('#sesSubj').value,time:$('#sesTime').value});
+    saveSessions(list);
+    closeModal();
+  };
+};
+
+function renderSchedule(){
+  const sessions=getSessions();
+  // تحديث جدول الأسبوع
+  $('#week').innerHTML=DAYS.map(day=>{
+    const dayItems=sessions.filter(s=>s.day===day).sort((a,b)=>a.time.localeCompare(b.time));
+    return `<div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+      <div style="text-align:center;font-weight:700;font-size:14px;padding:8px;border-radius:10px;background:#F3F5F9">${day}</div>
+      ${dayItems.length===0?'<div class="mut" style="text-align:center;padding:12px;font-size:12px">لا توجد جلسات</div>':dayItems.map(item=>{
+        const [fg,bg]=SUBJ_META[item.subject]||SUBJ_META['عام'];
+        return `<div style="background:${bg};color:${fg};border-radius:10px;padding:10px;font-size:13px;position:relative">
+          <div style="font-weight:700;margin-bottom:2px">${esc(item.title)}</div>
+          <div style="font-size:12px;opacity:.85">${esc(item.subject)} · ${esc(item.time)}</div>
+          <button data-del-ses="${item.id}" style="position:absolute;top:6px;left:6px;border:0;background:rgba(255,255,255,.7);color:#B42318;border-radius:6px;width:20px;height:20px;font-size:12px;line-height:1" title="حذف">×</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+
+  // تحديث جدول الصفحة الرئيسية
+  const todayEl=$('#todayList');
+  if(!sessions.length){
+    todayEl.innerHTML='<div class="mut" style="padding:24px 0;text-align:center">جدولك فارغ حالياً. اضغط «إدارة الجدول» لإضافة جلساتك.</div>';
+  }else{
+    todayEl.innerHTML=sessions.slice(0,4).map(s=>`
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #EDF0F5">
+        <b style="width:68px;font-size:13px;color:#0B5F58">${esc(s.day)}</b>
+        <div style="flex:1"><div style="font-size:14px;font-weight:600">${esc(s.title)}</div><div class="mut">${esc(s.subject)} · ${esc(s.time)}</div></div>
+      </div>
+    `).join('');
+  }
+}
+
+document.addEventListener('click',e=>{
+  const del=e.target.closest('[data-del-ses]');
+  if(del){
+    saveSessions(getSessions().filter(s=>s.id!==del.dataset.delSes));
+  }
+});
+
+/* ==========================================
+   4. التسجيل الصوتي والتفريغ النصي الحقيقي
+   ========================================== */
+let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null};
+
+async function loadRecordings(){
+  recState.recordings=await storeAction('recordings','readonly','getAll');
+  renderRecList();
+}
+
+function renderRecList(){
+  const listEl=$('#recList');
+  if(!recState.recordings.length){
+    listEl.innerHTML='<div class="mut" style="text-align:center;padding:30px 10px">لا توجد تسجيلات محفوظة بعد</div>';
+    return;
+  }
+  listEl.innerHTML=recState.recordings.map(r=>`
+    <button data-sel-rec="${r.id}" style="border:0;border-radius:12px;padding:12px;text-align:right;background:${r.id===recState.selectedId?'#E4F2F0':'transparent'}">
+      <div style="font-size:14px;font-weight:700">${esc(r.title)}</div>
+      <div class="mut">${esc(r.date)} · ${esc(r.duration)}</div>
+    </button>
+  `).join('');
+}
+
+function selectRecording(id){
+  const rec=recState.recordings.find(r=>r.id===id);
+  if(!rec) return;
+  recState.selectedId=id;
+  renderRecList();
+  $('#recTitle').textContent=rec.title;
+  $('#recTranscriptArea').value=rec.transcript||'';
+  $('#delRecBtn').classList.remove('hide');
+  $('#saveRecTextBtn').classList.remove('hide');
+  $('#quizFromRecBtn').classList.remove('hide');
+  const player=$('#audioPlayer');
+  if(rec.audioBlob){
+    player.src=URL.createObjectURL(rec.audioBlob);
+    player.classList.remove('hide');
+  }else{
+    player.classList.add('hide');
+  }
+}
+
+document.addEventListener('click',e=>{
+  const sel=e.target.closest('[data-sel-rec]');
+  if(sel) selectRecording(sel.dataset.selRec);
+});
+
+$('#saveRecTextBtn').onclick=async()=>{
+  const rec=recState.recordings.find(r=>r.id===recState.selectedId);
+  if(!rec) return;
+  rec.transcript=$('#recTranscriptArea').value;
+  await storeAction('recordings','readwrite','put',rec);
+  alert('تم حفظ النص المفرّغ');
+};
+
+$('#delRecBtn').onclick=async()=>{
+  if(!recState.selectedId||!confirm('هل تريد حذف هذا التسجيل؟')) return;
+  await storeAction('recordings','readwrite','delete',recState.selectedId);
+  recState.selectedId=null;
+  $('#recTitle').textContent='اختر تسجيلاً أو ابدأ تسجيلاً جديداً';
+  $('#recTranscriptArea').value='';
+  $('#audioPlayer').classList.add('hide');
+  $('#delRecBtn').classList.add('hide');
+  $('#saveRecTextBtn').classList.add('hide');
+  $('#quizFromRecBtn').classList.add('hide');
+  await loadRecordings();
+};
+
+async function startAudioRecording(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    alert('متصفحك لا يدعم الوصول للميكروفون.');
+    return;
+  }
+  try{
+    recState.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recState.chunks=[];
+    recState.finalText='';
+    recState.sec=0;
+    recState.active=true;
+
+    recState.recorder=new MediaRecorder(recState.stream);
+    recState.recorder.ondataavailable=e=>{if(e.data.size>0) recState.chunks.push(e.data);};
+    recState.recorder.onstop=async()=>{
+      const blob=new Blob(recState.chunks,{type:recState.recorder.mimeType||'audio/webm'});
+      const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
+      const newRec={
+        id:makeId(),
+        title:'تسجيل '+(recState.recordings.length+1),
+        date:new Date().toLocaleDateString('ar-SA'),
+        duration:`${m}:${s}`,
+        audioBlob:blob,
+        transcript:recState.finalText.trim()
+      };
+      await storeAction('recordings','readwrite','put',newRec);
+      await loadRecordings();
+      selectRecording(newRec.id);
+    };
+    recState.recorder.start();
+
+    // بدء التفريغ النصي المباشر (SpeechRecognition)
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(SR){
+      recState.recognition=new SR();
+      recState.recognition.lang='ar-SA';
+      recState.recognition.continuous=true;
+      recState.recognition.interimResults=true;
+      recState.recognition.onresult=e=>{
+        let interim='';
+        for(let i=e.resultIndex;i<e.results.length;i++){
+          if(e.results[i].isFinal) recState.finalText+=e.results[i][0].transcript+' ';
+          else interim+=e.results[i][0].transcript;
+        }
+        const display=recState.finalText+interim;
+        $('#recLiveContent').textContent=display||'تحدث الآن…';
+        $('#homeLiveText').textContent=display||'جاري التسجيل والاستماع…';
+      };
+      recState.recognition.onerror=e=>{
+        $('#speechStatusBadge').textContent='يسجل الصوت (التفريغ التلقائي غير متاح حالياً)';
+      };
+      recState.recognition.start();
+    }else{
+      $('#speechStatusBadge').textContent='يسجل الصوت (متصفحك لا يدعم التفريغ التلقائي)';
+    }
+
+    // تحديث الواجهة والمؤقت
+    $('#liveBox').classList.remove('hide');
+    $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف وحفظ التسجيل</span>';
+    $('#homeRecBtn').innerHTML='<i data-i="dot"></i>إيقاف التسجيل';
+    $('#homeRecStatus').textContent='جاري التسجيل الآن…';
+    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+
+    recState.timer=setInterval(()=>{
+      recState.sec++;
+      const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
+      $('#timer').textContent=`${m}:${s}`;
+    },1000);
+  }catch(err){
+    console.error(err);
+    alert('تعذر تشغيل الميكروفون. تأكد من السماح للموقع باستخدام الميكروفون.');
+  }
+}
+
+function stopAudioRecording(){
+  if(!recState.active) return;
+  recState.active=false;
+  clearInterval(recState.timer);
+  if(recState.recognition){try{recState.recognition.stop();}catch{}}
+  if(recState.recorder&&recState.recorder.state!=='inactive'){recState.recorder.stop();}
+  if(recState.stream){recState.stream.getTracks().forEach(t=>t.stop());}
+
+  $('#liveBox').classList.add('hide');
+  $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
+  $('#homeRecBtn').innerHTML='<i data-i="dot"></i>ابدأ التسجيل';
+  $('#homeRecStatus').textContent='تم حفظ التسجيل';
+  $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+}
+
+$('#recBtn').onclick=()=>recState.active?stopAudioRecording():startAudioRecording();
+$('#homeRecBtn').onclick=()=>{
+  if(recState.active) stopAudioRecording();
+  else{go('recordings');startAudioRecording();}
+};
+
+/* ==========================================
+   5. الاختبارات الذاتية من نصوصك وملاحظاتك
+   ========================================== */
+function renderQuizHome(prefillText=''){
+  $('#qMain').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات التدريبية</h1></div>
+    <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:14px;max-width:760px">
+      <h2>أنشئ اختباراً من ملاحظاتك أو تفريغ محاضراتك</h2>
+      <div class="mut">الصق أي نص دراسي أو تعاريف (مثال: البناء الضوئي: عملية تصنع فيها النباتات غذاءها) وسيقوم التطبيق بتوليد أسئلة تفاعلية لك فوراً.</div>
+      <textarea id="quizSourceInput" class="inp" rows="8" placeholder="اكتب أو الصق المحتوى الدراسي هنا…">${esc(prefillText)}</textarea>
+      <div><button class="btn pri" id="generateQuizBtn">${ico('spark',20)} ابدأ الاختبار الآن</button></div>
+    </div>
+  `;
+  $('#generateQuizBtn').onclick=()=>{
+    const raw=$('#quizSourceInput').value.trim();
+    const questions=buildQuestionsFromText(raw);
+    if(!questions.length){
+      alert('الرجاء إدخال نص أطول (جملتين على الأقل) لتوليد الأسئلة.');
+      return;
+    }
+    runCustomQuiz(questions,0,0);
+  };
+}
+
+function buildQuestionsFromText(text){
+  const lines=text.split(/\n|[.!؟]+/).map(l=>l.trim()).filter(l=>l.length>=12);
+  return lines.slice(0,15).map(line=>{
+    const pair=line.match(/^(.{2,45})\s*[:：=]\s*(.{4,})$/);
+    if(pair){
+      return {q:`ما المقصود بـ «${pair[1].trim()}»؟`,a:pair[2].trim()};
+    }
+    const words=line.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{4,}/g)||[];
+    const target=words.sort((a,b)=>b.length-a.length)[0];
+    if(!target) return {q:`أكمل العبارة: ${line}`,a:line};
+    return {q:`أكمل الفراغ: ${line.replace(target,'ــــــــــــ')}`,a:target};
+  });
+}
+
+function runCustomQuiz(list,idx,score){
+  if(idx>=list.length){
+    $('#qMain').innerHTML=`
+      <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
+        <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
+        <h1>انتهى الاختبار!</h1>
+        <div style="font-size:18px;font-weight:700;color:#0B5F58">نتيجتك: ${score} من ${list.length}</div>
+        <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">إنشاء اختبار جديد</button>
+      </div>`;
+    return;
+  }
+  const item=list[idx];
+  $('#qMain').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px">
+      <button class="fab" onclick="renderQuizHome()">${ico('back',22)}</button>
+      <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((idx+1)/list.length)*100}%"></div></div>
+      <b>${idx+1} / ${list.length}</b>
+    </div>
+    <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
+      <div class="card" style="padding:26px;font-size:20px;line-height:1.9;font-weight:600">${esc(item.q)}</div>
+      <input id="userAnsInput" class="inp" style="height:54px;font-size:16px" placeholder="اكتب إجابتك هنا…">
+      <div id="ansFeedback" class="card hide" style="padding:16px"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn pri" id="checkAnsBtn">تحقق من الإجابة</button>
+        <button class="btn sec hide" id="nextAnsBtn">السؤال التالي</button>
+      </div>
+    </div>`;
+  $('#checkAnsBtn').onclick=()=>{
+    const u=$('#userAnsInput').value.trim().toLowerCase();
+    const c=item.a.trim().toLowerCase();
+    if(!u){alert('اكتب إجابتك أولاً');return;}
+    const ok=u===c||c.includes(u)||u.includes(c);
+    if(ok) score++;
+    const fb=$('#ansFeedback');
+    fb.classList.remove('hide');
+    fb.style.background=ok?'#E4F2F0':'#FDECEA';
+    fb.innerHTML=`<b style="color:${ok?'#0B5F58':'#B42318'}">${ok?'إجابة صحيحة!':'إجابة غير مطابقة'}</b><div style="margin-top:6px">الإجابة النموذجية: <b>${esc(item.a)}</b></div>`;
+    $('#checkAnsBtn').classList.add('hide');
+    $('#nextAnsBtn').classList.remove('hide');
+    $('#nextAnsBtn').onclick=()=>runCustomQuiz(list,idx+1,score);
+  };
+}
+
+$('#quizFromRecBtn').onclick=()=>{
+  const txt=$('#recTranscriptArea').value.trim();
+  go('quizzes');
+  renderQuizHome(txt);
+};
+
+/* ==========================================
+   6. أدوات شاشة الدراسة والتنقل
+   ========================================== */
+const TL=[['pen','قلم'],['hl','تظليل'],['er','ممحاة']],COL=['#14213D','#1D4ED8','#C2410C','#0B5F58'];
 $('#tools').innerHTML=TL.map((t,i)=>'<button class="tb '+(i==0?'on':'')+'" data-t="'+t[0]+'">'+ico(t[0],22)+'</button>').join('')+'<span style="width:1px;height:26px;background:#D5DBE7;margin:0 6px"></span><div style="display:flex;gap:12px;padding:0 6px">'+COL.map((c,i)=>'<button class="sw '+(i==0?'on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>').join('')+'</div>';
-
-$$('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;$$('[data-t]').forEach(x=>x.classList.toggle('on',x==b))});
-$$('[data-c]').forEach(b=>b.onclick=()=>{col=b.dataset.c;$$('[data-c]').forEach(x=>x.classList.toggle('on',x==b))});
-
+$$('[data-t]').forEach(b=>b.onclick=()=>{$$('[data-t]').forEach(x=>x.classList.toggle('on',x==b))});
+$$('[data-c]').forEach(b=>b.onclick=()=>{$$('[data-c]').forEach(x=>x.classList.toggle('on',x==b))});
 $('#bPages').onclick=()=>{$('#pagesDr').classList.toggle('hide');$('#bPages').classList.toggle('on')};
 $('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.toggle('on')};
 
-// التنقل بين الشاشات
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
+  $$('.nav').forEach(n=>n.classList.toggle('on',n.dataset.go===id));
 }
 document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
   if(g){e.preventDefault();go(g.dataset.go);}
 });
 
-// تحجيم الشاشة تلقائياً مثل full.html
 function fit(){
   const k=Math.min(innerWidth/1194,innerHeight/834);
   const st=$('#stage');
@@ -461,8 +788,11 @@ function fit(){
 addEventListener('resize',fit);
 fit();
 
-// تحميل المكتبة عند البدء
-refreshLibrary();
+// تهيئة البيانات عند فتح التطبيق
+loadLibrary();
+renderSchedule();
+loadRecordings();
+renderQuizHome();
 </script>
 </body>
 </html>
