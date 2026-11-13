@@ -1,611 +1,374 @@
 ```html
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>رفيق المذاكرة</title>
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --text: #20283a;
-      --muted: #778198;
-      --primary: #6257e8;
-      --primary-light: #eeedff;
-      --green: #25a878;
-      --red: #e35d6a;
-      --border: #e8ebf2;
-      --shadow: 0 10px 30px rgba(35, 42, 75, .07);
+<script>
+/* الجزء الأول: استيراد ملفات PDF وحفظها محليًا وعرضها */
+(() => {
+  'use strict';
+
+  const DB_NAME = 'tahseeli-study-app';
+  const DB_VERSION = 1;
+  const STORE = 'files';
+
+  const state = {
+    files: [],
+    currentFile: null,
+    pdf: null,
+    page: 1,
+    rendering: false
+  };
+
+  window.StudyApp = state;
+
+  // تحميل PDF.js لعرض صفحات ملفات PDF
+  function loadPdfJs() {
+    if (window.pdfjsLib) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+
+      script.onload = () => {
+        if (window.pdfjsLib) {
+          pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          resolve();
+        } else {
+          reject(new Error('تعذر تحميل مكتبة عرض PDF'));
+        }
+      };
+
+      script.onerror = () => reject(new Error('تعذر الاتصال لتحميل عارض PDF'));
+      document.head.appendChild(script);
+    });
+  }
+
+  // قاعدة بيانات محلية لحفظ ملفات PDF على الجهاز
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE)) {
+          db.createObjectStore(STORE, { keyPath: 'id' });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function dbAction(mode, action, value) {
+    const db = await openDB();
+
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, mode);
+      const store = tx.objectStore(STORE);
+      const request = action === 'getAll'
+        ? store.getAll()
+        : action === 'delete'
+          ? store.delete(value)
+          : store.put(value);
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      tx.oncomplete = () => db.close();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function makeId() {
+    return crypto.randomUUID
+      ? crypto.randomUUID()
+      : 'f-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+  }
+
+  function safeText(text) {
+    const div = document.createElement('div');
+    div.textContent = text == null ? '' : String(text);
+    return div.innerHTML;
+  }
+
+  function notify(message) {
+    let box = document.getElementById('appToast');
+
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'appToast';
+      box.style.cssText = [
+        'position:fixed',
+        'z-index:99999',
+        'bottom:22px',
+        'left:50%',
+        'transform:translateX(-50%)',
+        'background:#14213D',
+        'color:white',
+        'padding:12px 18px',
+        'border-radius:12px',
+        'font:600 14px IBM Plex Sans Arabic, sans-serif',
+        'box-shadow:0 8px 28px #14213d40',
+        'max-width:90vw',
+        'text-align:center'
+      ].join(';');
+      document.body.appendChild(box);
     }
 
-    * { box-sizing: border-box; }
+    box.textContent = message;
+    box.style.display = 'block';
+    clearTimeout(box._timer);
+    box._timer = setTimeout(() => {
+      box.style.display = 'none';
+    }, 3000);
+  }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Tahoma, Arial, sans-serif;
+  // إضافة اختيار الملف عند الضغط على أزرار استيراد PDF
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'application/pdf,.pdf';
+  fileInput.hidden = true;
+  document.body.appendChild(fileInput);
+
+  function choosePdf() {
+    fileInput.value = '';
+    fileInput.click();
+  }
+
+  document.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+
+    const label = (button.innerText || '').trim();
+    if (label.includes('استيراد PDF')) {
+      event.preventDefault();
+      choosePdf();
+    }
+  });
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      notify('الرجاء اختيار ملف PDF');
+      return;
     }
 
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
+    try {
+      const record = {
+        id: makeId(),
+        name: file.name,
+        subject: 'غير مصنف',
+        size: file.size,
+        addedAt: new Date().toISOString(),
+        data: await file.arrayBuffer()
+      };
 
-    .app {
-      max-width: 1100px;
-      margin: auto;
-      padding: 24px;
+      await dbAction('readwrite', 'put', record);
+      await refreshLibrary();
+      notify('تم استيراد الملف وحفظه على جهازك');
+    } catch (error) {
+      console.error(error);
+      notify('تعذر حفظ الملف. تأكد من وجود مساحة كافية في المتصفح');
+    }
+  });
+
+  function formatSize(bytes) {
+    if (!bytes) return '';
+    if (bytes < 1024 * 1024) return Math.max(1, Math.round(bytes / 1024)) + ' ك.ب';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' م.ب';
+  }
+
+  async function refreshLibrary() {
+    try {
+      state.files = await dbAction('readonly', 'getAll');
+    } catch (error) {
+      console.error(error);
+      state.files = [];
     }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
+    const grid = document.getElementById('libGrid');
+    if (!grid) return;
+
+    if (!state.files.length) {
+      grid.innerHTML =
+        '<div class="card" style="grid-column:1/-1;padding:32px;text-align:center">' +
+        '<div style="font-size:17px;font-weight:700">مكتبتك فارغة</div>' +
+        '<div class="mut" style="margin-top:8px">اضغط «استيراد PDF» لإضافة أول ملف</div>' +
+        '</div>';
+      return;
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .logo {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 16px;
-      background: var(--primary);
-      color: white;
-      font-size: 24px;
-    }
-
-    h1 { margin: 0; font-size: 23px; }
-    .subtitle { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
-
-    nav {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 6px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      margin-bottom: 22px;
-    }
-
-    nav button {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      padding: 11px 16px;
-      border-radius: 11px;
-      white-space: nowrap;
-    }
-
-    nav button.active { background: var(--primary-light); color: var(--primary); font-weight: bold; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .stat-label { color: var(--muted); font-size: 13px; }
-    .stat-number { font-size: 30px; font-weight: bold; margin-top: 10px; }
-    .stat-icon { float: left; font-size: 23px; }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 4px 0 14px;
-    }
-
-    h2 { font-size: 18px; margin: 0; }
-    h3 { font-size: 15px; margin: 0 0 12px; }
-
-    .task-list { display: grid; gap: 10px; }
-    .task {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-    }
-
-    .task.done .task-name { text-decoration: line-through; color: var(--muted); }
-    .task-info { flex: 1; min-width: 0; }
-    .task-name { font-weight: bold; overflow-wrap: anywhere; }
-    .task-meta { color: var(--muted); font-size: 12px; margin-top: 5px; }
-    .check { width: 19px; height: 19px; accent-color: var(--green); }
-    .delete {
-      border: 0;
-      background: #fff0f1;
-      color: var(--red);
-      border-radius: 9px;
-      padding: 7px 10px;
-    }
-
-    form { display: grid; gap: 10px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      background: white;
-      color: var(--text);
-      outline: none;
-    }
-
-    input:focus, select:focus { border-color: var(--primary); }
-    .btn {
-      border: 0;
-      border-radius: 11px;
-      padding: 12px 16px;
-      background: var(--primary);
-      color: white;
-      font-weight: bold;
-    }
-
-    .btn.secondary { background: var(--primary-light); color: var(--primary); }
-    .btn.gray { background: #eef0f5; color: var(--text); }
-    .btn.danger { background: #fff0f1; color: var(--red); }
-    .empty { text-align: center; color: var(--muted); padding: 24px 10px; }
-
-    .progress-track {
-      height: 10px;
-      background: #eeeff5;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0;
-      background: var(--green);
-      border-radius: inherit;
-      transition: width .25s;
-    }
-
-    .subject-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .subject-chip {
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-    }
-
-    .timer-card { text-align: center; max-width: 620px; margin: 0 auto; }
-    .mode-label { color: var(--primary); font-weight: bold; }
-    .timer {
-      font-size: clamp(64px, 14vw, 105px);
-      font-weight: bold;
-      letter-spacing: 3px;
-      margin: 15px 0;
-      direction: ltr;
-    }
-
-    .timer-controls, .timer-settings {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 14px;
-    }
-
-    .timer-settings input { width: 100px; text-align: center; }
-    .review-card { max-width: 700px; margin: auto; text-align: center; }
-    .flash-face {
-      min-height: 190px;
-      display: grid;
-      place-items: center;
-      padding: 25px;
-      margin: 18px 0;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #f0efff, #f6f3ff);
-      font-size: 22px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-
-    .answer { color: var(--green); }
-    .review-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 9px; }
-    .small-note { color: var(--muted); font-size: 12px; margin-top: 10px; }
-
-    @media (max-width: 700px) {
-      .app { padding: 16px; }
-      .grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      header { align-items: flex-start; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">📚</div>
-        <div>
-          <h1>رفيق المذاكرة</h1>
-          <p class="subtitle">رتّب مذاكرتك، وخلّ إنجازك يتكلم</p>
+    grid.innerHTML = state.files.map(file => `
+      <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0">
+        <button type="button" data-study-file="${safeText(file.id)}"
+          style="border:0;background:#F3F5F9;border-radius:12px;padding:20px 12px;
+          min-height:150px;color:#0B5F58;cursor:pointer">
+          <div style="font-size:34px">▤</div>
+          <div style="font-size:12px;margin-top:8px">ملف PDF</div>
+        </button>
+        <div style="font-size:14px;font-weight:700;overflow-wrap:anywhere">
+          ${safeText(file.name)}
+        </div>
+        <div class="mut">${safeText(file.subject || 'غير مصنف')} · ${formatSize(file.size)}</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn pri" type="button" data-study-file="${safeText(file.id)}"
+            style="height:38px;padding:0 12px;flex:1;justify-content:center">افتح</button>
+          <button class="btn sec" type="button" data-delete-file="${safeText(file.id)}"
+            style="height:38px;padding:0 12px" aria-label="حذف الملف">حذف</button>
         </div>
       </div>
-    </header>
+    `).join('');
+  }
 
-    <nav>
-      <button class="active" data-page="home">الرئيسية</button>
-      <button data-page="plan">المواد والمهام</button>
-      <button data-page="timerPage">المؤقّت</button>
-      <button data-page="review">بطاقات المراجعة</button>
-    </nav>
+  // فتح ملف من المكتبة
+  document.addEventListener('click', async event => {
+    const deleteButton = event.target.closest('[data-delete-file]');
+    if (deleteButton) {
+      const id = deleteButton.dataset.deleteFile;
+      const file = state.files.find(item => item.id === id);
+      if (!file) return;
 
-    <main>
-      <section id="home" class="page active">
-        <div class="grid">
-          <div class="card">
-            <span class="stat-icon">📝</span>
-            <div class="stat-label">المهام المتبقية</div>
-            <div class="stat-number" id="pendingCount">0</div>
-          </div>
-          <div class="card">
-            <span class="stat-icon">✅</span>
-            <div class="stat-label">المهام المكتملة</div>
-            <div class="stat-number" id="doneCount">0</div>
-          </div>
-          <div class="card">
-            <span class="stat-icon">🗂️</span>
-            <div class="stat-label">بطاقات المراجعة</div>
-            <div class="stat-number" id="cardCount">0</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-bottom:18px">
-          <div class="section-title">
-            <h2>إنجاز المهام</h2>
-            <strong id="progressText">0%</strong>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-        </div>
-
-        <div class="card">
-          <div class="section-title">
-            <h2>مهامك القادمة</h2>
-            <button class="btn secondary" onclick="showPage('plan')">إضافة مهمة</button>
-          </div>
-          <div id="homeTasks" class="task-list"></div>
-        </div>
-      </section>
-
-      <section id="plan" class="page">
-        <div class="grid" style="grid-template-columns:1fr 1.5fr">
-          <div class="card">
-            <h2 style="margin-bottom:14px">إضافة مادة</h2>
-            <form id="subjectForm">
-              <input id="subjectName" placeholder="مثال: الرياضيات" required>
-              <button class="btn">إضافة المادة</button>
-            </form>
-            <h3 style="margin-top:22px">موادي</h3>
-            <div id="subjectsList" class="subject-list"></div>
-          </div>
-
-          <div class="card">
-            <h2 style="margin-bottom:14px">إضافة مهمة</h2>
-            <form id="taskForm">
-              <input id="taskTitle" placeholder="وش المطلوب تذاكره؟" required>
-              <div class="form-row">
-                <select id="taskSubject"></select>
-                <input id="taskDate" type="date" aria-label="تاريخ المهمة">
-              </div>
-              <button class="btn">حفظ المهمة</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-title"><h2>كل المهام</h2></div>
-          <div id="allTasks" class="task-list"></div>
-        </div>
-      </section>
-
-      <section id="timerPage" class="page">
-        <div class="card timer-card">
-          <div class="mode-label" id="timerMode">وقت التركيز</div>
-          <div class="timer" id="timerDisplay">25:00</div>
-          <div class="timer-controls">
-            <button class="btn" id="startBtn">ابدأ</button>
-            <button class="btn gray" id="pauseBtn">إيقاف مؤقت</button>
-            <button class="btn secondary" id="resetBtn">إعادة</button>
-          </div>
-          <div class="timer-settings">
-            <label>تركيز (دقيقة)<br><input id="focusMinutes" type="number" min="1" max="180" value="25"></label>
-            <label>استراحة (دقيقة)<br><input id="breakMinutes" type="number" min="1" max="60" value="5"></label>
-          </div>
-          <p class="small-note">اضبط وقتك، وابدأ جلسة مذاكرة جديدة.</p>
-        </div>
-      </section>
-
-      <section id="review" class="page">
-        <div class="grid" style="grid-template-columns:1fr 1.4fr">
-          <div class="card">
-            <h2 style="margin-bottom:14px">إنشاء بطاقة</h2>
-            <form id="flashForm">
-              <input id="questionInput" placeholder="السؤال أو المصطلح" required>
-              <input id="answerInput" placeholder="الإجابة أو الشرح" required>
-              <button class="btn">إضافة البطاقة</button>
-            </form>
-          </div>
-          <div class="card review-card">
-            <div class="section-title"><h2>راجع معلوماتك</h2><span id="reviewCount"></span></div>
-            <div id="flashFace" class="flash-face">أضف بطاقة لتبدأ المراجعة 📖</div>
-            <div class="review-actions">
-              <button class="btn secondary" id="showAnswerBtn">إظهار الإجابة</button>
-              <button class="btn" id="nextCardBtn">بطاقة أخرى</button>
-              <button class="btn danger" id="deleteCardBtn">حذف البطاقة</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script>
-    const STORAGE_KEY = "studyBuddyData_v1";
-    const defaultData = {
-      subjects: ["رياضيات", "علوم", "لغة عربية"],
-      tasks: [],
-      cards: []
-    };
-
-    let data;
-    try {
-      data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData;
-    } catch {
-      data = defaultData;
-    }
-
-    data.subjects ||= [];
-    data.tasks ||= [];
-    data.cards ||= [];
-
-    let currentCardIndex = 0;
-    let answerVisible = false;
-    let timerMode = "focus";
-    let remainingSeconds = 25 * 60;
-    let timerInterval = null;
-
-    function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      render();
-    }
-
-    function showPage(id) {
-      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      document.querySelectorAll("nav button").forEach(button => {
-        button.classList.toggle("active", button.dataset.page === id);
-      });
-    }
-
-    document.querySelectorAll("nav button").forEach(button => {
-      button.addEventListener("click", () => showPage(button.dataset.page));
-    });
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      })[char]);
-    }
-
-    function renderTasks(targetId, tasks) {
-      const target = document.getElementById(targetId);
-      if (!tasks.length) {
-        target.innerHTML = '<div class="empty">ما عندك مهام حاليًا. أضف مهمة جديدة 🌱</div>';
-        return;
-      }
-
-      target.innerHTML = tasks.map(task => `
-        <div class="task ${task.done ? "done" : ""}">
-          <input class="check" type="checkbox" ${task.done ? "checked" : ""}
-            onchange="toggleTask('${task.id}')">
-          <div class="task-info">
-            <div class="task-name">${escapeHTML(task.title)}</div>
-            <div class="task-meta">
-              ${escapeHTML(task.subject || "بدون مادة")}
-              ${task.date ? " · " + escapeHTML(task.date) : ""}
-            </div>
-          </div>
-          <button class="delete" onclick="deleteTask('${task.id}')" title="حذف">حذف</button>
-        </div>
-      `).join("");
-    }
-
-    function render() {
-      const pending = data.tasks.filter(task => !task.done).length;
-      const done = data.tasks.filter(task => task.done).length;
-      const percent = data.tasks.length ? Math.round(done / data.tasks.length * 100) : 0;
-
-      document.getElementById("pendingCount").textContent = pending;
-      document.getElementById("doneCount").textContent = done;
-      document.getElementById("cardCount").textContent = data.cards.length;
-      document.getElementById("progressText").textContent = percent + "%";
-      document.getElementById("progressFill").style.width = percent + "%";
-
-      renderTasks("allTasks", data.tasks);
-      renderTasks("homeTasks", data.tasks.filter(task => !task.done).slice(0, 5));
-
-      document.getElementById("subjectsList").innerHTML = data.subjects.length
-        ? data.subjects.map(subject => `<span class="subject-chip">${escapeHTML(subject)}</span>`).join("")
-        : '<span class="small-note">أضف موادك لتظهر هنا</span>';
-
-      const select = document.getElementById("taskSubject");
-      const oldValue = select.value;
-      select.innerHTML = '<option value="">اختر المادة (اختياري)</option>' +
-        data.subjects.map(subject => `<option value="${escapeHTML(subject)}">${escapeHTML(subject)}</option>`).join("");
-      if (data.subjects.includes(oldValue)) select.value = oldValue;
-
-      renderFlashcard();
-    }
-
-    function toggleTask(id) {
-      const task = data.tasks.find(item => item.id === id);
-      if (task) task.done = !task.done;
-      save();
-    }
-
-    function deleteTask(id) {
-      data.tasks = data.tasks.filter(task => task.id !== id);
-      save();
-    }
-
-    document.getElementById("subjectForm").addEventListener("submit", event => {
-      event.preventDefault();
-      const input = document.getElementById("subjectName");
-      const subject = input.value.trim();
-      if (subject && !data.subjects.includes(subject)) {
-        data.subjects.push(subject);
-        save();
-      }
-      input.value = "";
-    });
-
-    document.getElementById("taskForm").addEventListener("submit", event => {
-      event.preventDefault();
-      const title = document.getElementById("taskTitle").value.trim();
-      if (!title) return;
-
-      data.tasks.unshift({
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        title,
-        subject: document.getElementById("taskSubject").value,
-        date: document.getElementById("taskDate").value,
-        done: false
-      });
-
-      event.target.reset();
-      save();
-    });
-
-    document.getElementById("flashForm").addEventListener("submit", event => {
-      event.preventDefault();
-      data.cards.push({
-        question: document.getElementById("questionInput").value.trim(),
-        answer: document.getElementById("answerInput").value.trim()
-      });
-      currentCardIndex = data.cards.length - 1;
-      answerVisible = false;
-      event.target.reset();
-      save();
-    });
-
-    function renderFlashcard() {
-      const face = document.getElementById("flashFace");
-      document.getElementById("reviewCount").textContent =
-        data.cards.length ? `${currentCardIndex + 1} / ${data.cards.length}` : "";
-
-      if (!data.cards.length) {
-        face.className = "flash-face";
-        face.textContent = "أضف بطاقة لتبدأ المراجعة 📖";
-        return;
-      }
-
-      if (currentCardIndex >= data.cards.length) currentCardIndex = 0;
-      const card = data.cards[currentCardIndex];
-      face.className = "flash-face" + (answerVisible ? " answer" : "");
-      face.textContent = answerVisible ? card.answer : card.question;
-    }
-
-    document.getElementById("showAnswerBtn").addEventListener("click", () => {
-      if (!data.cards.length) return;
-      answerVisible = !answerVisible;
-      renderFlashcard();
-      document.getElementById("showAnswerBtn").textContent =
-        answerVisible ? "إظهار السؤال" : "إظهار الإجابة";
-    });
-
-    document.getElementById("nextCardBtn").addEventListener("click", () => {
-      if (!data.cards.length) return;
-      currentCardIndex = (currentCardIndex + 1) % data.cards.length;
-      answerVisible = false;
-      document.getElementById("showAnswerBtn").textContent = "إظهار الإجابة";
-      renderFlashcard();
-    });
-
-    document.getElementById("deleteCardBtn").addEventListener("click", () => {
-      if (!data.cards.length) return;
-      data.cards.splice(currentCardIndex, 1);
-      if (currentCardIndex >= data.cards.length) currentCardIndex = 0;
-      answerVisible = false;
-      document.getElementById("showAnswerBtn").textContent = "إظهار الإجابة";
-      save();
-    });
-
-    function getMinutes() {
-      const input = document.getElementById(timerMode === "focus" ? "focusMinutes" : "breakMinutes");
-      return Math.max(1, Number(input.value) || (timerMode === "focus" ? 25 : 5));
-    }
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(remainingSeconds / 60);
-      const seconds = remainingSeconds % 60;
-      document.getElementById("timerDisplay").textContent =
-        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-      document.getElementById("timerMode").textContent =
-        timerMode === "focus" ? "وقت التركيز" : "وقت الاستراحة";
-    }
-
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      remainingSeconds = getMinutes() * 60;
-      updateTimerDisplay();
-    }
-
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (timerInterval) return;
-      timerInterval = setInterval(() => {
-        remainingSeconds--;
-        updateTimerDisplay();
-
-        if (remainingSeconds <= 0) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-          alert(timerMode === "focus" ? "انتهى وقت التركيز! خذ استراحة ☕" : "انتهت الاستراحة! مستعد لجلسة جديدة؟");
+      if (confirm(`هل تريد حذف الملف «${file.name}» من هذا الجهاز؟`)) {
+        await dbAction('readwrite', 'delete', id);
+        if (state.currentFile && state.currentFile.id === id) {
+          state.currentFile = null;
+          state.pdf = null;
         }
-      }, 1000);
+        await refreshLibrary();
+        notify('تم حذف الملف');
+      }
+      return;
+    }
+
+    const openButton = event.target.closest('[data-study-file]');
+    if (openButton) {
+      event.preventDefault();
+      const file = state.files.find(item => item.id === openButton.dataset.studyFile);
+      if (file) await openPdf(file);
+    }
+  });
+
+  async function openPdf(file) {
+    state.currentFile = file;
+    state.page = 1;
+
+    const title = document.querySelector('#study .card');
+    if (title) title.textContent = file.name + ' · جارٍ فتح الملف';
+
+    // الانتقال إلى شاشة الدراسة باستخدام تنقل التطبيق الأصلي
+    const backToStudy = document.querySelector('[data-go="study"]');
+    if (backToStudy) backToStudy.click();
+    else document.getElementById('study')?.classList.add('on');
+
+    const paper = document.getElementById('paper');
+    if (!paper) return;
+
+    paper.innerHTML =
+      '<div style="direction:rtl;text-align:center;margin:auto;color:#566178">' +
+      'جارٍ فتح ملف PDF…</div>';
+
+    try {
+      await loadPdfJs();
+
+      const bytes = new Uint8Array(file.data);
+      state.pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+
+      paper.innerHTML = `
+        <div id="pdfPageHost" style="position:absolute;inset:0;overflow:auto;
+          display:flex;justify-content:center;align-items:flex-start;padding:24px;background:#fff">
+          <canvas id="pdfCanvas" style="max-width:100%;height:auto;box-shadow:0 2px 14px #14213d18"></canvas>
+        </div>
+      `;
+
+      await renderPdfPage();
+
+      const pageLabel = document.querySelector('#study .card');
+      if (pageLabel) {
+        pageLabel.textContent =
+          `${file.name} · ${state.page} / ${state.pdf.numPages}`;
+      }
+    } catch (error) {
+      console.error(error);
+      paper.innerHTML =
+        '<div style="direction:rtl;text-align:center;margin:auto;color:#B42318">' +
+        'تعذر عرض الملف. تأكد من اتصال الإنترنت لتحميل عارض PDF، ثم أعد فتح الملف.</div>';
+      notify('تعذر فتح الملف');
+    }
+  }
+
+  async function renderPdfPage() {
+    if (!state.pdf || state.rendering) return;
+
+    state.rendering = true;
+    try {
+      const page = await state.pdf.getPage(state.page);
+      const canvas = document.getElementById('pdfCanvas');
+      if (!canvas) return;
+
+      const host = document.getElementById('pdfPageHost');
+      const maxWidth = Math.max(300, (host?.clientWidth || 900) - 48);
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(maxWidth / base.width, 1.8);
+      const viewport = page.getViewport({ scale });
+
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewport.width * ratio);
+      canvas.height = Math.floor(viewport.height * ratio);
+      canvas.style.width = Math.floor(viewport.width) + 'px';
+      canvas.style.height = Math.floor(viewport.height) + 'px';
+
+      const context = canvas.getContext('2d');
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      await page.render({ canvasContext: context, viewport }).promise;
+
+      const pageLabel = document.querySelector('#study .card');
+      if (pageLabel && state.currentFile) {
+        pageLabel.textContent =
+          `${state.currentFile.name} · ${state.page} / ${state.pdf.numPages}`;
+      }
+    } finally {
+      state.rendering = false;
+    }
+  }
+
+  // أزرار الصفحات والتنقل بينها
+  document.addEventListener('keydown', event => {
+    if (!state.pdf || document.getElementById('study')?.classList.contains('on') !== true) return;
+
+    if (event.key === 'ArrowLeft' && state.page < state.pdf.numPages) {
+      state.page++;
+      renderPdfPage();
+    }
+
+    if (event.key === 'ArrowRight' && state.page > 1) {
+      state.page--;
+      renderPdfPage();
+    }
+  });
+
+  const pageButton = document.getElementById('bPages');
+  if (pageButton) {
+    pageButton.addEventListener('dblclick', () => {
+      if (!state.pdf) return;
+      const page = prompt(`رقم الصفحة من 1 إلى ${state.pdf.numPages}:`, state.page);
+      const number = Number(page);
+      if (Number.isInteger(number) && number >= 1 && number <= state.pdf.numPages) {
+        state.page = number;
+        renderPdfPage();
+      }
     });
+  }
 
-    document.getElementById("pauseBtn").addEventListener("click", () => {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    });
+  // بدء المكتبة واستبدال الملفات التجريبية بملفات المستخدم
+  refreshLibrary();
 
-    document.getElementById("resetBtn").addEventListener("click", resetTimer);
-
-    ["focusMinutes", "breakMinutes"].forEach(id => {
-      document.getElementById(id).addEventListener("change", () => {
-        if (!timerInterval) resetTimer();
-      });
-    });
-
-    render();
-    updateTimerDisplay();
-  </script>
-</body>
-</html>
+  // إتاحة وظائف الصفحة لبقية أجزاء الإضافة
+  state.refreshLibrary = refreshLibrary;
+  state.openPdf = openPdf;
+  state.renderPdfPage = renderPdfPage;
+  state.notify = notify;
+})();
+</script>
 ```
