@@ -264,6 +264,16 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  initGlobalSidebars();
+  loadLibrary();
+  renderScheduleView();
+  renderQuizHome();
+  loadRecordings();
+  loadNotebooks();
+  initHomeLiveTranscription();
+});
+
+function initGlobalSidebars(){
   const tpl = document.getElementById('sidebarTemplate');
   if(tpl){
     document.querySelectorAll('.side').forEach(sideEl => {
@@ -275,14 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-
-  loadLibrary();
-  renderScheduleView();
-  renderQuizHome();
-  loadRecordings();
-  loadNotebooks();
-  initHomeLiveTranscription();
-});
+}
 
 function openModal(html){
   const root=document.getElementById('modalRoot');
@@ -531,7 +534,7 @@ function initAnnotationLayer(canvas,pageNo,file){
 updateAnnotationTools();
 
 /* ==========================================
-   تفريغ الصوت الفوري: كلمة بكلمة وبشكل لحظي
+   التفريغ الصوتي الفوري: كلمة بكلمة وبشكل لحظي
    ========================================== */
 function initHomeLiveTranscription(){
   const startBtn = document.getElementById('homeLiveMicBtn');
@@ -551,7 +554,7 @@ function initHomeLiveTranscription(){
   let recognition = new SpeechRec();
   recognition.lang = 'ar-SA';
   recognition.continuous = true;
-  recognition.interimResults = true; // تمكين النتائج المؤقتة لكتابة كل كلمة فوراً
+  recognition.interimResults = true;
   let userWantsListening = false;
   let finalizedTranscript = '';
 
@@ -587,7 +590,6 @@ function initHomeLiveTranscription(){
     if(currentFinal){
       finalizedTranscript += currentFinal;
     }
-    // عرض النص المثبت مضافاً إليه الكلمات اللحظية المؤقتة لتظهر الكتابة فوراً
     textBox.value = finalizedTranscript + interimText;
   };
 
@@ -709,16 +711,17 @@ function renderScheduleView(){
   }
 }
 
+/* ==========================================
+   نظام الاختبارات والبطاقات المُصلح بالكامل
+   ========================================== */
 async function renderQuizHome(){
   const qMain = document.getElementById('qMain');
   if(!qMain) return;
   const files = pdfState.files;
-  const tpl = document.getElementById('sidebarTemplate');
-  const sideHtml = tpl ? tpl.innerHTML : '';
-
+  
   if(!files.length){
     qMain.innerHTML=`
-      <div class="side" id="side-quizzes">${sideHtml}</div>
+      <div class="side" id="side-quizzes"></div>
       <div class="main">
         <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
         <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
@@ -727,12 +730,12 @@ async function renderQuizHome(){
           <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
         </div>
       </div>`;
-    setupSidebar('side-quizzes');
+    initGlobalSidebars();
     return;
   }
 
   qMain.innerHTML=`
-    <div class="side" id="side-quizzes">${sideHtml}</div>
+    <div class="side" id="side-quizzes"></div>
     <div class="main">
       <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
       <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
@@ -755,7 +758,7 @@ async function renderQuizHome(){
       </div>
     </div>
   `;
-  setupSidebar('side-quizzes');
+  initGlobalSidebars();
 
   document.getElementById('startPdfQuizBtn').onclick = async () => {
     const fileId = document.getElementById('quizFileSelect').value;
@@ -763,8 +766,8 @@ async function renderQuizHome(){
     const file = files.find(f => f.id === fileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div class="side" id="side-quizzes">${sideHtml}</div><div class="main"><div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF وتوليد الأسئلة…</div></div>`;
-    setupSidebar('side-quizzes');
+    qMain.innerHTML=`<div class="side" id="side-quizzes"></div><div class="main"><div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF وتوليد الأسئلة…</div></div>`;
+    initGlobalSidebars();
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
@@ -809,12 +812,10 @@ function generateRobustQuestions(text, type){
 function runQuizSession(questions, type, index, score){
   const qMain = document.getElementById('qMain');
   if(!qMain) return;
-  const tpl = document.getElementById('sidebarTemplate');
-  const sideHtml = tpl ? tpl.innerHTML : '';
 
   if(index >= questions.length){
     qMain.innerHTML=`
-      <div class="side" id="side-quizzes">${sideHtml}</div>
+      <div class="side" id="side-quizzes"></div>
       <div class="main">
         <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
           <h1>انتهى الاختبار بنجاح!</h1>
@@ -822,7 +823,7 @@ function runQuizSession(questions, type, index, score){
           <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
         </div>
       </div>`;
-    setupSidebar('side-quizzes');
+    initGlobalSidebars();
     return;
   }
 
@@ -857,7 +858,7 @@ function runQuizSession(questions, type, index, score){
   }
 
   qMain.innerHTML=`
-    <div class="side" id="side-quizzes">${sideHtml}</div>
+    <div class="side" id="side-quizzes"></div>
     <div class="main">
       <div style="display:flex;align-items:center;gap:14px">
         <button class="fab" onclick="renderQuizHome()">↩</button>
@@ -869,7 +870,7 @@ function runQuizSession(questions, type, index, score){
         ${contentHtml}
       </div>
     </div>`;
-  setupSidebar('side-quizzes');
+  initGlobalSidebars();
 
   if(type === 'mcq'){
     document.querySelectorAll('.opt').forEach(btn => {
@@ -960,25 +961,12 @@ if(saveRecTextBtn){
   };
 }
 
-function setupSidebar(sideId){
-  const side = document.getElementById(sideId);
-  const tpl = document.getElementById('sidebarTemplate');
-  if(side && tpl){
-    side.innerHTML = '';
-    side.appendChild(tpl.content.cloneNode(true));
-    const targetId = sideId.replace('side-', '');
-    side.querySelectorAll('[data-go]').forEach(b => {
-      if(b.dataset.go === targetId) b.classList.add('on');
-    });
-  }
-}
-
 function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
   if(id==='quizzes') renderQuizHome();
   if(id==='recordings') loadRecordings();
   if(id==='notebooks') loadNotebooks();
-  setupSidebar('side-' + id);
+  initGlobalSidebars();
 }
 
 document.addEventListener('click',e=>{
