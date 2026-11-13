@@ -18,12 +18,12 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-/* التخطيط الثابت للشريط الجانبي يميناً والمحتوى يساراً */
+/* الشريط الجانبي يميناً والمحتوى يساراً بشكل ثابت ومستقر */
 .scr{position:fixed;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
-.side{width:240px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10;overflow-y:auto}
-.nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
+.side{width:250px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10;overflow-y:auto}
+.nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:15px;width:100%;text-align:right;font-weight:600}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
 
@@ -51,47 +51,51 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<!-- شابلون الشريط الجانبي المشترك -->
+<!-- شابلون الشريط الجانبي الأنيق بالأيقونات الأصلية الصافية -->
 <template id="sidebarTemplate">
   <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
     <b style="font-size:18px">رفيق المذاكرة</b>
   </div>
   <button class="nav" data-go="home">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
     <span>الرئيسية</span>
   </button>
   <button class="nav" data-go="library">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h12"/></svg>
     <span>المكتبة وملفات PDF</span>
   </button>
   <button class="nav" data-go="notebooks">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
     <span>الدفاتر والملاحظات</span>
   </button>
   <button class="nav" data-go="schedule">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
     <span>الجدول والتخطيط</span>
   </button>
   <button class="nav" data-go="quizzes">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
     <span>الاختبارات والبطاقات</span>
   </button>
+  <button class="nav" data-go="transcription">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    <span>التفريغ الذكي (الإملاء)</span>
+  </button>
   <button class="nav" data-go="recordings">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
     <span>التسجيلات الصوتية</span>
   </button>
   <button class="nav" data-go="tools">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     <span>الأدوات والذكاء الاصطناعي</span>
   </button>
   <button class="nav" data-go="community">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span>المجتمع الإبداعي</span>
   </button>
   <div style="flex:1"></div>
   <div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
     <span>مزامنة آمنة عبر iCloud</span>
   </div>
 </template>
@@ -113,9 +117,9 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
-    <div style="display:flex;justify-content:space-between"><h2>تسجيل المحاضرة الصوتي</h2><span style="font-size:13px;color:#C7D0E4">متوافق مع أجهزة أبل</span></div>
-    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;display:flex;align-items:center;justify-content:center;text-align:center" id="homeLiveText">اضغط الزر أدناه لبدء تسجيل الصوت وحفظه…</div>
-    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز</span></div>
+    <div style="display:flex;justify-content:space-between"><h2>التفريغ الصوتي والإملاء</h2><span style="font-size:13px;color:#C7D0E4">متوافق مع أجهزة أبل</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;display:flex;align-items:center;justify-content:center;text-align:center" id="homeLiveText">اضغط الزر للانتقال لصفحة التفريغ الذكي واستخدام إملاء أبل…</div>
+    <div style="display:flex;align-items:center;gap:14px"><button class="btn pri" data-go="transcription" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">فتح صفحة التفريغ</button></div>
    </div>
   </div>
   <h2>مكتبة ملفاتك السريعة</h2>
@@ -165,11 +169,29 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  <div class="main" id="qMain"></div>
 </div>
 
+<!-- TRANSCRIPTION (صفحة التفريغ المخصصة والرئيسية) -->
+<div class="scr" id="transcription">
+ <div class="side" id="side-transcription"></div>
+ <div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h1>التفريغ الذكي والإملاء الصوتي</h1>
+    <span class="mut">استخدم أيقونة الميكروفون في لوحة أبل للإملاء المباشر</span>
+  </div>
+  <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <label style="font-weight:700">ملاحظات المحاضرة والتفريغ المباشر:</label>
+      <button class="btn pri" id="saveDirectTransBtn">حفظ التفريغ والملاحظات</button>
+    </div>
+    <textarea id="directTransText" class="inp" style="flex:1;resize:none;line-height:1.9;font-size:16px;" placeholder="اضغط هنا، ثم انقر على أيقونة الميكروفون (Dictation) في لوحة مفاتيح أبل لتحويل صوتك إلى نص فوراً وبدقة تامة..."></textarea>
+  </div>
+ </div>
+</div>
+
 <!-- RECORDINGS -->
 <div class="scr" id="recordings">
  <div class="side" id="side-recordings"></div>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والملاحظات</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><span>تسجيل جديد</span></button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمحفوظات</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><span>تسجيل جديد</span></button></div>
   <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
    <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto" id="recList"></div>
    <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;min-height:0">
@@ -179,12 +201,10 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <label class="mut" style="font-weight:700">ملاحظات وملخص التسجيل (اضغط أيقونة الميكروفون في لوحة أبل للإملاء الصوتي الفوري):</label>
-      </div>
-      <textarea id="transcriptSegmentsBox" class="inp" style="flex:1;resize:none;line-height:1.8;" placeholder="اضغط على أيقونة الميكروفون في لوحة المفاتيح لتحويل صوتك إلى نص فوراً أو اكتب ملاحظاتك..."></textarea>
+      <label class="mut" style="font-weight:700">التفريغ والملاحظات (استخدم إملاء لوحة أبل):</label>
+      <textarea id="transcriptSegmentsBox" class="inp" style="flex:1;resize:none;line-height:1.9;" placeholder="اضغط ميكروفون لوحة المفاتيح للإملاء أو اكتب هنا..."></textarea>
       <div style="display:flex;justify-content:flex-end">
-        <button class="btn pri" id="saveRecTextBtn">حفظ الملاحظات</button>
+        <button class="btn pri" id="saveRecTextBtn">حفظ الملاحظات والتفريغ</button>
       </div>
     </div>
    </div>
@@ -233,7 +253,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  </div>
 </div>
 
-<!-- STUDY (PDF Viewer with proper Sidebar Layout) -->
+<!-- STUDY (PDF Viewer with proper layout) -->
 <div class="scr" id="study" style="background:#E9ECF2">
  <div class="side" id="side-study"></div>
  <div class="main" style="position:relative; padding:0; overflow:hidden;">
@@ -241,22 +261,18 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
    </div>
    <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:20">
-     <button class="fab" data-go="library" aria-label="رجوع">↩</button>
+     <button class="fab" data-go="library" title="رجوع">
+       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+     </button>
      <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
    </div>
    <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:20">
-     <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة">🎙️</button>
-     <button class="fab" id="bAI" aria-label="المساعد">✨</button>
+     <button class="fab" data-go="transcription" title="التفريغ الذكي والإملاء">
+       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg>
+     </button>
+     <button class="fab" id="bAI" title="المساعد">✨</button>
    </div>
    <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:20" id="tools"></div>
-   
-   <!-- شريط التسجيل السفلي المصغر داخل صفحة المذاكرة -->
-   <div id="studyRecBar" class="hide" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#14213D;color:#fff;border-radius:16px;padding:12px 20px;box-shadow:0 6px 24px rgba(20,33,61,.3);display:flex;align-items:center;gap:16px;z-index:30;width:90%;max-width:600px;">
-     <span class="rec" style="width:10px;height:10px;border-radius:50%;background:#E8590C;flex:none"></span>
-     <b id="studyRecTimer" style="font-size:14px;flex:none">00:00</b>
-     <div id="studyRecText" style="flex:1;font-size:14px;color:#E6EBF5">جاري تسجيل الصوت الحي (استخدم ميكروفون لوحة أبل للإملاء)...</div>
-     <button class="btn" id="stopStudyRecBtn" style="background:#E8590C;color:#fff;height:36px;padding:0 14px;font-size:13px;border-radius:10px;flex:none">إيقاف وحفظ</button>
-   </div>
 
    <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:20">
     <h2 style="font-size:16px">مساعد المذاكرة والذكاء الاصطناعي</h2>
@@ -271,7 +287,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 <div id="modalRoot" class="modal-bg hide"></div>
 
 <script>
-// تعبئة القوائم الجانبية تلقائياً في كل الشاشات وضمان ظهورها
+// تعبئة القوائم الجانبية تلقائياً في كل الشاشات
 document.addEventListener('DOMContentLoaded', () => {
   const tpl = document.getElementById('sidebarTemplate');
   if(tpl){
@@ -792,7 +808,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ==========================================
-   6. الاختبارات الذكية والبطاقات (محدث ومستقر)
+   6. الاختبارات الذكية والبطاقات
    ========================================== */
 async function renderQuizHome(){
   const qMain = document.getElementById('qMain');
@@ -1021,19 +1037,12 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   7. التسجيل الصوتي المتوافق مع الآيباد
+   7. التسجيل الصوتي والإملاء
    ========================================== */
-let globalRecState = {
-  active: false,
-  recorder: null,
-  stream: null,
-  chunks: [],
-  timer: null,
-  sec: 0
-};
+let globalRecState = { active: false, recorder: null, stream: null, chunks: [], timer: null, sec: 0 };
 
 async function startGlobalRecording(onUpdateCallback){
-  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم في هذا المتصفح');
+  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم');
   try{
     globalRecState.stream = await navigator.mediaDevices.getUserMedia({audio:true});
     globalRecState.chunks = [];
@@ -1052,7 +1061,7 @@ async function startGlobalRecording(onUpdateCallback){
         date: new Date().toLocaleDateString('ar-SA'),
         duration: `${m}:${s}`,
         audioBlob: blob,
-        transcript: 'تم تسجيل المحاضرة صوتياً بنجاح (استخدم أيقونة الميكروفون في لوحة أبل داخل حقل الملاحظات للإملاء الصوتي الفوري).'
+        transcript: 'تسجيل صوتي جديد. يمكنك استخدام ميكروفون الإملاء من لوحة أبل لكتابة الملاحظات هنا.'
       };
       await storeAction('recordings','readwrite','put',newRec);
     };
@@ -1063,9 +1072,8 @@ async function startGlobalRecording(onUpdateCallback){
       const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
       if(onUpdateCallback) onUpdateCallback(globalRecState.sec, `${m}:${s}`);
     }, 1000);
-
   } catch(err){
-    alert('تعذر استخدام الميكروفون. تأكد من السماح للمتصفح بالوصول للميكروفون.');
+    alert('تعذر استخدام الميكروفون.');
   }
 }
 
@@ -1077,53 +1085,27 @@ function stopGlobalRecording(){
   if(globalRecState.stream) globalRecState.stream.getTracks().forEach(t => t.stop());
 }
 
-// زر الصفحة الرئيسية للتسجيل الصوتي
-const homeRecBtn = document.getElementById('homeRecBtn');
-if(homeRecBtn){
-  homeRecBtn.onclick = () => {
-    if(!globalRecState.active){
-      homeRecBtn.textContent = 'إيقاف التسجيل';
-      document.getElementById('homeRecStatus').textContent = 'جاري تسجيل الصوت الآن…';
-      startGlobalRecording((sec, timeStr)=>{
-        document.getElementById('homeLiveText').textContent = `🔴 جاري تسجيل المحاضرة (${timeStr}) - الصوت يُحفظ مباشرة...`;
-      });
-    } else {
-      stopGlobalRecording();
-      homeRecBtn.textContent = 'ابدأ التسجيل';
-      document.getElementById('homeRecStatus').textContent = 'تم الحفظ في قائمة التسجيلات بنجاح!';
-    }
+// حفظ التفريغ المباشر من صفحة التفريغ
+const saveDirectTransBtn = document.getElementById('saveDirectTransBtn');
+if(saveDirectTransBtn){
+  saveDirectTransBtn.onclick = async () => {
+    const text = document.getElementById('directTransText').value.trim();
+    if(!text) return alert('الرجاء إدخال أو إملاء نص التفريغ أولاً');
+    const recordings = await storeAction('recordings','readonly','getAll');
+    const newRec = {
+      id: makeId(),
+      title: 'تفريغ محاضرة ' + (recordings.length + 1),
+      date: new Date().toLocaleDateString('ar-SA'),
+      duration: '00:00',
+      audioBlob: null,
+      transcript: text
+    };
+    await storeAction('recordings','readwrite','put',newRec);
+    alert('تم حفظ التفريغ بنجاح في التسجيلات والملاحظات!');
+    go('recordings');
   };
 }
 
-// زر صفحة المذاكرة (PDF) للتسجيل عبر شريط سفلي مصغر
-const studyRecFab = document.getElementById('studyRecFab');
-const studyRecBar = document.getElementById('studyRecBar');
-const stopStudyRecBtn = document.getElementById('stopStudyRecBtn');
-
-if(studyRecFab){
-  studyRecFab.onclick = () => {
-    if(!globalRecState.active){
-      studyRecBar.classList.remove('hide');
-      startGlobalRecording((sec, timeStr)=>{
-        document.getElementById('studyRecTimer').textContent = timeStr;
-        document.getElementById('studyRecText').textContent = `🔴 جاري التسجيل الحي للمحاضرة (${timeStr})...`;
-      });
-    } else {
-      stopGlobalRecording();
-      studyRecBar.classList.add('hide');
-    }
-  };
-}
-
-if(stopStudyRecBtn){
-  stopStudyRecBtn.onclick = () => {
-    stopGlobalRecording();
-    studyRecBar.classList.add('hide');
-    alert('تم إيقاف التسجيل وحفظه في قائمة التسجيلات بنجاح!');
-  };
-}
-
-// إدارة قائمة التسجيلات والملاحظات
 let recState={recordings:[],selectedId:null};
 async function loadRecordings(){
   recState.recordings=await storeAction('recordings','readonly','getAll');
@@ -1156,6 +1138,7 @@ document.addEventListener('click',e=>{
       document.getElementById('delRecBtn').classList.remove('hide');
       const player=document.getElementById('audioPlayer');
       if(rec.audioBlob){ player.src=URL.createObjectURL(rec.audioBlob); player.classList.remove('hide'); }
+      else { player.classList.add('hide'); }
     }
   }
 });
@@ -1167,7 +1150,7 @@ if(saveRecTextBtn){
     if(!rec) return alert('الرجاء اختيار تسجيل أولاً');
     rec.transcript = document.getElementById('transcriptSegmentsBox').value;
     await storeAction('recordings', 'readwrite', 'put', rec);
-    alert('تم حفظ الملاحظات بنجاح!');
+    alert('تم حفظ الملاحظات والتفريغ بنجاح!');
   };
 }
 
@@ -1203,7 +1186,7 @@ if(recBtn){
 }
 
 /* ==========================================
-   8. أدوات الذكاء الاصطناعي (مفعلة وتعمل بكفاءة)
+   8. أدوات الذكاء الاصطناعي
    ========================================== */
 const doTranslateBtn = document.getElementById('doTranslateBtn');
 if(doTranslateBtn){
