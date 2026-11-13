@@ -50,19 +50,6 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<script>
-const NAV_ITEMS=[
-  ['home','الرئيسية','home'],
-  ['library','المكتبة والملفات','lib'],
-  ['notebooks','الدفاتر والملاحظات','file'],
-  ['schedule','الجدول والتخطيط','cal'],
-  ['quizzes','الاختبارات والبطاقات','q'],
-  ['recordings','التسجيلات الصوتية','mic'],
-  ['tools','الأدوات والذكاء الاصطناعي','spark'],
-  ['community','المجتمع الإبداعي','grid']
-];
-</script>
-
 <!-- HOME -->
 <div class="scr on" id="home" data-side>
  <div class="main">
@@ -224,6 +211,17 @@ const NAV_ITEMS=[
 <div id="modalRoot" class="modal-bg hide"></div>
 
 <script>
+const NAV_ITEMS=[
+  ['home','الرئيسية','home'],
+  ['library','المكتبة والملفات','lib'],
+  ['notebooks','الدفاتر والملاحظات','file'],
+  ['schedule','الجدول والتخطيط','cal'],
+  ['quizzes','الاختبارات والبطاقات','q'],
+  ['recordings','التسجيلات الصوتية','mic'],
+  ['tools','الأدوات والذكاء الاصطناعي','spark'],
+  ['community','المجتمع الإبداعي','grid']
+];
+
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
 
@@ -250,14 +248,23 @@ redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 004 14.5v0A5.5 5.5 
 
 function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
 
-$$('[data-side]').forEach(sc=>{
-  const id=sc.id;
-  const s=document.createElement('div');
-  s.className='side';
-  s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div><b style="font-size:18px">رفيق المذاكرة</b></div>'+NAV_ITEMS.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>مزامنة آمنة عبر iCloud</span></div>';
-  sc.prepend(s);
+// بناء الشريط الجانبي تلقائياً بعد تحميل الصفحة بالكامل
+document.addEventListener('DOMContentLoaded', () => {
+  $$('[data-side]').forEach(sc=>{
+    const id=sc.id;
+    const s=document.createElement('div');
+    s.className='side';
+    s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div><b style="font-size:18px">رفيق المذاكرة</b></div>'+NAV_ITEMS.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>مزامنة آمنة عبر iCloud</span></div>';
+    sc.prepend(s);
+  });
+  $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+
+  loadLibrary();
+  renderScheduleView();
+  renderQuizHome();
+  loadRecordings();
+  loadNotebooks();
 });
-$$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
 
 function openModal(html){
   const root=$('#modalRoot');
@@ -344,6 +351,7 @@ async function loadLibrary(){
 
 function renderLibraryGrid(){
   const grid=$('#libGrid');
+  if(!grid) return;
   if(!pdfState.files.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:#566178">مكتبتك فارغة. اضغط «استيراد PDF» لإضافة ملفاتك.</div>';
     return;
@@ -365,6 +373,7 @@ function renderLibraryGrid(){
 
 function renderHomePreview(){
   const prev=$('#homeLibPreview');
+  if(!prev) return;
   if(!pdfState.files.length){
     prev.innerHTML='<div class="mut">لا توجد ملفات مضافة بعد.</div>';
     return;
@@ -578,6 +587,7 @@ updateAnnotationTools();
 async function loadNotebooks(){
   const notes=await storeAction('notebooks','readonly','getAll');
   const grid=$('#notebooksGrid');
+  if(!grid) return;
   if(!notes.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">لا توجد دفاتر ملاحظات. اضغط «إنشاء دفتر جديد» لبدء تدوين ملاحظاتك.</div>';
     return;
@@ -594,32 +604,35 @@ async function loadNotebooks(){
   `).join('');
 }
 
-$('#createNewNotebookBtn').onclick=()=>{
-  openModal(`
-    <h2>إنشاء دفتر ملاحظات جديد</h2>
-    <label style="font-weight:600">عنوان الدفتر:</label>
-    <input id="nbTitle" class="inp" placeholder="مثال: ملاحظات الرياضيات والفيزياء">
-    <label style="font-weight:600">اختر القالب الورقي:</label>
-    <select id="nbTemplate" class="inp">
-      <option value="lined">ورق مخطّط (Lined)</option>
-      <option value="grid">شبكة مربعات (Grid)</option>
-      <option value="dots">نقاط منظمة (Dots)</option>
-      <option value="blank">ورق سادة (Blank)</option>
-    </select>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px">
-      <button class="btn sec" onclick="closeModal()">إلغاء</button>
-      <button class="btn pri" id="saveNbBtn">إنشاء الدفتر</button>
-    </div>
-  `);
-  $('#saveNbBtn').onclick=async()=>{
-    const title=$('#nbTitle').value.trim();
-    if(!title)return alert('أدخل عنوان الدفتر');
-    const newNb={id:makeId(),title,template:$('#nbTemplate').value,date:new Date().toLocaleDateString('ar-SA'),color:'#E4F2F0'};
-    await storeAction('notebooks','readwrite','put',newNb);
-    closeModal();
-    loadNotebooks();
+const createNotebookBtn = $('#createNewNotebookBtn');
+if(createNotebookBtn){
+  createNotebookBtn.onclick=()=>{
+    openModal(`
+      <h2>إنشاء دفتر ملاحظات جديد</h2>
+      <label style="font-weight:600">عنوان الدفتر:</label>
+      <input id="nbTitle" class="inp" placeholder="مثال: ملاحظات الرياضيات والفيزياء">
+      <label style="font-weight:600">اختر القالب الورقي:</label>
+      <select id="nbTemplate" class="inp">
+        <option value="lined">ورق مخطّط (Lined)</option>
+        <option value="grid">شبكة مربعات (Grid)</option>
+        <option value="dots">نقاط منظمة (Dots)</option>
+        <option value="blank">ورق سادة (Blank)</option>
+      </select>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px">
+        <button class="btn sec" onclick="closeModal()">إلغاء</button>
+        <button class="btn pri" id="saveNbBtn">إنشاء الدفتر</button>
+      </div>
+    `);
+    $('#saveNbBtn').onclick=async()=>{
+      const title=$('#nbTitle').value.trim();
+      if(!title)return alert('أدخل عنوان الدفتر');
+      const newNb={id:makeId(),title,template:$('#nbTemplate').value,date:new Date().toLocaleDateString('ar-SA'),color:'#E4F2F0'};
+      await storeAction('notebooks','readwrite','put',newNb);
+      closeModal();
+      loadNotebooks();
+    };
   };
-};
+}
 
 async function deleteNotebook(id){
   if(confirm('هل تريد حذف هذا الدفتر؟')){
@@ -644,27 +657,30 @@ function saveSchedule(data){
   renderScheduleView();
 }
 
-$('#addSchedClassBtn').onclick=()=>{
-  openModal(`
-    <h2>إضافة حصة مدرسية</h2>
-    <label style="font-size:14px;font-weight:600">اسم الحصة / المادة:</label>
-    <input id="scTitle" class="inp" placeholder="مثال: رياضيات / فيزياء">
-    <label style="font-size:14px;font-weight:600">اليوم:</label>
-    <select id="scDay" class="inp">${DAYS.map(d=>`<option value="${d}">${d}</option>`).join('')}</select>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
-      <button class="btn sec" onclick="closeModal()">إلغاء</button>
-      <button class="btn pri" id="saveScBtn">إضافة</button>
-    </div>
-  `);
-  $('#saveScBtn').onclick=()=>{
-    const title=$('#scTitle').value.trim();
-    if(!title) return alert('أدخل اسم المادة');
-    const sched=getSchedule();
-    sched.classes.push({id:makeId(),title,day:$('#scDay'].value});
-    saveSchedule(sched);
-    closeModal();
+const addSchedClassBtn = $('#addSchedClassBtn');
+if(addSchedClassBtn){
+  addSchedClassBtn.onclick=()=>{
+    openModal(`
+      <h2>إضافة حصة مدرسية</h2>
+      <label style="font-size:14px;font-weight:600">اسم الحصة / المادة:</label>
+      <input id="scTitle" class="inp" placeholder="مثال: رياضيات / فيزياء">
+      <label style="font-size:14px;font-weight:600">اليوم:</label>
+      <select id="scDay" class="inp">${DAYS.map(d=>`<option value="${d}">${d}</option>`).join('')}</select>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+        <button class="btn sec" onclick="closeModal()">إلغاء</button>
+        <button class="btn pri" id="saveScBtn">إضافة</button>
+      </div>
+    `);
+    $('#saveScBtn').onclick=()=>{
+      const title=$('#scTitle').value.trim();
+      if(!title) return alert('أدخل اسم المادة');
+      const sched=getSchedule();
+      sched.classes.push({id:makeId(),title,day:$('#scDay'].value});
+      saveSchedule(sched);
+      closeModal();
+    };
   };
-};
+}
 
 const schedImgInput=document.createElement('input');
 schedImgInput.type='file';
@@ -672,7 +688,10 @@ schedImgInput.accept='image/*';
 schedImgInput.style.display='none';
 document.body.appendChild(schedImgInput);
 
-$('#uploadSchedImgBtn').onclick=()=>schedImgInput.click();
+const uploadSchedImgBtn = $('#uploadSchedImgBtn');
+if(uploadSchedImgBtn){
+  uploadSchedImgBtn.onclick=()=>schedImgInput.click();
+}
 schedImgInput.addEventListener('change',e=>{
   const file=e.target.files[0];
   if(!file) return;
@@ -688,6 +707,7 @@ schedImgInput.addEventListener('change',e=>{
 function renderScheduleView(){
   const sched=getSchedule();
   const container=$('#schedContainer');
+  if(!container) return;
   const todayName=DAYS[new Date().getDay()===0||new Date().getDay()===6?0:new Date().getDay()-1]||'الأحد';
 
   let html='';
@@ -712,8 +732,9 @@ function renderScheduleView(){
 
   container.innerHTML=html;
 
-  if($('#removeSchedImg')){
-    $('#removeSchedImg').onclick=()=>{
+  const removeImgBtn = $('#removeSchedImg');
+  if(removeImgBtn){
+    removeImgBtn.onclick=()=>{
       const s=getSchedule();
       s.image='';
       saveSchedule(s);
@@ -721,17 +742,19 @@ function renderScheduleView(){
   }
 
   const todayBox=$('#todayClassesList');
-  const todayList=sched.classes.filter(c=>c.day===todayName);
-  if(!todayList.length && !sched.image){
-    todayBox.innerHTML='<div class="mut" style="text-align:center;padding:20px">لم تقم بإضافة جدولك المدرسي بعد.</div>';
-  } else if(sched.image && !todayList.length){
-    todayBox.innerHTML='<div style="text-align:center"><span class="mut">تم رفع صورة الجدول بنجاح.</span><br><img src="'+sched.image+'" style="max-height:110px;border-radius:8px;margin-top:6px"/></div>';
-  } else {
-    todayBox.innerHTML=todayList.map(c=>`
-      <div style="display:flex;align-items:center;padding:8px 12px;background:#F3F5F9;border-radius:8px;font-weight:600">
-        <span>${esc(c.title)}</span>
-      </div>
-    `).join('');
+  if(todayBox){
+    const todayList=sched.classes.filter(c=>c.day===todayName);
+    if(!todayList.length && !sched.image){
+      todayBox.innerHTML='<div class="mut" style="text-align:center;padding:20px">لم تقم بإضافة جدولك المدرسي بعد.</div>';
+    } else if(sched.image && !todayList.length){
+      todayBox.innerHTML='<div style="text-align:center"><span class="mut">تم رفع صورة الجدول بنجاح.</span><br><img src="'+sched.image+'" style="max-height:110px;border-radius:8px;margin-top:6px"/></div>';
+    } else {
+      todayBox.innerHTML=todayList.map(c=>`
+        <div style="display:flex;align-items:center;padding:8px 12px;background:#F3F5F9;border-radius:8px;font-weight:600">
+          <span>${esc(c.title)}</span>
+        </div>
+      `).join('');
+    }
   }
 }
 
@@ -748,9 +771,11 @@ document.addEventListener('click',e=>{
    6. الاختبارات الذكية والبطاقات مع معالجة الرموز (OCR)
    ========================================== */
 async function renderQuizHome(){
+  const qMain = $('#qMain');
+  if(!qMain) return;
   const files=pdfState.files;
   if(!files.length){
-    $('#qMain').innerHTML=`
+    qMain.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
       <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
         <h2>لا توجد ملفات PDF في مكتبتك</h2>
@@ -760,7 +785,7 @@ async function renderQuizHome(){
     return;
   }
 
-  $('#qMain').innerHTML=`
+  qMain.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
     <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
       <div>
@@ -783,54 +808,57 @@ async function renderQuizHome(){
     </div>
   `;
 
-  $('#startPdfQuizBtn').onclick=async()=>{
-    const fileId=$('#quizFileSelect').value;
-    const type=$('#quizTypeSelect').value;
-    const file=files.find(f=>f.id===fileId);
-    if(!file) return;
+  const startQuizBtn = $('#startPdfQuizBtn');
+  if(startQuizBtn){
+    startQuizBtn.onclick=async()=>{
+      const fileId=$('#quizFileSelect').value;
+      const type=$('#quizTypeSelect').value;
+      const file=files.find(f=>f.id===fileId);
+      if(!file) return;
 
-    $('#qMain').innerHTML='<div style="margin:auto;text-align:center;color:#566178">جاري تحليل محتوى الملف وتوليد الاختبار الذكي…</div>';
+      qMain.innerHTML='<div style="margin:auto;text-align:center;color:#566178">جاري تحليل محتوى الملف وتوليد الاختبار الذكي…</div>';
 
-    try{
-      const doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
-      let fullText='';
-      let ocrWorker=null;
-      for(let i=1;i<=doc.numPages;i++){
-        const page=await doc.getPage(i);
-        const textContent=await page.getTextContent();
-        let pageText=textContent.items.map(item=>item.str).join(' ').trim();
-        
-        if(pageText.includes('') || pageText.length < 25 || /[\ufffd]/g.test(pageText)){
-          if(window.Tesseract){
-            try{
-              if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
-              const viewport=page.getViewport({scale:1.6});
-              const scanCanvas=document.createElement('canvas');
-              scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
-              await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
-              const result=await ocrWorker.recognize(scanCanvas);
-              pageText = result.data.text || pageText;
-            }catch(ocrError){}
+      try{
+        const doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
+        let fullText='';
+        let ocrWorker=null;
+        for(let i=1;i<=doc.numPages;i++){
+          const page=await doc.getPage(i);
+          const textContent=await page.getTextContent();
+          let pageText=textContent.items.map(item=>item.str).join(' ').trim();
+          
+          if(pageText.length < 25 || /[\ufffd]/g.test(pageText)){
+            if(window.Tesseract){
+              try{
+                if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
+                const viewport=page.getViewport({scale:1.6});
+                const scanCanvas=document.createElement('canvas');
+                scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
+                await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
+                const result=await ocrWorker.recognize(scanCanvas);
+                pageText = result.data.text || pageText;
+              }catch(ocrError){}
+            }
           }
+          fullText+=' '+pageText;
         }
-        fullText+=' '+pageText;
-      }
-      if(ocrWorker){try{await ocrWorker.terminate();}catch{}}
+        if(ocrWorker){try{await ocrWorker.terminate();}catch{}}
 
-      const questions=generateSmartQuestions(fullText, type);
-      if(!questions.length){
-        alert('لم يتم العثور على كلمات أو نصوص كافية في هذا الملف.');
+        const questions=generateSmartQuestions(fullText, type);
+        if(!questions.length){
+          alert('لم يتم العثور على كلمات أو نصوص كافية في هذا الملف.');
+          renderQuizHome();
+          return;
+        }
+
+        runQuizSession(questions, type, 0, 0);
+      }catch(err){
+        console.error(err);
+        alert('حدث خطأ أثناء قراءة الملف.');
         renderQuizHome();
-        return;
       }
-
-      runQuizSession(questions, type, 0, 0);
-    }catch(err){
-      console.error(err);
-      alert('حدث خطأ أثناء قراءة الملف.');
-      renderQuizHome();
-    }
-  };
+    };
+  }
 }
 
 function generateSmartQuestions(text, type){
@@ -863,8 +891,10 @@ function generateSmartQuestions(text, type){
 }
 
 function runQuizSession(questions, type, index, score){
+  const qMain = $('#qMain');
+  if(!qMain) return;
   if(index>=questions.length){
-    $('#qMain').innerHTML=`
+    qMain.innerHTML=`
       <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
         <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
         <h1>انتهى الاختبار بنجاح!</h1>
@@ -911,7 +941,7 @@ function runQuizSession(questions, type, index, score){
       </div>`;
   }
 
-  $('#qMain').innerHTML=`
+  qMain.innerHTML=`
     <div style="display:flex;align-items:center;gap:14px">
       <button class="fab" onclick="renderQuizHome()">${ico('back',22)}</button>
       <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((index+1)/questions.length)*100}%"></div></div>
@@ -940,19 +970,23 @@ function runQuizSession(questions, type, index, score){
       };
     });
   } else if(type==='essay'){
-    $('#submitEssay').onclick=()=>{
-      $('#essayExplanationText').textContent = item.explanation;
-      $('#essayFeedback').classList.remove('hide');
-      $('#submitEssay').textContent='السؤال التالي';
-      $('#submitEssay').onclick=()=>runQuizSession(questions, type, index+1, score+1);
-    };
+    const submitEssayBtn = $('#submitEssay');
+    if(submitEssayBtn){
+      submitEssayBtn.onclick=()=>{
+        $('#essayExplanationText').textContent = item.explanation;
+        $('#essayFeedback').classList.remove('hide');
+        submitEssayBtn.textContent='السؤال التالي';
+        submitEssayBtn.onclick=()=>runQuizSession(questions, type, index+1, score+1);
+      };
+    }
   } else {
-    $('#fcCard').onclick=()=>{
-      $('#fcCard').classList.add('hide');
-      $('#fcAns').classList.remove('hide');
-    };
-    $('#fcCorrect').onclick=()=>runQuizSession(questions, type, index+1, score+1);
-    $('#fcWrong').onclick=()=>runQuizSession(questions, type, index+1, score);
+    const fcCard = $('#fcCard');
+    const fcAns = $('#fcAns');
+    const fcCorrect = $('#fcCorrect');
+    const fcWrong = $('#fcWrong');
+    if(fcCard) fcCard.onclick=()=>{ fcCard.classList.add('hide'); fcAns.classList.remove('hide'); };
+    if(fcCorrect) fcCorrect.onclick=()=>runQuizSession(questions, type, index+1, score+1);
+    if(fcWrong) fcWrong.onclick=()=>runQuizSession(questions, type, index+1, score);
   }
 }
 
@@ -968,6 +1002,7 @@ async function loadRecordings(){
 
 function renderRecList(){
   const listEl=$('#recList');
+  if(!listEl) return;
   if(!recState.recordings.length){
     listEl.innerHTML='<div class="mut" style="text-align:center;padding:30px 10px">لا توجد تسجيلات</div>';
     return;
@@ -988,6 +1023,7 @@ function selectRecording(id){
   $('#recTitle').textContent=rec.title;
   
   const segBox=$('#transcriptSegmentsBox');
+  if(!segBox) return;
   if(rec.segments && rec.segments.length > 0){
     segBox.innerHTML = rec.segments.map(seg=>`
       <div class="transcript-seg" data-time="${seg.time}" style="padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #E3E7EF;cursor:pointer;display:flex;gap:10px;align-items:center">
@@ -1026,25 +1062,31 @@ document.addEventListener('click',e=>{
   if(sel) selectRecording(sel.dataset.selRec);
 });
 
-$('#saveRecTextBtn').onclick=async()=>{
-  const rec=recState.recordings.find(r=>r.id===recState.selectedId);
-  if(!rec) return;
-  rec.transcript = $('#transcriptSegmentsBox').innerText;
-  await storeAction('recordings','readwrite','put',rec);
-  alert('تم الحفظ بنجاح');
-};
+const saveRecTextBtn = $('#saveRecTextBtn');
+if(saveRecTextBtn){
+  saveRecTextBtn.onclick=async()=>{
+    const rec=recState.recordings.find(r=>r.id===recState.selectedId);
+    if(!rec) return;
+    rec.transcript = $('#transcriptSegmentsBox').innerText;
+    await storeAction('recordings','readwrite','put',rec);
+    alert('تم الحفظ بنجاح');
+  };
+}
 
-$('#delRecBtn').onclick=async()=>{
-  if(!recState.selectedId||!confirm('حذف هذا التسجيل؟')) return;
-  await storeAction('recordings','readwrite','delete',recState.selectedId);
-  recState.selectedId=null;
-  $('#recTitle').textContent='اختر تسجيلاً';
-  $('#transcriptSegmentsBox').innerHTML='';
-  $('#audioPlayer').classList.add('hide');
-  $('#delRecBtn').classList.add('hide');
-  $('#saveRecTextBtn').classList.add('hide');
-  await loadRecordings();
-};
+const delRecBtn = $('#delRecBtn');
+if(delRecBtn){
+  delRecBtn.onclick=async()=>{
+    if(!recState.selectedId||!confirm('حذف هذا التسجيل؟')) return;
+    await storeAction('recordings','readwrite','delete',recState.selectedId);
+    recState.selectedId=null;
+    $('#recTitle').textContent='اختر تسجيلاً';
+    $('#transcriptSegmentsBox').innerHTML='';
+    $('#audioPlayer').classList.add('hide');
+    $('#delRecBtn').classList.add('hide');
+    $('#saveRecTextBtn').classList.add('hide');
+    await loadRecordings();
+  };
+}
 
 async function startAudioRecording(){
   if(!navigator.mediaDevices?.getUserMedia)return alert('الميكروفون غير مدعوم');
@@ -1080,22 +1122,22 @@ async function startAudioRecording(){
           }else{interim+=e.results[i][0].transcript;}
         }
         const display=recState.finalText+interim;
-        $('#recLiveContent').textContent=display||'تحدث الآن…';
-        $('#homeLiveText').textContent=display||'جاري التسجيل…';
+        if($('#recLiveContent')) $('#recLiveContent').textContent=display||'تحدث الآن…';
+        if($('#homeLiveText')) $('#homeLiveText').textContent=display||'جاري التسجيل…';
       };
       recState.recognition.start();
     }
 
-    $('#liveBox').classList.remove('hide');
-    $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف وحفظ</span>';
-    $('#homeRecBtn').innerHTML='<i data-i="dot"></i>إيقاف التسجيل';
-    $('#homeRecStatus').textContent='جاري التسجيل…';
+    if($('#liveBox')) $('#liveBox').classList.remove('hide');
+    if($('#recBtn')) $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف وحفظ</span>';
+    if($('#homeRecBtn')) $('#homeRecBtn').innerHTML='<i data-i="dot"></i>إيقاف التسجيل';
+    if($('#homeRecStatus')) $('#homeRecStatus').textContent='جاري التسجيل…';
     $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
 
     recState.timer=setInterval(()=>{
       recState.sec++;
       const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
-      $('#timer').textContent=`${m}:${s}`;
+      if($('#timer')) $('#timer').textContent=`${m}:${s}`;
     },1000);
   }catch(err){alert('تعذر استخدام الميكروفون.');}
 }
@@ -1108,30 +1150,38 @@ function stopAudioRecording(){
   if(recState.recorder&&recState.recorder.state!=='inactive')recState.recorder.stop();
   if(recState.stream)recState.stream.getTracks().forEach(t=>t.stop());
 
-  $('#liveBox').classList.add('hide');
-  $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
-  $('#homeRecBtn').innerHTML='<i data-i="dot"></i>ابدأ التسجيل';
-  $('#homeRecStatus').textContent='جاهز';
+  if($('#liveBox')) $('#liveBox').classList.add('hide');
+  if($('#recBtn')) $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
+  if($('#homeRecBtn')) $('#homeRecBtn').innerHTML='<i data-i="dot"></i>ابدأ التسجيل';
+  if($('#homeRecStatus')) $('#homeRecStatus').textContent='جاهز';
   $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
 }
 
-$('#recBtn').onclick=()=>recState.active?stopAudioRecording():startAudioRecording();
-$('#homeRecBtn').onclick=()=>{if(recState.active)stopAudioRecording();else{go('recordings');startAudioRecording();}};
+const recBtn = $('#recBtn');
+if(recBtn) recBtn.onclick=()=>recState.active?stopAudioRecording():startAudioRecording();
+const homeRecBtn = $('#homeRecBtn');
+if(homeRecBtn) homeRecBtn.onclick=()=>{if(recState.active)stopAudioRecording();else{go('recordings');startAudioRecording();}};
 
 /* ==========================================
    8. أدوات الذكاء الاصطناعي
    ========================================== */
-$('#doTranslateBtn').onclick=()=>{
-  const txt=$('#translateInput').value.trim();
-  if(!txt)return alert('اكتب نصاً للترجمة');
-  $('#translateResult').textContent='ترجمة فورية («'+txt+'»): [تمت الترجمة بنجاح إلى اللغة المطلوبة بدقة عالية]';
-};
+const doTranslateBtn = $('#doTranslateBtn');
+if(doTranslateBtn){
+  doTranslateBtn.onclick=()=>{
+    const txt=$('#translateInput').value.trim();
+    if(!txt)return alert('اكتب نصاً للترجمة');
+    $('#translateResult').textContent='ترجمة فورية («'+txt+'»): [تمت الترجمة بنجاح إلى اللغة المطلوبة بدقة عالية]';
+  };
+}
 
-$('#askAiBtn').onclick=()=>{
-  const q=$('#aiMathInput').value.trim();
-  if(!q)return alert('اكتب سؤالاً أو معادلة');
-  $('#aiResultBox').innerHTML='<b>إجابة الذكاء الاصطناعي والحاسبة:</b><br>تحليل المعادلة/السؤال «'+esc(q)+'» يوضح أن النتيجة أو القاعدة العلمية مرتبطة بالمفاهيم الأساسية المدروسة.';
-};
+const askAiBtn = $('#askAiBtn');
+if(askAiBtn){
+  askAiBtn.onclick=()=>{
+    const q=$('#aiMathInput').value.trim();
+    if(!q)return alert('اكتب سؤالاً أو معادلة');
+    $('#aiResultBox').innerHTML='<b>إجابة الذكاء الاصطناعي والحاسبة:</b><br>تحليل المعادلة/السؤال «'+esc(q)+'» يوضح أن النتيجة أو القاعدة العلمية مرتبطة بالمفاهيم الأساسية المدروسة.';
+  };
+}
 
 /* ==========================================
    9. التنقل السلس
@@ -1148,13 +1198,6 @@ document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
   if(g){e.preventDefault();go(g.dataset.go);}
 });
-
-// التهيئة الأولية
-loadLibrary();
-renderScheduleView();
-renderQuizHome();
-loadRecordings();
-loadNotebooks();
 </script>
 </body>
 </html>
