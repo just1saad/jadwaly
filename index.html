@@ -14,19 +14,23 @@
 </script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden;position:fixed;width:100%;height:100%}
+html,body{margin:0;height:100vh;width:100vw;background:#F3F5F9;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;overflow:hidden;display:flex}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
-#stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
-.scr{position:absolute;inset:0;display:none}
+
+/* App Layout - Fully Responsive */
+#app{display:flex;width:100vw;height:100vh;overflow:hidden;background:#F3F5F9;position:relative}
+.scr{position:absolute;inset:0;display:none;background:#F3F5F9;overflow:hidden}
 .scr.on{display:flex}
-.side{width:230px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none}
+
+.side{width:260px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%}
 .nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
-.main{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:18px;min-width:0;overflow:hidden}
+
+.main{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:18px;min-width:0;height:100%;overflow-y:auto}
 .card{background:#fff;border:1px solid #E3E7EF;border-radius:16px}
-.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;border:0;font-size:15px;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;border:0;font-size:15px;font-weight:700;justify-content:center}
 .pri{background:#0B5F58;color:#fff}.sec{background:#fff;border:1px solid #D5DBE7;color:#14213D}
 h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .mut{color:#566178;font-size:13px}
@@ -39,27 +43,26 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .opt{display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:16px;font-weight:600;width:100%;text-align:right}
 .opt:hover{border-color:#9bb}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
-.chip{padding:8px 16px;border-radius:20px;border:1px solid #D5DBE7;background:#fff;font-size:14px;color:#14213D}
-.chip.on{background:#14213D;color:#fff;border-color:#14213D}
 @keyframes p{50%{opacity:.35}}.rec{animation:p 1s infinite}
 .hide{display:none!important}
-.modal-bg{position:absolute;inset:0;background:rgba(20,33,61,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-bg{position:fixed;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-box{background:#fff;border-radius:20px;padding:24px;width:480px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
 .inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
 </style>
 </head>
 <body>
-<div id="stage">
+
+<div id="app">
 
 <!-- HOME -->
 <div class="scr on" id="home" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
     <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك الشاملة لتنظيم الجدول المدرسي، ملفات PDF، والتسجيل الصوتي</div></div>
     <button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-   <div class="card" style="padding:22px;display:flex;flex-direction:column">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+   <div class="card" style="padding:22px;display:flex;flex-direction:column;min-height:220px">
      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><h2>الجدول المدرسي اليومي</h2><a href="#" data-go="schedule" style="color:#0B5F58;font-weight:600;font-size:14px;text-decoration:none">إدارة الجدول</a></div>
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
@@ -70,7 +73,7 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
    </div>
   </div>
   <h2>مكتبة ملفاتك</h2>
-  <div id="homeLibPreview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-height:170px;overflow:hidden"></div>
+  <div id="homeLibPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;max-height:180px;overflow:hidden"></div>
  </div>
 </div>
 
@@ -78,14 +81,14 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 <div class="scr" id="library" data-side>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة</h1><button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button></div>
-  <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
+  <div id="libGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
 <!-- SCHEDULE -->
 <div class="scr" id="schedule" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
     <h1>الجدول المدرسي</h1>
     <div style="display:flex;gap:10px">
       <button class="btn sec" id="uploadSchedImgBtn">رفع صورة الجدول</button>
@@ -118,9 +121,7 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2 id="recTitle">اختر تسجيلًا أو ابدأ تسجيلاً جديداً</h2>
-      <div style="display:flex;gap:8px">
-        <button class="btn sec hide" id="delRecBtn" style="color:#B42318">حذف</button>
-      </div>
+      <button class="btn sec hide" id="delRecBtn" style="color:#B42318">حذف</button>
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
@@ -136,20 +137,20 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 </div>
 
 <!-- STUDY -->
-<div class="scr" id="study" style="background:#E9ECF2">
- <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:834px;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
+<div class="scr" id="study" style="background:#E9ECF2;position:absolute;inset:0">
+ <div dir="ltr" style="position:absolute;inset:0;padding:80px 30px 30px;display:flex;flex-direction:column;align-items:center;overflow-y:auto;" id="paper">
    <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
  </div>
- <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center">
+ <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:10">
    <button class="fab" data-go="library" aria-label="رجوع"><i data-i="back"></i></button>
    <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
  </div>
- <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
+ <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:10">
    <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة"><i data-i="mic"></i></button>
    <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
  </div>
- <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
- <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px">
+ <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:10" id="tools"></div>
+ <div id="aiDr" class="hide" style="position:absolute;top:76px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:15">
   <h2 style="font-size:16px">مساعد المذاكرة</h2>
   <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
   <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">إنشاء اختبار ذكي</button>
@@ -340,28 +341,29 @@ async function openPdf(file){
     pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
     paper.innerHTML='';
     
-          for(let i=1;i<=doc.numPages;i++){
-        const page=await doc.getPage(i);
-        const textContent=await page.getTextContent();
-        let pageText=textContent.items.map(item=>item.str).join(' ').trim();
-        
-        // إذا ظهرت رموز تالفة أو مربعات ()، يتم تحويل الصفحة إلى صورة وقراءتها بالـ OCR تلقائياً
-        if(pageText.includes('') || pageText.length < 25 || /[\ufffd]/g.test(pageText)){
-          if(window.Tesseract){
-            try{
-              if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
-              const viewport=page.getViewport({scale:1.6});
-              const scanCanvas=document.createElement('canvas');
-              scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
-              await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
-              const result=await ocrWorker.recognize(scanCanvas);
-              pageText = result.data.text || pageText;
-            }catch(ocrError){console.warn('OCR error',ocrError);}
-          }
-        }
-        fullText+=' '+pageText;
-      }
+    for(let i=1; i<=pdfState.doc.numPages; i++){
+      const pageWrapper=document.createElement('div');
+      pageWrapper.style.cssText='position:relative;display:flex;justify-content:center;flex:none;margin:0 auto 20px;width:max-content;max-width:100%;';
+      const canvas=document.createElement('canvas');
+      canvas.style.cssText='display:block;box-shadow:0 4px 16px rgba(0,0,0,.15);max-width:100%;height:auto;background:#fff;';
+      pageWrapper.appendChild(canvas);
+      paper.appendChild(pageWrapper);
 
+      const page=await pdfState.doc.getPage(i);
+      const vp=page.getViewport({scale:1.35});
+      canvas.width=vp.width;
+      canvas.height=vp.height;
+      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+
+      const overlay=document.createElement('canvas');
+      overlay.className='annotation-layer';
+      overlay.dataset.page=String(i);
+      overlay.width=canvas.width;
+      overlay.height=canvas.height;
+      overlay.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none;';
+      pageWrapper.appendChild(overlay);
+      initAnnotationLayer(overlay, i, file);
+    }
 
     $('#pdfFileTitleBanner').textContent=`${file.name} (${pdfState.doc.numPages} صفحة)`;
     $('#aiPageSummary').textContent=`الملف: ${file.name}\nإجمالي الصفحات: ${pdfState.doc.numPages}`;
@@ -546,10 +548,10 @@ $('#addSchedClassBtn').onclick=()=>{
     </div>
   `);
   $('#saveScBtn').onclick=()=>{
-    const title=$('#scTitle').value.trim();
+    const title=$('#scTitle'].value.trim();
     if(!title) return alert('أدخل اسم المادة');
     const sched=getSchedule();
-    sched.classes.push({id:makeId(),title,day:$('#scDay').value});
+    sched.classes.push({id:makeId(),title,day:$('#scDay'].value});
     saveSchedule(sched);
     closeModal();
   };
@@ -584,7 +586,7 @@ function renderScheduleView(){
     html+=`<div style="margin-bottom:16px;text-align:center"><b style="display:block;margin-bottom:8px">صورة الجدول المدرسي المرفوعة:</b><img src="${sched.image}" style="max-width:100%;max-height:260px;border-radius:12px;border:1px solid #D5DBE7"/><div style="margin-top:8px"><button class="btn sec" id="removeSchedImg">حذف الصورة</button></div></div>`;
   }
 
-  html+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">`;
   html+=DAYS.map(day=>{
     const dayClasses=sched.classes.filter(c=>c.day===day);
     return `<div style="background:#F3F5F9;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px">
@@ -634,7 +636,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ==========================================
-   5. الاختبارات الذكية المطورة مع شرح الإجابات
+   5. الاختبارات الذكية مع الشرح والتفصيل
    ========================================== */
 async function renderQuizHome(){
   const files=pdfState.files;
@@ -687,19 +689,22 @@ async function renderQuizHome(){
       for(let i=1;i<=doc.numPages;i++){
         const page=await doc.getPage(i);
         const textContent=await page.getTextContent();
-        const pageText=textContent.items.map(item=>item.str).join(' ').trim();
-        fullText+=' '+pageText;
-        if(pageText.length<25 && window.Tesseract){
-          try{
-            if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
-            const viewport=page.getViewport({scale:1.6});
-            const scanCanvas=document.createElement('canvas');
-            scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
-            await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
-            const result=await ocrWorker.recognize(scanCanvas);
-            fullText+=' '+(result.data.text||'');
-          }catch(ocrError){console.warn('OCR error',ocrError);}
+        let pageText=textContent.items.map(item=>item.str).join(' ').trim();
+        
+        if(pageText.includes('') || pageText.length < 25 || /[\ufffd]/g.test(pageText)){
+          if(window.Tesseract){
+            try{
+              if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
+              const viewport=page.getViewport({scale:1.6});
+              const scanCanvas=document.createElement('canvas');
+              scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
+              await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
+              const result=await ocrWorker.recognize(scanCanvas);
+              pageText = result.data.text || pageText;
+            }catch(ocrError){console.warn('OCR error',ocrError);}
+          }
         }
+        fullText+=' '+pageText;
       }
       if(ocrWorker){try{await ocrWorker.terminate();}catch{}}
 
@@ -739,7 +744,7 @@ function generateSmartQuestions(text, type){
     
     const options=[keyword, ...shuffledDistractors].sort(()=>Math.random()-.5);
     
-    const explanation=`السبب من النص: "${sent}" حيث تمثل الكلمة المفقودة العنصر الأساسي في هذه القاعدة أو المعلومة.`;
+    const explanation=`السبب من النص: "${sent}" حيث تمثل الكلمة المفقودة العنصر الأساسي في هذه المعلومة.`;
 
     if(type==='mcq'){
       questions.push({
@@ -769,7 +774,7 @@ function generateSmartQuestions(text, type){
 function runQuizSession(questions, type, index, score){
   if(index>=questions.length){
     $('#qMain').innerHTML=`
-      <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="margin:auto;padding:40px;width:500px;max-width:100%;text-align:center;display:flex;flex-direction:column;gap:14px">
         <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
         <h1>انتهى الاختبار بنجاح!</h1>
         <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة النهائية: ${score} / ${questions.length}</div>
@@ -865,7 +870,7 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   6. التسجيل الصوتي والمزامنة الزمنية مع النصوص
+   6. التسجيل الصوتي ومزامنة النصوص
    ========================================== */
 let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null,segments:[]};
 
@@ -1057,7 +1062,7 @@ $('#homeRecBtn').onclick=()=>{
 };
 
 /* ==========================================
-   7. التنقل والتحجيم المتوافق مع الجوال والآيباد
+   7. التنقل
    ========================================== */
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
@@ -1070,34 +1075,6 @@ document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
   if(g){e.preventDefault();go(g.dataset.go);}
 });
-
-function fit(){
-  const st = document.getElementById('stage');
-  const baseWidth = 1194;
-  const baseHeight = 834;
-  
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  const scale = Math.min(vw / baseWidth, vh / baseHeight);
-
-  st.style.position = 'absolute';
-  st.style.width = baseWidth + 'px';
-  st.style.height = baseHeight + 'px';
-  st.style.transformOrigin = 'top left';
-  st.style.transform = 'scale(' + scale + ')';
-  st.style.left = Math.max(0, (vw - baseWidth * scale) / 2) + 'px';
-  st.style.top = Math.max(0, (vh - baseHeight * scale) / 2) + 'px';
-}
-
-window.addEventListener('resize', fit);
-window.addEventListener('orientationchange', () => setTimeout(fit, 150));
-window.addEventListener('pageshow', fit);
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', fit);
-  window.visualViewport.addEventListener('scroll', fit);
-}
-fit();
 
 // التهيئة الأولية
 loadLibrary();
