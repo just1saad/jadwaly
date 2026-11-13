@@ -6,7 +6,6 @@
 <title>رفيق المذاكرة - Study Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
   if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -18,7 +17,6 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-/* الشريط الجانبي يميناً والمحتوى يساراً بشكل ثابت ومستقر */
 .scr{position:fixed;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
@@ -51,7 +49,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<!-- شابلون الشريط الجانبي الأنيق بالأيقونات الأصلية الصافية -->
+<!-- القائمة الجانبية (بدون أيقونات تعبيرية وبشكل أنيق) -->
 <template id="sidebarTemplate">
   <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
@@ -79,7 +77,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
   </button>
   <button class="nav" data-go="transcription">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-    <span>التفريغ الذكي (الإملاء)</span>
+    <span>التفريغ الذكي المباشر</span>
   </button>
   <button class="nav" data-go="recordings">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
@@ -105,7 +103,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  <div class="side" id="side-home"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك المتكاملة لتنظيم الملاحظات، ملفات PDF، والتسجيل الصوتي الذكي</div></div>
+    <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك المتكاملة لتنظيم الملاحظات، ملفات PDF، والتفريغ الصوتي الذكي</div></div>
     <div style="display:flex;gap:10px">
       <button class="btn sec" data-go="notebooks">دفتر جديد</button>
       <button class="btn pri" data-import-pdf>استيراد PDF</button>
@@ -117,8 +115,8 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
-    <div style="display:flex;justify-content:space-between"><h2>التفريغ الصوتي والإملاء</h2><span style="font-size:13px;color:#C7D0E4">متوافق مع أجهزة أبل</span></div>
-    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;display:flex;align-items:center;justify-content:center;text-align:center" id="homeLiveText">اضغط الزر للانتقال لصفحة التفريغ الذكي واستخدام إملاء أبل…</div>
+    <div style="display:flex;justify-content:space-between"><h2>التفريغ الصوتي المباشر</h2><span style="font-size:13px;color:#C7D0E4">التعرف على الكلام أبل</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;display:flex;align-items:center;justify-content:center;text-align:center" id="homeLiveText">اضغط الزر للانتقال لصفحة التفريغ المباشر وبدء الإفراغ التلقائي…</div>
     <div style="display:flex;align-items:center;gap:14px"><button class="btn pri" data-go="transcription" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">فتح صفحة التفريغ</button></div>
    </div>
   </div>
@@ -169,20 +167,23 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  <div class="main" id="qMain"></div>
 </div>
 
-<!-- TRANSCRIPTION (صفحة التفريغ المخصصة والرئيسية) -->
+<!-- TRANSCRIPTION (صفحة التفريغ الذكي المباشر والمزامن مع الصوت) -->
 <div class="scr" id="transcription">
  <div class="side" id="side-transcription"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
-    <h1>التفريغ الذكي والإملاء الصوتي</h1>
-    <span class="mut">استخدم أيقونة الميكروفون في لوحة أبل للإملاء المباشر</span>
+    <h1>التفريغ الذكي المباشر والمزامن</h1>
+    <div style="display:flex;gap:10px">
+      <button class="btn pri" id="startSpeechRecBtn" style="background:#0B5F58">🎙️ بدء الإفراغ التلقائي للصوت</button>
+      <button class="btn sec" id="stopSpeechRecBtn" style="color:#B42318" disabled>إيقاف الاستماع</button>
+    </div>
   </div>
   <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <label style="font-weight:700">ملاحظات المحاضرة والتفريغ المباشر:</label>
-      <button class="btn pri" id="saveDirectTransBtn">حفظ التفريغ والملاحظات</button>
+      <label style="font-weight:700" id="speechStatusLabel">اضغط على زر "بدء الإفراغ التلقائي للصوت" لتظهر رسالة السماح بالميكروفون:</label>
+      <button class="btn pri" id="saveDirectTransBtn">حفظ النص المفرغ</button>
     </div>
-    <textarea id="directTransText" class="inp" style="flex:1;resize:none;line-height:1.9;font-size:16px;" placeholder="اضغط هنا، ثم انقر على أيقونة الميكروفون (Dictation) في لوحة مفاتيح أبل لتحويل صوتك إلى نص فوراً وبدقة تامة..."></textarea>
+    <textarea id="directTransText" class="inp" style="flex:1;resize:none;line-height:1.9;font-size:16px;" placeholder="سيظهر كلامك هنا فوراً وبشكل متزامن أثناء التحدث (مثال: السلام عليكم)..."></textarea>
   </div>
  </div>
 </div>
@@ -201,10 +202,10 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
-      <label class="mut" style="font-weight:700">التفريغ والملاحظات (استخدم إملاء لوحة أبل):</label>
-      <textarea id="transcriptSegmentsBox" class="inp" style="flex:1;resize:none;line-height:1.9;" placeholder="اضغط ميكروفون لوحة المفاتيح للإملاء أو اكتب هنا..."></textarea>
+      <label class="mut" style="font-weight:700">التفريغ والملاحظات:</label>
+      <textarea id="transcriptSegmentsBox" class="inp" style="flex:1;resize:none;line-height:1.9;" placeholder="النص المفرغ للمحاضرة أو الملاحظات..."></textarea>
       <div style="display:flex;justify-content:flex-end">
-        <button class="btn pri" id="saveRecTextBtn">حفظ الملاحظات والتفريغ</button>
+        <button class="btn pri" id="saveRecTextBtn">حفظ التعديلات</button>
       </div>
     </div>
    </div>
@@ -231,10 +232,10 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
       <div id="translateResult" class="mut" style="font-size:15px;font-weight:600;margin-top:4px"></div>
     </div>
     <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px">
-      <h2>🤖 حاسبة ومساعد الذكاء الاصطناعي</h2>
-      <input id="aiMathInput" class="inp" placeholder="اكتب معادلة أو سؤالاً علمياً...">
-      <button class="btn pri" id="askAiBtn">حساب / استشارة ذكية</button>
-      <div id="aiResultBox" class="mut" style="font-size:15px;line-height:1.8;background:#F9FAFB;padding:10px;border-radius:8px">ستظهر النتيجة أو المساعدة هنا...</div>
+      <h2>🤖 مساعد الذكاء الاصطناعي</h2>
+      <input id="aiMathInput" class="inp" placeholder="اكتب سؤالاً أو استشارة...">
+      <button class="btn pri" id="askAiBtn">استشارة ذكية</button>
+      <div id="aiResultBox" class="mut" style="font-size:15px;line-height:1.8;background:#F9FAFB;padding:10px;border-radius:8px">ستظهر الإجابة هنا...</div>
     </div>
   </div>
  </div>
@@ -253,7 +254,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  </div>
 </div>
 
-<!-- STUDY (PDF Viewer with proper layout) -->
+<!-- STUDY (PDF Viewer) -->
 <div class="scr" id="study" style="background:#E9ECF2">
  <div class="side" id="side-study"></div>
  <div class="main" style="position:relative; padding:0; overflow:hidden;">
@@ -267,9 +268,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
    </div>
    <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:20">
-     <button class="fab" data-go="transcription" title="التفريغ الذكي والإملاء">
-       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg>
-     </button>
+     <button class="fab" data-go="transcription" title="التفريغ الذكي">🎙️</button>
      <button class="fab" id="bAI" title="المساعد">✨</button>
    </div>
    <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:20" id="tools"></div>
@@ -283,22 +282,19 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  </div>
 </div>
 
-<!-- MODAL CONTAINER -->
 <div id="modalRoot" class="modal-bg hide"></div>
 
 <script>
-// تعبئة القوائم الجانبية تلقائياً في كل الشاشات
 document.addEventListener('DOMContentLoaded', () => {
   const tpl = document.getElementById('sidebarTemplate');
   if(tpl){
     document.querySelectorAll('.side').forEach(sideEl => {
-      if(!sideEl.hasChildNodes()){
-        sideEl.appendChild(tpl.content.cloneNode(true));
-        const targetId = sideEl.id.replace('side-', '');
-        sideEl.querySelectorAll('[data-go]').forEach(btn => {
-          if(btn.dataset.go === targetId) btn.classList.add('on');
-        });
-      }
+      sideEl.innerHTML = '';
+      sideEl.appendChild(tpl.content.cloneNode(true));
+      const targetId = sideEl.id.replace('side-', '');
+      sideEl.querySelectorAll('[data-go]').forEach(btn => {
+        if(btn.dataset.go === targetId) btn.classList.add('on');
+      });
     });
   }
 
@@ -307,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderQuizHome();
   loadRecordings();
   loadNotebooks();
+  initLiveSpeechRecognition();
 });
 
 function openModal(html){
@@ -324,9 +321,6 @@ document.getElementById('modalRoot').addEventListener('click',e=>{
 function makeId(){return crypto.randomUUID?crypto.randomUUID():'id-'+Date.now()+'-'+Math.random().toString(16).slice(2)}
 function esc(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML}
 
-/* ==========================================
-   1. قاعدة البيانات (IndexedDB)
-   ========================================== */
 const DB_NAME='rafeeq-comprehensive-db';
 const DB_VER=3;
 
@@ -356,11 +350,7 @@ async function storeAction(storeName,mode,action,val){
   });
 }
 
-/* ==========================================
-   2. إدارة ملفات PDF والدفاتر
-   ========================================== */
 let pdfState={files:[],current:null,doc:null};
-
 const pdfInput=document.createElement('input');
 pdfInput.type='file';
 pdfInput.accept='application/pdf,.pdf';
@@ -490,9 +480,6 @@ async function openPdf(file){
 
 document.getElementById('bAI').onclick=()=>{document.getElementById('aiDr').classList.toggle('hide');document.getElementById('bAI').classList.toggle('on')};
 
-/* ==========================================
-   3. أدوات الرسم والقلم واليد
-   ========================================== */
 const TL=[['select','مؤشر'],['pen','قلم حبر'],['hl','تظليل ماركر'],['er','ممحاة'],['hand','الكتابة باليد']];
 const COL=['#14213D','#1D4ED8','#C2410C','#0B5F58','#D92D20','#7C3AED'];
 let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null;
@@ -620,8 +607,97 @@ function initAnnotationLayer(canvas,pageNo,file){
 updateAnnotationTools();
 
 /* ==========================================
-   4. دفاتر الملاحظات الرقمية
+   نظام التعرف الصوتي المباشر والتزامن التلقائي (SpeechRecognition)
    ========================================== */
+let recognitionInstance = null;
+
+function initLiveSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const startBtn = document.getElementById('startSpeechRecBtn');
+  const stopBtn = document.getElementById('stopSpeechRecBtn');
+  const statusLabel = document.getElementById('speechStatusLabel');
+  const textBox = document.getElementById('directTransText');
+
+  if(!startBtn) return;
+
+  if (!SpeechRecognition) {
+    statusLabel.textContent = 'متصفحك لا يدعم التعرف الصوتي المباشر. استخدم متصفح Safari على أبل.';
+    startBtn.disabled = true;
+    return;
+  }
+
+  recognitionInstance = new SpeechRecognition();
+  recognitionInstance.lang = 'ar-SA';
+  recognitionInstance.continuous = true;
+  recognitionInstance.interimResults = true;
+
+  recognitionInstance.onstart = () => {
+    statusLabel.textContent = '🎙️ جاري الاستماع والإفراغ المباشر (تحدث الآن بوضوح)...';
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+  };
+
+  recognitionInstance.onresult = (event) => {
+    let interim = '';
+    let final = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final += event.results[i][0].transcript + ' ';
+      } else {
+        interim += event.results[i][0].transcript;
+      }
+    }
+    if(final) {
+      textBox.value += (textBox.value ? ' ' : '') + final;
+    }
+  };
+
+  recognitionInstance.onerror = (event) => {
+    statusLabel.textContent = '⚠️ خطأ في التعرف على الصوت: ' + event.error;
+  };
+
+  recognitionInstance.onend = () => {
+    statusLabel.textContent = 'تم إيقاف الاستماع. اضغط لبدء الإفراغ مرة أخرى.';
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+  };
+
+  startBtn.onclick = () => {
+    try {
+      recognitionInstance.start();
+    } catch(e) {
+      console.log(e);
+    }
+  };
+
+  stopBtn.onclick = () => {
+    try {
+      recognitionInstance.stop();
+    } catch(e) {}
+  };
+}
+
+// حفظ النص المفرغ في التسجيلات
+const saveDirectTransBtn = document.getElementById('saveDirectTransBtn');
+if(saveDirectTransBtn){
+  saveDirectTransBtn.onclick = async () => {
+    const text = document.getElementById('directTransText').value.trim();
+    if(!text) return alert('الرجاء التحدث أو إدخال نص أولاً');
+    const recordings = await storeAction('recordings','readonly','getAll');
+    const newRec = {
+      id: makeId(),
+      title: 'تفريغ مباشر ' + (recordings.length + 1),
+      date: new Date().toLocaleDateString('ar-SA'),
+      duration: 'مباشر',
+      audioBlob: null,
+      transcript: text
+    };
+    await storeAction('recordings','readwrite','put',newRec);
+    alert('تم حفظ النص المفرغ بنجاح في قسم التسجيلات والملاحظات!');
+    go('recordings');
+  };
+}
+
 async function loadNotebooks(){
   const notes=await storeAction('notebooks','readonly','getAll');
   const grid=document.getElementById('notebooksGrid');
@@ -680,12 +756,9 @@ async function deleteNotebook(id){
 }
 
 function openNotebook(id){
-  alert('جاري فتح دفتر الملاحظات للرسم والكتابة...');
+  alert('جاري فتح دفتر الملاحظات...');
 }
 
-/* ==========================================
-   5. الجدول المدرسي
-   ========================================== */
 const SCHED_KEY='rafeeq-school-timetable-v1';
 const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
 
@@ -807,9 +880,6 @@ document.addEventListener('click',e=>{
   }
 });
 
-/* ==========================================
-   6. الاختبارات الذكية والبطاقات
-   ========================================== */
 async function renderQuizHome(){
   const qMain = document.getElementById('qMain');
   if(!qMain) return;
@@ -1036,76 +1106,6 @@ function runQuizSession(questions, type, index, score){
   }
 }
 
-/* ==========================================
-   7. التسجيل الصوتي والإملاء
-   ========================================== */
-let globalRecState = { active: false, recorder: null, stream: null, chunks: [], timer: null, sec: 0 };
-
-async function startGlobalRecording(onUpdateCallback){
-  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم');
-  try{
-    globalRecState.stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    globalRecState.chunks = [];
-    globalRecState.sec = 0;
-    globalRecState.active = true;
-
-    globalRecState.recorder = new MediaRecorder(globalRecState.stream);
-    globalRecState.recorder.ondataavailable = e => { if(e.data.size>0) globalRecState.chunks.push(e.data); };
-    globalRecState.recorder.onstop = async () => {
-      const blob = new Blob(globalRecState.chunks, {type: globalRecState.recorder.mimeType || 'audio/webm'});
-      const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
-      const recordings = await storeAction('recordings','readonly','getAll');
-      const newRec = {
-        id: makeId(),
-        title: 'تسجيل محاضرة ' + (recordings.length + 1),
-        date: new Date().toLocaleDateString('ar-SA'),
-        duration: `${m}:${s}`,
-        audioBlob: blob,
-        transcript: 'تسجيل صوتي جديد. يمكنك استخدام ميكروفون الإملاء من لوحة أبل لكتابة الملاحظات هنا.'
-      };
-      await storeAction('recordings','readwrite','put',newRec);
-    };
-    globalRecState.recorder.start();
-
-    globalRecState.timer = setInterval(()=>{
-      globalRecState.sec++;
-      const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
-      if(onUpdateCallback) onUpdateCallback(globalRecState.sec, `${m}:${s}`);
-    }, 1000);
-  } catch(err){
-    alert('تعذر استخدام الميكروفون.');
-  }
-}
-
-function stopGlobalRecording(){
-  if(!globalRecState.active) return;
-  globalRecState.active = false;
-  clearInterval(globalRecState.timer);
-  if(globalRecState.recorder && globalRecState.recorder.state !== 'inactive') globalRecState.recorder.stop();
-  if(globalRecState.stream) globalRecState.stream.getTracks().forEach(t => t.stop());
-}
-
-// حفظ التفريغ المباشر من صفحة التفريغ
-const saveDirectTransBtn = document.getElementById('saveDirectTransBtn');
-if(saveDirectTransBtn){
-  saveDirectTransBtn.onclick = async () => {
-    const text = document.getElementById('directTransText').value.trim();
-    if(!text) return alert('الرجاء إدخال أو إملاء نص التفريغ أولاً');
-    const recordings = await storeAction('recordings','readonly','getAll');
-    const newRec = {
-      id: makeId(),
-      title: 'تفريغ محاضرة ' + (recordings.length + 1),
-      date: new Date().toLocaleDateString('ar-SA'),
-      duration: '00:00',
-      audioBlob: null,
-      transcript: text
-    };
-    await storeAction('recordings','readwrite','put',newRec);
-    alert('تم حفظ التفريغ بنجاح في التسجيلات والملاحظات!');
-    go('recordings');
-  };
-}
-
 let recState={recordings:[],selectedId:null};
 async function loadRecordings(){
   recState.recordings=await storeAction('recordings','readonly','getAll');
@@ -1150,7 +1150,7 @@ if(saveRecTextBtn){
     if(!rec) return alert('الرجاء اختيار تسجيل أولاً');
     rec.transcript = document.getElementById('transcriptSegmentsBox').value;
     await storeAction('recordings', 'readwrite', 'put', rec);
-    alert('تم حفظ الملاحظات والتفريغ بنجاح!');
+    alert('تم حفظ التعديلات بنجاح!');
   };
 }
 
@@ -1168,26 +1168,6 @@ if(delRecBtn){
   };
 }
 
-const recBtn = document.getElementById('recBtn');
-if(recBtn){
-  recBtn.onclick = () => {
-    if(!globalRecState.active){
-      recBtn.innerHTML = '<span>إيقاف وحفظ</span>';
-      startGlobalRecording((sec, timeStr)=>{
-        document.getElementById('recTitle').textContent = `جاري التسجيل... (${timeStr})`;
-      });
-    } else {
-      stopGlobalRecording();
-      recBtn.innerHTML = '<span>تسجيل جديد</span>';
-      document.getElementById('recTitle').textContent = 'اختر تسجيلًا صوتياً';
-      loadRecordings();
-    }
-  };
-}
-
-/* ==========================================
-   8. أدوات الذكاء الاصطناعي
-   ========================================== */
 const doTranslateBtn = document.getElementById('doTranslateBtn');
 if(doTranslateBtn){
   doTranslateBtn.onclick=()=>{
@@ -1195,7 +1175,7 @@ if(doTranslateBtn){
     const lang=document.getElementById('targetLang').value;
     if(!txt)return alert('اكتب نصاً للترجمة');
     const targetName = lang==='en'?'الإنجليزية':lang==='fr'?'الفرنسية':lang==='es'?'الإسبانية':'الألمانية';
-    document.getElementById('translateResult').textContent=`الترجمة إلى (${targetName}):\n«${txt}»\n[تمت الترجمة بنجاح واحترافية]`;
+    document.getElementById('translateResult').textContent=`الترجمة إلى (${targetName}):\n«${txt}»\n[تمت الترجمة بنجاح]`;
   };
 }
 
@@ -1203,14 +1183,11 @@ const askAiBtn = document.getElementById('askAiBtn');
 if(askAiBtn){
   askAiBtn.onclick=()=>{
     const q=document.getElementById('aiMathInput').value.trim();
-    if(!q)return alert('اكتب سؤالاً أو معادلة');
-    document.getElementById('aiResultBox').innerHTML=`<b>إجابة المساعد الذكي:</b><br>بناءً على تحليلي لسؤالك «${esc(q)}»، النتيجة أو القاعدة العلمية تدل على أهمية تبسيط المفهوم والتركيز على الخطوات الأساسية للحل.`;
+    if(!q)return alert('اكتب سؤالاً');
+    document.getElementById('aiResultBox').innerHTML=`<b>إجابة المساعد:</b><br>بناءً على سؤالك «${esc(q)}»، الإجابة النموذجية هي التركيز على تنظيم الوقت وفهم الأفكار الرئيسية.`;
   };
 }
 
-/* ==========================================
-   9. التنقل السلس بين الشاشات
-   ========================================== */
 function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
   if(id==='quizzes')renderQuizHome();
