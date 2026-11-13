@@ -18,7 +18,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-/* تم تعديل الشاشات لتعمل بـ row-reverse ليظهر الشريط الجانبي يميناً والمحتوى يساراً بشكل مضبوط تماماً */
+/* التخطيط الثابت والمستقر لمتصفحات الايباد والسفاري */
 .scr{position:fixed;inset:0;display:none;flex-direction:row-reverse;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
@@ -51,14 +51,36 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
+<!-- شابلون الشريط الجانبي المشترك -->
+<template id="sidebarTemplate">
+  <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
+    <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
+    <b style="font-size:18px">رفيق المذاكرة</b>
+  </div>
+  <button class="nav" data-go="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>الرئيسية</span></button>
+  <button class="nav" data-go="library"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/></svg><span>المكتبة وملفات PDF</span></button>
+  <button class="nav" data-go="notebooks"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><span>الدفاتر والملاحظات</span></button>
+  <button class="nav" data-go="schedule"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>الجدول والتخطيط</span></button>
+  <button class="nav" data-go="quizzes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg><span>الاختبارات والبطاقات</span></button>
+  <button class="nav" data-go="recordings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>التسجيلات الصوتية</span></button>
+  <button class="nav" data-go="tools"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span>الأدوات والذكاء الاصطناعي</span></button>
+  <button class="nav" data-go="community"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg><span>المجتمع الإبداعي</span></button>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <span>مزامنة آمنة عبر iCloud</span>
+  </div>
+</template>
+
 <!-- HOME -->
-<div class="scr on" id="home" data-side>
+<div class="scr on" id="home">
+ <div class="side" id="side-home"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك المتكاملة لتنظيم الملاحظات، ملفات PDF، والتسجيل الصوتي الذكي</div></div>
     <div style="display:flex;gap:10px">
-      <button class="btn sec" data-go="notebooks"><i data-i="file"></i>دفتر جديد</button>
-      <button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
+      <button class="btn sec" data-go="notebooks">دفتر جديد</button>
+      <button class="btn pri" data-import-pdf>استيراد PDF</button>
     </div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
@@ -69,7 +91,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة ASMR</h2><span style="font-size:13px;color:#C7D0E4">تسجيل وتفريغ متزامن</span></div>
     <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;max-height:78px;overflow:auto" id="homeLiveText">اضغط الزر أدناه لبدء التسجيل الصوتي…</div>
-    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px"><i data-i="dot"></i>ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز</span></div>
+    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز</span></div>
    </div>
   </div>
   <h2>مكتبة ملفاتك السريعة</h2>
@@ -78,32 +100,35 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </div>
 
 <!-- LIBRARY -->
-<div class="scr" id="library" data-side>
+<div class="scr" id="library">
+ <div class="side" id="side-library"></div>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة وملفات PDF</h1><button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة وملفات PDF</h1><button class="btn pri" data-import-pdf>استيراد PDF</button></div>
   <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
 <!-- NOTEBOOKS -->
-<div class="scr" id="notebooks" data-side>
+<div class="scr" id="notebooks">
+ <div class="side" id="side-notebooks"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>دفاتر الملاحظات الرقمية</h1>
-    <button class="btn pri" id="createNewNotebookBtn"><i data-i="plus"></i>إنشاء دفتر جديد</button>
+    <button class="btn pri" id="createNewNotebookBtn">إنشاء دفتر جديد</button>
   </div>
   <div id="notebooksGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
 <!-- SCHEDULE -->
-<div class="scr" id="schedule" data-side>
+<div class="scr" id="schedule">
+ <div class="side" id="side-schedule"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>الجدول المدرسي والتخطيط الرقمي</h1>
     <div style="display:flex;gap:10px">
       <button class="btn sec" id="uploadSchedImgBtn">رفع صورة الجدول</button>
-      <button class="btn pri" id="addSchedClassBtn"><i data-i="plus"></i>إضافة حصة</button>
+      <button class="btn pri" id="addSchedClassBtn">إضافة حصة</button>
     </div>
   </div>
   <div id="schedContainer" class="card" style="padding:16px;flex:1;overflow:auto"></div>
@@ -111,14 +136,16 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </div>
 
 <!-- QUIZZES -->
-<div class="scr" id="quizzes" data-side>
+<div class="scr" id="quizzes">
+ <div class="side" id="side-quizzes"></div>
  <div class="main" id="qMain"></div>
 </div>
 
 <!-- RECORDINGS -->
-<div class="scr" id="recordings" data-side>
+<div class="scr" id="recordings">
+ <div class="side" id="side-recordings"></div>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمزامنة</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><i data-i="dot"></i><span>تسجيل جديد</span></button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمزامنة</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><span>تسجيل جديد</span></button></div>
   <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
    <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto" id="recList"></div>
    <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;min-height:0">
@@ -136,7 +163,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
-      <label class="mut" style="font-weight:700">النص المفرّغ المتزامن (اضغط على أي سطر للانتقال لتلك الدقيقة وتشغيل الصوت):</label>
+      <label class="mut" style="font-weight:700">النص المفرّغ المتزامن:</label>
       <div id="transcriptSegmentsBox" class="inp" style="flex:1;overflow-y:auto;line-height:1.9;font-size:15px;background:#F9FAFB;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
       <div style="display:flex;justify-content:flex-end">
         <button class="btn sec hide" id="saveRecTextBtn">حفظ التعديلات</button>
@@ -148,7 +175,8 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </div>
 
 <!-- TOOLS & AI -->
-<div class="scr" id="tools" data-side>
+<div class="scr" id="tools">
+ <div class="side" id="side-tools"></div>
  <div class="main">
   <h1>الأدوات والذكاء الاصطناعي</h1>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
@@ -175,7 +203,8 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </div>
 
 <!-- COMMUNITY -->
-<div class="scr" id="community" data-side>
+<div class="scr" id="community">
+ <div class="side" id="side-community"></div>
  <div class="main">
   <h1>المجتمع الإبداعي والتعاون</h1>
   <div class="card" style="padding:30px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
@@ -192,19 +221,19 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
    <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
  </div>
  <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:20">
-   <button class="fab" data-go="library" aria-label="رجوع"><i data-i="back"></i></button>
+   <button class="fab" data-go="library" aria-label="رجوع">↩</button>
    <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
  </div>
  <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:20">
-   <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة"><i data-i="mic"></i></button>
-   <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
+   <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة">🎙️</button>
+   <button class="fab" id="bAI" aria-label="المساعد">✨</button>
  </div>
  <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:20" id="tools"></div>
  <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:20">
   <h2 style="font-size:16px">مساعد المذاكرة والذكاء الاصطناعي</h2>
   <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
   <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">إنشاء اختبار ذكي وبطاقات</button>
-  <div style="flex:1"></div><div class="mut" style="display:flex;gap:8px;align-items:center"><i data-i="lock" data-s="16"></i>بياناتك محفوظة على جهازك وفي iCloud</div>
+  <div style="flex:1"></div><div class="mut" style="display:flex;gap:8px;align-items:center">🔒 مزامنة آمنة عبر iCloud</div>
  </div>
 </div>
 
@@ -212,53 +241,18 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 <div id="modalRoot" class="modal-bg hide"></div>
 
 <script>
-const NAV_ITEMS=[
-  ['home','الرئيسية','home'],
-  ['library','المكتبة والملفات','lib'],
-  ['notebooks','الدفاتر والملاحظات','file'],
-  ['schedule','الجدول والتخطيط','cal'],
-  ['quizzes','الاختبارات والبطاقات','q'],
-  ['recordings','التسجيلات الصوتية','mic'],
-  ['tools','الأدوات والذكاء الاصطناعي','spark'],
-  ['community','المجتمع الإبداعي','grid']
-];
-
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
-
-const IC={
-home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
-lib:'<path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/>',
-cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
-q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
-mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
-plus:'<path d="M12 5v14M5 12h14"/>',
-dot:'<circle cx="12" cy="12" r="6" fill="currentColor"/>',
-pen:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>',
-hl:'<path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/>',
-er:'<path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/>',
-hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8.5M6 14l-1.5-1.5a2.12 2.12 0 0 0-3 3l4.5 4.5H15a4 4 0 0 0 4-4v-3a2 2 0 0 0-4 0v-1"/>',
-back:'<path d="M9 6l6 6-6 6"/>',
-grid:'<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
-spark:'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
-lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
-file:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>',
-check:'<path d="M5 12l5 5 9-10"/>',
-undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 015.5 5.5v0a5.5 5.5 0 01-5.5 5.5H11"/>',
-redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 004 14.5v0A5.5 5.5 0 009.5 20H13"/>'};
-
-function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
-
-// بناء الشريط الجانبي تلقائياً بعد تحميل الصفحة بالكامل
+// تعبئة القوائم الجانبية تلقائياً في كل الشاشات من القالب الثابت
 document.addEventListener('DOMContentLoaded', () => {
-  $$('[data-side]').forEach(sc=>{
-    const id=sc.id;
-    const s=document.createElement('div');
-    s.className='side';
-    s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div><b style="font-size:18px">رفيق المذاكرة</b></div>'+NAV_ITEMS.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>مزامنة آمنة عبر iCloud</span></div>';
-    sc.prepend(s);
-  });
-  $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+  const tpl = document.getElementById('sidebarTemplate');
+  if(tpl){
+    document.querySelectorAll('.side').forEach(sideEl => {
+      sideEl.appendChild(tpl.content.cloneNode(true));
+      const targetId = sideEl.id.replace('side-', '');
+      sideEl.querySelectorAll('[data-go]').forEach(btn => {
+        if(btn.dataset.go === targetId) btn.classList.add('on');
+      });
+    });
+  }
 
   loadLibrary();
   renderScheduleView();
@@ -268,15 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function openModal(html){
-  const root=$('#modalRoot');
+  const root=document.getElementById('modalRoot');
   root.innerHTML=`<div class="modal-box">${html}</div>`;
   root.classList.remove('hide');
 }
 function closeModal(){
-  $('#modalRoot').classList.add('hide');
+  document.getElementById('modalRoot').classList.add('hide');
 }
-$('#modalRoot').addEventListener('click',e=>{
-  if(e.target===$('#modalRoot')) closeModal();
+document.getElementById('modalRoot').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modalRoot')) closeModal();
 });
 
 function makeId(){return crypto.randomUUID?crypto.randomUUID():'id-'+Date.now()+'-'+Math.random().toString(16).slice(2)}
@@ -351,7 +345,7 @@ async function loadLibrary(){
 }
 
 function renderLibraryGrid(){
-  const grid=$('#libGrid');
+  const grid=document.getElementById('libGrid');
   if(!grid) return;
   if(!pdfState.files.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:#566178">مكتبتك فارغة. اضغط «استيراد PDF» لإضافة ملفاتك.</div>';
@@ -360,7 +354,7 @@ function renderLibraryGrid(){
   grid.innerHTML=pdfState.files.map(f=>`
     <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px">
       <div style="aspect-ratio:3/4;border-radius:10px;background:#E4F2F0;color:#0B5F58;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:6px" data-open-pdf="${f.id}">
-        ${ico('file',36)}
+        📄
         <span style="font-size:12px;font-weight:700">ملف PDF</span>
       </div>
       <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(f.name)}">${esc(f.name)}</div>
@@ -373,7 +367,7 @@ function renderLibraryGrid(){
 }
 
 function renderHomePreview(){
-  const prev=$('#homeLibPreview');
+  const prev=document.getElementById('homeLibPreview');
   if(!prev) return;
   if(!pdfState.files.length){
     prev.innerHTML='<div class="mut">لا توجد ملفات مضافة بعد.</div>';
@@ -408,7 +402,7 @@ async function openPdf(file){
   lastAnnotationCanvas=null;
   updateAnnotationTools();
   go('study');
-  const paper=$('#paper');
+  const paper=document.getElementById('paper');
   paper.innerHTML='<div style="margin:auto;color:#566178">جاري تحميل صفحات الملف والترميز…</div>';
   try{
     pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
@@ -438,56 +432,52 @@ async function openPdf(file){
       initAnnotationLayer(overlay, i, file);
     }
 
-    $('#pdfFileTitleBanner').textContent=`${file.name} (${pdfState.doc.numPages} صفحة)`;
-    $('#aiPageSummary').textContent=`الملف: ${file.name}\nإجمالي الصفحات: ${pdfState.doc.numPages}`;
+    document.getElementById('pdfFileTitleBanner').textContent=`${file.name} (${pdfState.doc.numPages} صفحة)`;
+    document.getElementById('aiPageSummary').textContent=`الملف: ${file.name}\nإجمالي الصفحات: ${pdfState.doc.numPages}`;
   }catch(err){
     console.error(err);
     paper.innerHTML='<div style="margin:auto;color:#B42318">تعذر عرض الملف. تأكد أن الملف سليم وصالح.</div>';
   }
 }
 
-$('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.toggle('on')};
-$('#studyRecFab').onclick=()=>{ go('recordings'); startAudioRecording(); };
+document.getElementById('bAI').onclick=()=>{document.getElementById('aiDr').classList.toggle('hide');document.getElementById('bAI').classList.toggle('on')};
+document.getElementById('studyRecFab').onclick=()=>{ go('recordings'); startAudioRecording(); };
 
 /* ==========================================
-   3. أدوات الرسم وفعالية زر اليد والقلم
+   3. أدوات الرسم والقلم واليد
    ========================================== */
 const TL=[['select','مؤشر'],['pen','قلم حبر'],['hl','تظليل ماركر'],['er','ممحاة'],['hand','الكتابة باليد']];
 const COL=['#14213D','#1D4ED8','#C2410C','#0B5F58','#D92D20','#7C3AED'];
 let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null;
 
-$('#tools').innerHTML=
-  '<button class="tb" data-action="undo" title="تراجع" aria-label="تراجع">'+ico('undo',20)+'</button>'+
-  '<button class="tb" data-action="redo" title="إعادة" aria-label="إعادة">'+ico('redo',20)+'</button>'+
+document.getElementById('tools').innerHTML=
+  '<button class="tb" data-action="undo" title="تراجع">↩</button>'+
+  '<button class="tb" data-action="redo" title="إعادة">↪</button>'+
   '<span style="width:1px;height:24px;background:#D5DBE7;margin:0 4px"></span>'+
-  TL.map((t,i)=>'<button class="tb '+(t[0]==='pen'?'on':'')+'" data-t="'+t[0]+'" title="'+t[1]+'" aria-label="'+t[1]+'">'+(t[0]==='select'?'↖':ico(t[0],22))+'</button>').join('')+
+  TL.map((t,i)=>'<button class="tb '+(t[0]==='pen'?'on':'')+'" data-t="'+t[0]+'" title="'+t[1]+'">'+(t[0]==='select'?'↖':(t[0]==='pen'?'✒':(t[0]==='hl'?'🖍':(t[0]==='er'?'🧹':'✋'))))+'</button>').join('')+
   '<span style="width:1px;height:24px;background:#D5DBE7;margin:0 4px"></span>'+
   '<div style="display:flex;gap:8px;padding:0 4px">'+COL.map((c,i)=>'<button class="sw '+(i===0?'on':'')+'" data-c="'+c+'" title="لون" style="background:'+c+'"></button>').join('')+'</div>'+
   '<select id="penSize" title="سُمك القلم" style="height:34px;border:1px solid #D5DBE7;border-radius:8px;padding:0 5px;background:#fff;color:#14213D"><option value="2">رفيع</option><option value="3" selected>متوسط</option><option value="6">عريض</option><option value="10">سميك</option></select>';
 
 function updateAnnotationTools(){
-  $$('#tools [data-t]').forEach(b=>{
+  document.querySelectorAll('#tools [data-t]').forEach(b=>{
     b.classList.toggle('on', b.dataset.t===activeTool);
-    if(b.dataset.t==='hand'){
-      b.title = activeTool === 'hand' ? 'زر اليد مفعل (الكتابة باليد مسموحة)' : 'تفعيل الكتابة باليد والإصبع';
-    }
   });
-  $$('#tools [data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===activeColor));
-  $$('#tools [data-action="undo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex<=0;
-  $$('#tools [data-action="redo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex>=lastAnnotationCanvas._history.length-1;
-  $$('#tools [data-action]').forEach(b=>b.style.opacity=b.disabled?'.35':'1');
-  $$('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er','hand'].includes(activeTool)?'auto':'none');
+  document.querySelectorAll('#tools [data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===activeColor));
+  document.querySelectorAll('#tools [data-action="undo"]').forEach(b=>b.disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex<=0);
+  document.querySelectorAll('#tools [data-action="redo"]').forEach(b=>b.disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex>=lastAnnotationCanvas._history.length-1);
+  document.querySelectorAll('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er','hand'].includes(activeTool)?'auto':'none');
 }
 
-$$('#tools [data-t]').forEach(b=>b.onclick=()=>{
+document.querySelectorAll('#tools [data-t]').forEach(b=>b.onclick=()=>{
   activeTool=b.dataset.t;
   updateAnnotationTools();
 });
 
-$$('#tools [data-c]').forEach(b=>b.onclick=()=>{activeColor=b.dataset.c;updateAnnotationTools();});
-$('#penSize').onchange=e=>{activeSize=Number(e.target.value)||3;};
-$('#tools [data-action="undo"]').onclick=()=>undoAnnotation();
-$('#tools [data-action="redo"]').onclick=()=>redoAnnotation();
+document.querySelectorAll('#tools [data-c]').forEach(b=>b.onclick=()=>{activeColor=b.dataset.c;updateAnnotationTools();});
+document.getElementById('penSize').onchange=e=>{activeSize=Number(e.target.value)||3;};
+document.querySelectorAll('#tools [data-action="undo"]').forEach(b=>b.onclick=()=>undoAnnotation());
+document.querySelectorAll('#tools [data-action="redo"]').forEach(b=>b.onclick=()=>redoAnnotation());
 
 function snapshotAnnotation(canvas){
   if(!canvas._history) canvas._history=[];
@@ -587,7 +577,7 @@ updateAnnotationTools();
    ========================================== */
 async function loadNotebooks(){
   const notes=await storeAction('notebooks','readonly','getAll');
-  const grid=$('#notebooksGrid');
+  const grid=document.getElementById('notebooksGrid');
   if(!grid) return;
   if(!notes.length){
     grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">لا توجد دفاتر ملاحظات. اضغط «إنشاء دفتر جديد» لبدء تدوين ملاحظاتك.</div>';
@@ -605,7 +595,7 @@ async function loadNotebooks(){
   `).join('');
 }
 
-const createNotebookBtn = $('#createNewNotebookBtn');
+const createNotebookBtn = document.getElementById('createNewNotebookBtn');
 if(createNotebookBtn){
   createNotebookBtn.onclick=()=>{
     openModal(`
@@ -624,10 +614,10 @@ if(createNotebookBtn){
         <button class="btn pri" id="saveNbBtn">إنشاء الدفتر</button>
       </div>
     `);
-    $('#saveNbBtn').onclick=async()=>{
-      const title=$('#nbTitle').value.trim();
+    document.getElementById('saveNbBtn').onclick=async()=>{
+      const title=document.getElementById('nbTitle').value.trim();
       if(!title)return alert('أدخل عنوان الدفتر');
-      const newNb={id:makeId(),title,template:$('#nbTemplate').value,date:new Date().toLocaleDateString('ar-SA'),color:'#E4F2F0'};
+      const newNb={id:makeId(),title,template:document.getElementById('nbTemplate').value,date:new Date().toLocaleDateString('ar-SA'),color:'#E4F2F0'};
       await storeAction('notebooks','readwrite','put',newNb);
       closeModal();
       loadNotebooks();
@@ -650,6 +640,8 @@ function openNotebook(id){
    5. الجدول المدرسي
    ========================================== */
 const SCHED_KEY='rafeeq-school-timetable-v1';
+const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
+
 function getSchedule(){
   try{return JSON.parse(localStorage.getItem(SCHED_KEY)||'{"classes":[], "image":""}')}catch{return {classes:[], image:""}}
 }
@@ -658,7 +650,7 @@ function saveSchedule(data){
   renderScheduleView();
 }
 
-const addSchedClassBtn = $('#addSchedClassBtn');
+const addSchedClassBtn = document.getElementById('addSchedClassBtn');
 if(addSchedClassBtn){
   addSchedClassBtn.onclick=()=>{
     openModal(`
@@ -672,11 +664,11 @@ if(addSchedClassBtn){
         <button class="btn pri" id="saveScBtn">إضافة</button>
       </div>
     `);
-    $('#saveScBtn').onclick=()=>{
-      const title=$('#scTitle').value.trim();
+    document.getElementById('saveScBtn').onclick=()=>{
+      const title=document.getElementById('scTitle').value.trim();
       if(!title) return alert('أدخل اسم المادة');
       const sched=getSchedule();
-      sched.classes.push({id:makeId(),title,day:$('#scDay'].value});
+      sched.classes.push({id:makeId(),title,day:document.getElementById('scDay').value});
       saveSchedule(sched);
       closeModal();
     };
@@ -689,7 +681,7 @@ schedImgInput.accept='image/*';
 schedImgInput.style.display='none';
 document.body.appendChild(schedImgInput);
 
-const uploadSchedImgBtn = $('#uploadSchedImgBtn');
+const uploadSchedImgBtn = document.getElementById('uploadSchedImgBtn');
 if(uploadSchedImgBtn){
   uploadSchedImgBtn.onclick=()=>schedImgInput.click();
 }
@@ -707,7 +699,7 @@ schedImgInput.addEventListener('change',e=>{
 
 function renderScheduleView(){
   const sched=getSchedule();
-  const container=$('#schedContainer');
+  const container=document.getElementById('schedContainer');
   if(!container) return;
   const todayName=DAYS[new Date().getDay()===0||new Date().getDay()===6?0:new Date().getDay()-1]||'الأحد';
 
@@ -733,7 +725,7 @@ function renderScheduleView(){
 
   container.innerHTML=html;
 
-  const removeImgBtn = $('#removeSchedImg');
+  const removeImgBtn = document.getElementById('removeSchedImg');
   if(removeImgBtn){
     removeImgBtn.onclick=()=>{
       const s=getSchedule();
@@ -742,7 +734,7 @@ function renderScheduleView(){
     };
   }
 
-  const todayBox=$('#todayClassesList');
+  const todayBox=document.getElementById('todayClassesList');
   if(todayBox){
     const todayList=sched.classes.filter(c=>c.day===todayName);
     if(!todayList.length && !sched.image){
@@ -772,52 +764,73 @@ document.addEventListener('click',e=>{
    6. الاختبارات الذكية والبطاقات مع معالجة الرموز (OCR)
    ========================================== */
 async function renderQuizHome(){
-  const qMain = $('#qMain');
+  const qMain = document.getElementById('qMain');
   if(!qMain) return;
   const files=pdfState.files;
   if(!files.length){
     qMain.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
-      <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
-        <h2>لا توجد ملفات PDF في مكتبتك</h2>
-        <div class="mut">الرجاء استيراد ملف PDF أولاً لتوليد اختبارات ذكية وبطاقات تعليمية منه.</div>
-        <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
+      <div class="side" id="side-quizzes"></div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
+        <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
+          <h2>لا توجد ملفات PDF في مكتبتك</h2>
+          <div class="mut">الرجاء استيراد ملف PDF أولاً لتوليد اختبارات ذكية وبطاقات تعليمية منه.</div>
+          <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
+        </div>
       </div>`;
+    // إعادة تعبئة الشريط الجانبي لتلك الصفحة
+    const tpl = document.getElementById('sidebarTemplate');
+    if(tpl) {
+      const side = document.getElementById('side-quizzes');
+      if(side && !side.hasChildNodes()){
+        side.appendChild(tpl.content.cloneNode(true));
+        side.querySelectorAll('[data-go]').forEach(b=>{ if(b.dataset.go==='quizzes')b.classList.add('on'); });
+      }
+    }
     return;
   }
 
+  // إعادة بناء الشريط الجانبي أولاً لضمان ظهوره
+  const tpl = document.getElementById('sidebarTemplate');
+  const sideHtml = tpl ? tpl.innerHTML : '';
+
   qMain.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
-    <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
-      <div>
-        <label style="font-weight:600;display:block;margin-bottom:6px">اختر ملف الـ PDF المطلوب:</label>
-        <select id="quizFileSelect" class="inp">
-          ${files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <label style="font-weight:600;display:block;margin-bottom:6px">اختر نوع الاختبار:</label>
-        <select id="quizTypeSelect" class="inp">
-          <option value="mcq">أسئلة خيارات متعددة (MCQ) مع الشرح</option>
-          <option value="essay">أسئلة مقالية وتوضيحية</option>
-          <option value="flashcards">بطاقات استذكار ذكية (Flashcards)</option>
-        </select>
-      </div>
-      <div>
-        <button class="btn pri" id="startPdfQuizBtn">${ico('spark',20)} توليد الاختبار والبطاقات</button>
+    <div class="side" id="side-quizzes">${sideHtml}</div>
+    <div class="main">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
+        <div>
+          <label style="font-weight:600;display:block;margin-bottom:6px">اختر ملف الـ PDF المطلوب:</label>
+          <select id="quizFileSelect" class="inp">
+            ${files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label style="font-weight:600;display:block;margin-bottom:6px">اختر نوع الاختبار:</label>
+          <select id="quizTypeSelect" class="inp">
+            <option value="mcq">أسئلة خيارات متعددة (MCQ) مع الشرح</option>
+            <option value="essay">أسئلة مقالية وتوضيحية</option>
+            <option value="flashcards">بطاقات استذكار ذكية (Flashcards)</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn pri" id="startPdfQuizBtn">✨ توليد الاختبار والبطاقات</button>
+        </div>
       </div>
     </div>
   `;
+  const side = document.getElementById('side-quizzes');
+  if(side) side.querySelectorAll('[data-go]').forEach(b=>{ if(b.dataset.go==='quizzes')b.classList.add('on'); });
 
-  const startQuizBtn = $('#startPdfQuizBtn');
+  const startQuizBtn = document.getElementById('startPdfQuizBtn');
   if(startQuizBtn){
     startQuizBtn.onclick=async()=>{
-      const fileId=$('#quizFileSelect').value;
-      const type=$('#quizTypeSelect').value;
+      const fileId=document.getElementById('quizFileSelect').value;
+      const type=document.getElementById('quizTypeSelect').value;
       const file=files.find(f=>f.id===fileId);
       if(!file) return;
 
-      qMain.innerHTML='<div style="margin:auto;text-align:center;color:#566178">جاري تحليل محتوى الملف وتوليد الاختبار الذكي…</div>';
+      qMain.innerHTML=`<div class="side" id="side-quizzes">${sideHtml}</div><div class="main"><div style="margin:auto;text-align:center;color:#566178">جاري تحليل محتوى الملف وتوليد الاختبار الذكي…</div></div>`;
 
       try{
         const doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
@@ -892,15 +905,21 @@ function generateSmartQuestions(text, type){
 }
 
 function runQuizSession(questions, type, index, score){
-  const qMain = $('#qMain');
+  const qMain = document.getElementById('qMain');
   if(!qMain) return;
+  const tpl = document.getElementById('sidebarTemplate');
+  const sideHtml = tpl ? tpl.innerHTML : '';
+
   if(index>=questions.length){
     qMain.innerHTML=`
-      <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
-        <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
-        <h1>انتهى الاختبار بنجاح!</h1>
-        <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
-        <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
+      <div class="side" id="side-quizzes">${sideHtml}</div>
+      <div class="main">
+        <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
+          <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">✓</div>
+          <h1>انتهى الاختبار بنجاح!</h1>
+          <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
+          <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
+        </div>
       </div>`;
     return;
   }
@@ -931,7 +950,7 @@ function runQuizSession(questions, type, index, score){
   } else {
     contentHtml=`
       <div id="fcCard" class="card" style="padding:35px;text-align:center;background:#F3F5F9;cursor:pointer;font-size:18px;font-weight:600;line-height:1.7">
-        اضغط هنا لعرض الإجابة (قلب البطاقة ASMR)
+        اضغط هنا لعرض الإجابة (قلب البطاقة)
       </div>
       <div id="fcAns" class="card hide" style="padding:24px;background:#E4F2F0;color:#0B5F58;font-size:16px;line-height:1.8">
         <b>💡 الإجابة:</b><br><span style="white-space:pre-line">${esc(item.answer)}</span>
@@ -943,48 +962,51 @@ function runQuizSession(questions, type, index, score){
   }
 
   qMain.innerHTML=`
-    <div style="display:flex;align-items:center;gap:14px">
-      <button class="fab" onclick="renderQuizHome()">${ico('back',22)}</button>
-      <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((index+1)/questions.length)*100}%"></div></div>
-      <b>${index+1} / ${questions.length}</b>
-    </div>
-    <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
-      <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
-      ${contentHtml}
+    <div class="side" id="side-quizzes">${sideHtml}</div>
+    <div class="main">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="fab" onclick="renderQuizHome()">↩</button>
+        <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((index+1)/questions.length)*100}%"></div></div>
+        <b>${index+1} / ${questions.length}</b>
+      </div>
+      <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
+        <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
+        ${contentHtml}
+      </div>
     </div>`;
 
   if(type==='mcq'){
-    $$('.opt').forEach(btn=>{
+    document.querySelectorAll('.opt').forEach(btn=>{
       btn.onclick=()=>{
         if(btn.dataset.answered==='1')return;
-        $$('.opt').forEach(b=>b.dataset.answered='1');
+        document.querySelectorAll('.opt').forEach(b=>b.dataset.answered='1');
         const chosen=btn.dataset.opt;
         const correct=chosen===item.answer;
         if(correct) score++;
-        $$('.opt').forEach(b=>{
+        document.querySelectorAll('.opt').forEach(b=>{
           if(b.dataset.opt===item.answer) b.classList.add('ok');
           else if(b.dataset.opt===chosen && !correct) b.classList.add('no');
         });
-        $('#explanationText').textContent = item.explanation;
-        $('#explanationBox').classList.remove('hide');
+        document.getElementById('explanationText').textContent = item.explanation;
+        document.getElementById('explanationBox').classList.remove('hide');
         setTimeout(()=>runQuizSession(questions, type, index+1, score), 4000);
       };
     });
   } else if(type==='essay'){
-    const submitEssayBtn = $('#submitEssay');
+    const submitEssayBtn = document.getElementById('submitEssay');
     if(submitEssayBtn){
       submitEssayBtn.onclick=()=>{
-        $('#essayExplanationText').textContent = item.explanation;
-        $('#essayFeedback').classList.remove('hide');
+        document.getElementById('essayExplanationText').textContent = item.explanation;
+        document.getElementById('essayFeedback').classList.remove('hide');
         submitEssayBtn.textContent='السؤال التالي';
         submitEssayBtn.onclick=()=>runQuizSession(questions, type, index+1, score+1);
       };
     }
   } else {
-    const fcCard = $('#fcCard');
-    const fcAns = $('#fcAns');
-    const fcCorrect = $('#fcCorrect');
-    const fcWrong = $('#fcWrong');
+    const fcCard = document.getElementById('fcCard');
+    const fcAns = document.getElementById('fcAns');
+    const fcCorrect = document.getElementById('fcCorrect');
+    const fcWrong = document.getElementById('fcWrong');
     if(fcCard) fcCard.onclick=()=>{ fcCard.classList.add('hide'); fcAns.classList.remove('hide'); };
     if(fcCorrect) fcCorrect.onclick=()=>runQuizSession(questions, type, index+1, score+1);
     if(fcWrong) fcWrong.onclick=()=>runQuizSession(questions, type, index+1, score);
@@ -1002,7 +1024,7 @@ async function loadRecordings(){
 }
 
 function renderRecList(){
-  const listEl=$('#recList');
+  const listEl=document.getElementById('recList');
   if(!listEl) return;
   if(!recState.recordings.length){
     listEl.innerHTML='<div class="mut" style="text-align:center;padding:30px 10px">لا توجد تسجيلات</div>';
@@ -1021,9 +1043,9 @@ function selectRecording(id){
   if(!rec) return;
   recState.selectedId=id;
   renderRecList();
-  $('#recTitle').textContent=rec.title;
+  document.getElementById('recTitle').textContent=rec.title;
   
-  const segBox=$('#transcriptSegmentsBox');
+  const segBox=document.getElementById('transcriptSegmentsBox');
   if(!segBox) return;
   if(rec.segments && rec.segments.length > 0){
     segBox.innerHTML = rec.segments.map(seg=>`
@@ -1036,7 +1058,7 @@ function selectRecording(id){
     segBox.querySelectorAll('.transcript-seg').forEach(el=>{
       el.onclick=()=>{
         const seconds = parseFloat(el.dataset.time);
-        const player = $('#audioPlayer');
+        const player = document.getElementById('audioPlayer');
         if(player && player.src){
           player.currentTime = seconds;
           player.play();
@@ -1047,9 +1069,9 @@ function selectRecording(id){
     segBox.innerHTML = `<div style="padding:10px">${esc(rec.transcript || 'لا توجد تفاصيل زمنية')}</div>`;
   }
 
-  $('#delRecBtn').classList.remove('hide');
-  $('#saveRecTextBtn').classList.remove('hide');
-  const player=$('#audioPlayer');
+  document.getElementById('delRecBtn').classList.remove('hide');
+  document.getElementById('saveRecTextBtn').classList.remove('hide');
+  const player=document.getElementById('audioPlayer');
   if(rec.audioBlob){
     player.src=URL.createObjectURL(rec.audioBlob);
     player.classList.remove('hide');
@@ -1063,28 +1085,28 @@ document.addEventListener('click',e=>{
   if(sel) selectRecording(sel.dataset.selRec);
 });
 
-const saveRecTextBtn = $('#saveRecTextBtn');
+const saveRecTextBtn = document.getElementById('saveRecTextBtn');
 if(saveRecTextBtn){
   saveRecTextBtn.onclick=async()=>{
     const rec=recState.recordings.find(r=>r.id===recState.selectedId);
     if(!rec) return;
-    rec.transcript = $('#transcriptSegmentsBox').innerText;
+    rec.transcript = document.getElementById('transcriptSegmentsBox').innerText;
     await storeAction('recordings','readwrite','put',rec);
     alert('تم الحفظ بنجاح');
   };
 }
 
-const delRecBtn = $('#delRecBtn');
+const delRecBtn = document.getElementById('delRecBtn');
 if(delRecBtn){
   delRecBtn.onclick=async()=>{
     if(!recState.selectedId||!confirm('حذف هذا التسجيل؟')) return;
     await storeAction('recordings','readwrite','delete',recState.selectedId);
     recState.selectedId=null;
-    $('#recTitle').textContent='اختر تسجيلاً';
-    $('#transcriptSegmentsBox').innerHTML='';
-    $('#audioPlayer').classList.add('hide');
-    $('#delRecBtn').classList.add('hide');
-    $('#saveRecTextBtn').classList.add('hide');
+    document.getElementById('recTitle').textContent='اختر تسجيلاً';
+    document.getElementById('transcriptSegmentsBox').innerHTML='';
+    document.getElementById('audioPlayer').classList.add('hide');
+    document.getElementById('delRecBtn').classList.add('hide');
+    document.getElementById('saveRecTextBtn').classList.add('hide');
     await loadRecordings();
   };
 }
@@ -1123,22 +1145,21 @@ async function startAudioRecording(){
           }else{interim+=e.results[i][0].transcript;}
         }
         const display=recState.finalText+interim;
-        if($('#recLiveContent')) $('#recLiveContent').textContent=display||'تحدث الآن…';
-        if($('#homeLiveText')) $('#homeLiveText').textContent=display||'جاري التسجيل…';
+        if(document.getElementById('recLiveContent')) document.getElementById('recLiveContent').textContent=display||'تحدث الآن…';
+        if(document.getElementById('homeLiveText')) document.getElementById('homeLiveText').textContent=display||'جاري التسجيل…';
       };
       recState.recognition.start();
     }
 
-    if($('#liveBox')) $('#liveBox').classList.remove('hide');
-    if($('#recBtn')) $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف وحفظ</span>';
-    if($('#homeRecBtn')) $('#homeRecBtn').innerHTML='<i data-i="dot"></i>إيقاف التسجيل';
-    if($('#homeRecStatus')) $('#homeRecStatus').textContent='جاري التسجيل…';
-    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+    if(document.getElementById('liveBox')) document.getElementById('liveBox').classList.remove('hide');
+    if(document.getElementById('recBtn')) document.getElementById('recBtn').innerHTML='<span>إيقاف وحفظ</span>';
+    if(document.getElementById('homeRecBtn')) document.getElementById('homeRecBtn').textContent='إيقاف التسجيل';
+    if(document.getElementById('homeRecStatus')) document.getElementById('homeRecStatus').textContent='جاري التسجيل…';
 
     recState.timer=setInterval(()=>{
       recState.sec++;
       const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
-      if($('#timer')) $('#timer').textContent=`${m}:${s}`;
+      if(document.getElementById('timer')) document.getElementById('timer').textContent=`${m}:${s}`;
     },1000);
   }catch(err){alert('تعذر استخدام الميكروفون.');}
 }
@@ -1151,45 +1172,43 @@ function stopAudioRecording(){
   if(recState.recorder&&recState.recorder.state!=='inactive')recState.recorder.stop();
   if(recState.stream)recState.stream.getTracks().forEach(t=>t.stop());
 
-  if($('#liveBox')) $('#liveBox').classList.add('hide');
-  if($('#recBtn')) $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
-  if($('#homeRecBtn')) $('#homeRecBtn').innerHTML='<i data-i="dot"></i>ابدأ التسجيل';
-  if($('#homeRecStatus')) $('#homeRecStatus').textContent='جاهز';
-  $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+  if(document.getElementById('liveBox')) document.getElementById('liveBox').classList.add('hide');
+  if(document.getElementById('recBtn')) document.getElementById('recBtn').innerHTML='<span>تسجيل جديد</span>';
+  if(document.getElementById('homeRecBtn')) document.getElementById('homeRecBtn').textContent='ابدأ التسجيل';
+  if(document.getElementById('homeRecStatus')) document.getElementById('homeRecStatus').textContent='جاهز';
 }
 
-const recBtn = $('#recBtn');
+const recBtn = document.getElementById('recBtn');
 if(recBtn) recBtn.onclick=()=>recState.active?stopAudioRecording():startAudioRecording();
-const homeRecBtn = $('#homeRecBtn');
+const homeRecBtn = document.getElementById('homeRecBtn');
 if(homeRecBtn) homeRecBtn.onclick=()=>{if(recState.active)stopAudioRecording();else{go('recordings');startAudioRecording();}};
 
 /* ==========================================
    8. أدوات الذكاء الاصطناعي
    ========================================== */
-const doTranslateBtn = $('#doTranslateBtn');
+const doTranslateBtn = document.getElementById('doTranslateBtn');
 if(doTranslateBtn){
   doTranslateBtn.onclick=()=>{
-    const txt=$('#translateInput').value.trim();
+    const txt=document.getElementById('translateInput').value.trim();
     if(!txt)return alert('اكتب نصاً للترجمة');
-    $('#translateResult').textContent='ترجمة فورية («'+txt+'»): [تمت الترجمة بنجاح إلى اللغة المطلوبة بدقة عالية]';
+    document.getElementById('translateResult').textContent='ترجمة فورية («'+txt+'»): [تمت الترجمة بنجاح إلى اللغة المطلوبة بدقة عالية]';
   };
 }
 
-const askAiBtn = $('#askAiBtn');
+const askAiBtn = document.getElementById('askAiBtn');
 if(askAiBtn){
   askAiBtn.onclick=()=>{
-    const q=$('#aiMathInput').value.trim();
+    const q=document.getElementById('aiMathInput').value.trim();
     if(!q)return alert('اكتب سؤالاً أو معادلة');
-    $('#aiResultBox').innerHTML='<b>إجابة الذكاء الاصطناعي والحاسبة:</b><br>تحليل المعادلة/السؤال «'+esc(q)+'» يوضح أن النتيجة أو القاعدة العلمية مرتبطة بالمفاهيم الأساسية المدروسة.';
+    document.getElementById('aiResultBox').innerHTML='<b>إجابة الذكاء الاصطناعي والحاسبة:</b><br>تحليل المعادلة/السؤال «'+esc(q)+'» يوضح أن النتيجة أو القاعدة العلمية مرتبطة بالمفاهيم الأساسية المدروسة.';
   };
 }
 
 /* ==========================================
-   9. التنقل السلس
+   9. التنقل السلس بين الشاشات
    ========================================== */
 function go(id){
-  $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
-  $$('.nav').forEach(n=>n.classList.toggle('on',n.dataset.go===id));
+  document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
   if(id==='quizzes')renderQuizHome();
   if(id==='recordings')loadRecordings();
   if(id==='notebooks')loadNotebooks();
