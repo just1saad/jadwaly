@@ -1,4 +1,3 @@
-```js
 /* الجزء الأول: استيراد ملفات PDF وحفظها محليًا وعرضها */
 (() => {
   'use strict';
@@ -349,7 +348,7 @@
 
   const pageButton = document.getElementById('bPages');
   if (pageButton) {
-    pageButton.addEventListener('dblclick', () => {
+    pageButton.addEventListener('click', () => { // تم التعديل من dblclick إلى click عادي
       if (!state.pdf) return;
       const page = prompt(`رقم الصفحة من 1 إلى ${state.pdf.numPages}:`, state.page);
       const number = Number(page);
@@ -645,7 +644,6 @@
       .filter(line => line.length >= 12);
 
     return lines.slice(0, 30).map(line => {
-      // إذا كان السطر بصيغة "مصطلح: تعريف"، يُنشأ سؤال تعريف.
       const pair = line.match(/^(.{2,50})\s*[:：=]\s*(.{4,})$/);
       if (pair) {
         return {
@@ -654,7 +652,6 @@
         };
       }
 
-      // وإلا تُخفى كلمة مناسبة لتكوين سؤال إكمال.
       const words = line.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{4,}/g) || [];
       const answer = words.sort((a, b) => b.length - a.length)[0];
 
@@ -689,7 +686,6 @@
     const overlay = document.getElementById('studyFeatureModal');
     const source = overlay.querySelector('#quizSource');
 
-    // إذا كانت هناك ملاحظات للملف المفتوح، نقترحها كمصدر للأسئلة.
     const note = readStore(currentNoteKey(), '');
     if (note) source.value = note;
 
@@ -976,7 +972,6 @@
     setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
 
-  // يربط الوظائف بأزرار الواجهة بحسب النص الظاهر عليها.
   document.addEventListener('click', event => {
     const button = event.target.closest('button,[role="button"],a,.btn');
     if (!button) return;
@@ -985,7 +980,7 @@
       .trim()
       .replace(/\s+/g, ' ');
 
-    if (/استيراد\s*PDF/i.test(label)) return; // يتولاه الجزء الأول
+    if (/استيراد\s*PDF/i.test(label)) return;
 
     if (/جدول|جدولي|المهام/i.test(label)) {
       event.preventDefault();
@@ -1015,7 +1010,6 @@
     }
   }, true);
 
-  // إغلاق النافذة بزر Escape، وإيقاف الميكروفون عند الإغلاق.
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
       stopAllRecording();
@@ -1023,7 +1017,6 @@
     }
   });
 
-  // وظائف متاحة لبقية أجزاء التطبيق عند الحاجة.
   window.StudyFeatures = {
     showSchedule,
     showNotes,
@@ -1032,4 +1025,3 @@
     renderTasks
   };
 })();
-```
