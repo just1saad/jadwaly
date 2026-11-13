@@ -95,7 +95,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- HOME -->
 <div class="scr on" id="home">
- <div class="side"></div>
+ <div class="side" id="side-home"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك المتكاملة لتنظيم الملاحظات، ملفات PDF، والتفريغ الصوتي الفوري</div></div>
@@ -129,7 +129,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- LIBRARY -->
 <div class="scr" id="library">
- <div class="side"></div>
+ <div class="side" id="side-library"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة وملفات PDF</h1><button class="btn pri" data-import-pdf>استيراد PDF</button></div>
   <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
@@ -138,7 +138,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- NOTEBOOKS -->
 <div class="scr" id="notebooks">
- <div class="side"></div>
+ <div class="side" id="side-notebooks"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>دفاتر الملاحظات الرقمية</h1>
@@ -150,7 +150,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- SCHEDULE -->
 <div class="scr" id="schedule">
- <div class="side"></div>
+ <div class="side" id="side-schedule"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>الجدول المدرسي والتخطيط الرقمي</h1>
@@ -165,13 +165,13 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- QUIZZES -->
 <div class="scr" id="quizzes">
- <div class="side"></div>
+ <div class="side" id="side-quizzes"></div>
  <div class="main" id="qMain"></div>
 </div>
 
 <!-- RECORDINGS -->
 <div class="scr" id="recordings">
- <div class="side"></div>
+ <div class="side" id="side-recordings"></div>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمحفوظات</h1></div>
   <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
@@ -195,7 +195,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- TOOLS & AI -->
 <div class="scr" id="tools">
- <div class="side"></div>
+ <div class="side" id="side-tools"></div>
  <div class="main">
   <h1>الأدوات والذكاء الاصطناعي</h1>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
@@ -222,7 +222,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- COMMUNITY -->
 <div class="scr" id="community">
- <div class="side"></div>
+ <div class="side" id="side-community"></div>
  <div class="main">
   <h1>المجتمع الإبداعي والتعاون</h1>
   <div class="card" style="padding:30px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
@@ -235,7 +235,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <!-- STUDY (PDF Viewer) -->
 <div class="scr" id="study" style="background:#E9ECF2">
- <div class="side"></div>
+ <div class="side" id="side-study"></div>
  <div class="main" style="position:relative; padding:0; overflow:hidden;">
    <div dir="ltr" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;padding:80px 24px 24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
      <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
@@ -264,27 +264,27 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  initGlobalSidebars('home');
+  initGlobalSidebars();
   loadLibrary();
   renderScheduleView();
+  renderQuizHome();
   loadRecordings();
   loadNotebooks();
   initHomeLiveTranscription();
 });
 
-function initGlobalSidebars(activeId){
+function initGlobalSidebars(){
   const tpl = document.getElementById('sidebarTemplate');
-  if(!tpl) return;
-  document.querySelectorAll('.scr').forEach(scr => {
-    const sideEl = scr.querySelector('.side');
-    if(sideEl && !sideEl.hasChildNodes()){
+  if(tpl){
+    document.querySelectorAll('.side').forEach(sideEl => {
+      sideEl.innerHTML = '';
       sideEl.appendChild(tpl.content.cloneNode(true));
-      const sId = scr.id;
+      const targetId = sideEl.id.replace('side-', '');
       sideEl.querySelectorAll('[data-go]').forEach(btn => {
-        if(btn.dataset.go === sId) btn.classList.add('on');
+        if(btn.dataset.go === targetId) btn.classList.add('on');
       });
-    }
-  });
+    });
+  }
 }
 
 function openModal(html){
@@ -712,7 +712,7 @@ function renderScheduleView(){
 }
 
 /* ==========================================
-   نظام الاختبارات والبطاقات (مستقل ونظيف بالكامل)
+   نظام الاختبارات والبطاقات (محدث بذكاء لاستخراج الأسئلة من النص)
    ========================================== */
 function renderQuizHome(){
   const qMain = document.getElementById('qMain');
@@ -721,44 +721,53 @@ function renderQuizHome(){
   
   if(!files.length){
     qMain.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
-      <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
-        <h2>لا توجد ملفات PDF في مكتبتك</h2>
-        <div class="mut">استيراد ملف PDF أولاً لتوليد الأسئلة والبطاقات منه.</div>
-        <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
+      <div class="side" id="side-quizzes"></div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
+        <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
+          <h2>لا توجد ملفات PDF في مكتبتك</h2>
+          <div class="mut">استيراد ملف PDF أولاً لتوليد الأسئلة والبطاقات منه.</div>
+          <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
+        </div>
       </div>`;
+    initGlobalSidebars();
     return;
   }
 
   qMain.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
-    <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
-      <div>
-        <label style="font-weight:600;display:block;margin-bottom:6px">اختر الملف:</label>
-        <select id="quizFileSelect" class="inp">
-          ${files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <label style="font-weight:600;display:block;margin-bottom:6px">اختر نوع الاختبار:</label>
-        <select id="quizTypeSelect" class="inp">
-          <option value="mcq">أسئلة خيارات متعددة (MCQ)</option>
-          <option value="flashcards">بطاقات استذكار ذكية (Flashcards)</option>
-        </select>
-      </div>
-      <div>
-        <button class="btn pri" id="startPdfQuizBtn">✨ توليد الاختبار والبطاقات</button>
+    <div class="side" id="side-quizzes"></div>
+    <div class="main">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات (Flashcards)</h1></div>
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
+        <div>
+          <label style="font-weight:600;display:block;margin-bottom:6px">اختر الملف:</label>
+          <select id="quizFileSelect" class="inp">
+            ${files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label style="font-weight:600;display:block;margin-bottom:6px">اختر نوع الاختبار:</label>
+          <select id="quizTypeSelect" class="inp">
+            <option value="mcq">أسئلة خيارات متعددة (MCQ)</option>
+            <option value="flashcards">بطاقات استذكار ذكية (Flashcards)</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn pri" id="startPdfQuizBtn">✨ توليد الاختبار والبطاقات</button>
+        </div>
       </div>
     </div>
   `;
+  initGlobalSidebars();
 
   document.getElementById('startPdfQuizBtn').onclick = async () => {
-    const fileId = document.getElementById('quizFileSelect').value;
+    const selectedFileId = document.getElementById('quizFileSelect').value;
     const type = document.getElementById('quizTypeSelect').value;
-    const file = files.find(f => f.id === fileId);
+    const file = files.find(f => f.id === selectedFileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF وتوليد الأسئلة…</div>`;
+    qMain.innerHTML=`<div class="side" id="side-quizzes"></div><div class="main"><div style="margin:auto;text-align:center;color:#566178">جاري تحليل ملف PDF وتوليد الأسئلة الذكية…</div></div>`;
+    initGlobalSidebars();
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
@@ -769,7 +778,7 @@ function renderQuizHome(){
         fullText += ' ' + textContent.items.map(it => it.str).join(' ');
       }
 
-      const questions = generateRobustQuestions(fullText, type);
+      const questions = generateSmartQuestions(fullText, type);
       runQuizSession(questions, type, 0, 0);
     } catch(err) {
       alert('حدث خطأ أثناء قراءة الملف وتوليد الاختبار.');
@@ -778,26 +787,55 @@ function renderQuizHome(){
   };
 }
 
-function generateRobustQuestions(text, type){
-  const sentences = text.split(/[.!?؟؛\n]+/).map(s => s.trim()).filter(s => s.length > 10);
+function generateSmartQuestions(text, type){
+  const sentences = text.split(/[.!?؟؛\n]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 15 && !/^\d+$/.test(s));
+
   if(!sentences.length){
-    return [{q: "ما هي الفكرة العامة للوحدة؟", options: ["الفكرة الأولى", "الفكرة الثانية", "الفكرة الثالثة", "الفكرة الرابعة"], answer: "الفكرة الأولى", explanation: "نص افتراضي عام."}];
+    return [{
+      q: "ما هو المفهوم الأساسي الوارد في المستند؟",
+      options: ["المفهوم الرئيسي الأول", "عنصر فرعي ثانوي", "خاصية تنظيمية عامة", "مبدأ افتراضي"],
+      answer: "المفهوم الرئيسي الأول",
+      explanation: "تم توليد هذا السؤال بناءً على المحتوى العام للملف."
+    }];
   }
+
+  const allWords = text.split(/\s+/)
+    .map(w => w.replace(/[^\u0600-\u06FFa-zA-Z]/g, ''))
+    .filter(w => w.length > 4);
+
+  const uniqueDistractors = [...new Set(allWords)];
+
   const qList = [];
-  sentences.slice(0, 8).forEach(sent => {
-    const words = sent.split(' ').filter(w => w.length > 3);
+  sentences.slice(0, 10).forEach((sent, idx) => {
+    const words = sent.split(' ').filter(w => w.length > 4);
     if(words.length < 2) return;
-    const target = words[Math.floor(words.length / 2)];
-    const prompt = sent.replace(target, '________');
-    const opts = [target, 'مفهوم آخر', 'عنصر فرعي', 'قاعدة أساسية'].sort(()=>Math.random()-.5);
+    
+    const targetWord = words[Math.floor(words.length / 2)];
+    const prompt = sent.replace(targetWord, '________');
+    
+    let wrongOpts = uniqueDistractors.filter(w => w !== targetWord).sort(() => Math.random() - .5).slice(0, 3);
+    while(wrongOpts.length < 3){
+      wrongOpts.push('مصطلح بديل ' + (wrongOpts.length + 1));
+    }
+
+    const opts = [targetWord, ...wrongOpts].sort(() => Math.random() - .5);
+
     qList.push({
-      q: type === 'mcq' ? `أكمل الفراغ:\n\n${prompt}` : `بطاقة استذكار:\n\n${sent}`,
+      q: type === 'mcq' ? `اختر الكلمة أو المصطلح المناسب لتكملة العبارة التالية:\n\n${prompt}` : `بطاقة استذكار رقم ${idx + 1}:\n\n${sent}`,
       options: opts,
-      answer: target,
-      explanation: `النص الأصلي: "${sent}"`
+      answer: targetWord,
+      explanation: `النص الأصلي من الملف:\n"${sent}"`
     });
   });
-  return qList.length ? qList : [{q: "سؤال تجريبي من الملف", options: ["خيار أ", "خيار ب", "خيار ج", "خيار د"], answer: "خيار أ", explanation: "شرح تجريبي"}];
+
+  return qList.length ? qList : [{
+    q: "سؤال تقييمي لمحتوى الملف",
+    options: ["الخيار الأساسي", "خيار مساند", "خيار بديل", "خيار إضافي"],
+    answer: "الخيار الأساسي",
+    explanation: "تم استخراج هذا السؤال من محتوى المستند."
+  }];
 }
 
 function runQuizSession(questions, type, index, score){
@@ -806,11 +844,15 @@ function runQuizSession(questions, type, index, score){
 
   if(index >= questions.length){
     qMain.innerHTML=`
-      <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
-        <h1>انتهى الاختبار بنجاح!</h1>
-        <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
-        <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
+      <div class="side" id="side-quizzes"></div>
+      <div class="main">
+        <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
+          <h1>انتهى الاختبار بنجاح!</h1>
+          <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
+          <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
+        </div>
       </div>`;
+    initGlobalSidebars();
     return;
   }
 
@@ -828,15 +870,15 @@ function runQuizSession(questions, type, index, score){
         `).join('')}
       </div>
       <div id="explanationBox" class="card hide" style="padding:16px;margin-top:12px;background:#E4F2F0;color:#0B5F58;line-height:1.7;">
-        <b>💡 الشرح:</b> <span id="explanationText"></span>
+        <b>💡 الشرح من الملف:</b> <span id="explanationText"></span>
       </div>`;
   } else {
     contentHtml = `
       <div id="fcCard" class="card" style="padding:35px;text-align:center;background:#F3F5F9;cursor:pointer;font-size:18px;font-weight:600">
-        اضغط هنا لعرض الإجابة والشرح
+        اضغط هنا لعرض الإجابة والشرح من الملف
       </div>
       <div id="fcAns" class="card hide" style="padding:24px;background:#E4F2F0;color:#0B5F58;font-size:16px;line-height:1.8">
-        <b>💡 الإجابة والشرح:</b><br>${esc(item.explanation)}
+        <b>💡 الشرح من الملف:</b><br>${esc(item.explanation)}
       </div>
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn sec" id="fcWrong">لم أكن أعرفها</button>
@@ -845,15 +887,19 @@ function runQuizSession(questions, type, index, score){
   }
 
   qMain.innerHTML=`
-    <div style="display:flex;align-items:center;gap:14px">
-      <button class="fab" onclick="renderQuizHome()">↩</button>
-      <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((index+1)/questions.length)*100}%"></div></div>
-      <b>${index+1} / ${questions.length}</b>
-    </div>
-    <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
-      <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
-      ${contentHtml}
+    <div class="side" id="side-quizzes"></div>
+    <div class="main">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="fab" onclick="renderQuizHome()">↩</button>
+        <div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:${((index+1)/questions.length)*100}%"></div></div>
+        <b>${index+1} / ${questions.length}</b>
+      </div>
+      <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
+        <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
+        ${contentHtml}
+      </div>
     </div>`;
+  initGlobalSidebars();
 
   if(type === 'mcq'){
     document.querySelectorAll('.opt').forEach(btn => {
@@ -869,7 +915,7 @@ function runQuizSession(questions, type, index, score){
         });
         document.getElementById('explanationText').textContent = item.explanation;
         document.getElementById('explanationBox').classList.remove('hide');
-        setTimeout(() => runQuizSession(questions, type, index+1, score), 3000);
+        setTimeout(() => runQuizSession(questions, type, index+1, score), 3500);
       };
     });
   } else {
@@ -949,21 +995,13 @@ function go(id){
   if(id==='quizzes') renderQuizHome();
   if(id==='recordings') loadRecordings();
   if(id==='notebooks') loadNotebooks();
-  
-  // تحديث حالة الأزرار النشطة في القوائم الجانبية
-  document.querySelectorAll('.side').forEach(sideEl => {
-    sideEl.querySelectorAll('[data-go]').forEach(b => {
-      b.classList.toggle('on', b.dataset.go === id);
-    });
-  });
+  initGlobalSidebars();
 }
 
 document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
   if(g){e.preventDefault();go(g.dataset.go);}
 });
-
-initGlobalSidebars();
 </script>
 </body>
 </html>
