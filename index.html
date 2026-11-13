@@ -1086,10 +1086,10 @@ function fit(){
   const st = document.getElementById('stage');
   const baseWidth = 1194;
   const baseHeight = 834;
-  const vv = window.visualViewport;
-  const screenWidth = window.screen && window.screen.width ? window.screen.width : window.innerWidth;
-  const vw = Math.min(vv && vv.width ? vv.width : window.innerWidth, screenWidth);
-  const vh = vv && vv.height ? vv.height : window.innerHeight;
+  
+حبذا لو تعتمد على العرض الفعلي للمتصفح دون اللجوء لعرض الشاشة الوهمي:
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
   const scale = Math.min(vw / baseWidth, vh / baseHeight);
 
