@@ -14,14 +14,15 @@
 </script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;width:100%;height:100%;height:100dvh;background:#F3F5F9;overflow:hidden;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D}
+html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:hidden;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-.scr{position:absolute;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden}
+/* تم تعديل الشاشات لتعمل بـ row-reverse ليظهر الشريط الجانبي يميناً والمحتوى يساراً بشكل مضبوط تماماً */
+.scr{position:fixed;inset:0;display:none;flex-direction:row-reverse;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
-.side{width:240px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10}
+.side{width:240px;background:#fff;border-right:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10;overflow-y:auto}
 .nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
