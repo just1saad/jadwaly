@@ -260,31 +260,36 @@ function renderQuizHome(){
         <option value="flashcards">بطاقات استذكار شاملة</option>
       </select>
 
-      <button class="btn pri" id="startPdfQuizBtn">✨ توليد اختبار شامل من الكتاب (مع الفحص البصري الدائم)</button>
+      <button class="btn pri" id="startPdfQuizBtn">✨ توليد اختبار شامل من الكتاب (بالمسح البصري الذكي OCR)</button>
     </div>
   `;
 
   document.getElementById('startPdfQuizBtn').onclick = async () => {
-    const fileId = document.getElementById('quizFileSelect').value;
+    const fileId = document.getElementById('quizFileSelect'.value) || document.getElementById('quizFileSelect').value;
     const type = document.getElementById('quizTypeSelect').value;
     const file = files.find(f => f.id === fileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري تفعيل الفحص البصري الشامل (OCR) لكامل صفحات الكتاب... يرجى الانتظار</div>`;
+    qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري معالجة الكتاب عبر محرك الـ OCR المتقدم... يرجى الانتظار</div>`;
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
       let fullText = '';
       
-      // تشغيل المسح البصري (OCR) دائماً وبشكل إجباري لكل صفحات الكتاب لضمان نقاء الحروف
+      // تشغيل محرك OCR بشكل دائم ومحسن مع رفع دقة المعالجة (Scale 2.5) لتجاوز مشاكل الترميز المشفر
       for(let i=1; i<=doc.numPages; i++){
-        qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري قراءة الصفحة ${i} من ${doc.numPages} بصرياً (OCR)...</div>`;
+        qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري قراءة الصفحة ${i} من ${doc.numPages} عبر محرك OCR...</div>`;
         const page = await doc.getPage(i);
-        const vp = page.getViewport({scale: 1.5});
+        const vp = page.getViewport({scale: 2.5}); // دقة عالية جداً لقراءة الحروف العربية بدقة
         const canvas = document.createElement('canvas');
         canvas.width = vp.width; canvas.height = vp.height;
-        await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+        const ctx = canvas.getContext('2d');
+        await page.render({canvasContext: ctx, viewport: vp}).promise;
+        
         const worker = await Tesseract.createWorker('ara');
+        await worker.setParameters({
+          tessedit_pageseg_mode: '3', // تحليل كتلة النص بالكامل بدقة
+        });
         const ret = await worker.recognize(canvas);
         await worker.terminate();
         fullText += ' ' + ret.data.text;
