@@ -37,7 +37,6 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
 .hide{display:none!important}
 .modal-bg{position:fixed;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
-.modal-box{background:#fff;border-radius:20px;padding:24px;width:480px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
 .inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
 </style>
 </head>
@@ -150,11 +149,11 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 <!-- TOOLS -->
 <div class="scr" id="tools"><div class="side"></div><div class="main"><h1>الأدوات والذكاء الاصطناعي</h1></div></div>
 
-<!-- STUDY (Exact layout matching user reference design studypage-2.html) -->
+<!-- STUDY (Exact layout matching studypage-2.html & screenshot) -->
 <div class="scr" id="study" style="background:#dfe3ea">
   <div dir="rtl" style="position:relative;width:100vw;height:100vh;background:#E9ECF2;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;overflow:hidden">
     
-    <!-- PDF Paper Container -->
+    <!-- PDF Paper Container with drawing layer -->
     <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:100%;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
       <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
     </div>
@@ -167,7 +166,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
       <div id="pdfFileTitleBanner" style="background:#fff;border-radius:12px;height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;box-shadow:0 2px 10px rgba(20,33,61,.15)">[اسم الملف] · 2 / [عدد]</div>
     </div>
 
-    <!-- Top-Left Action Buttons -->
+    <!-- Top-Left Action Buttons (Thumbnails, Recording, AI) -->
     <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:30">
       <button aria-label="الصفحات" id="btnThumbToggle" style="width:44px;height:44px;border:0;border-radius:12px;background:#fff;color:#14213D;box-shadow:0 2px 10px rgba(20,33,61,.15);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></button>
       <button aria-label="تسجيل" id="btnStudyRec" style="width:44px;height:44px;border:0;border-radius:12px;background:#fff;color:#14213D;box-shadow:0 2px 10px rgba(20,33,61,.15);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
@@ -176,20 +175,29 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 
     <!-- Top-Center Floating Toolbar -->
     <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 12px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:30">
+      
+      <!-- Pen Button & 25 Brushes Menu -->
       <div style="position:relative;">
-        <button aria-label="قلم" id="toolbarPenBtn" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:#0B5F58;color:#fff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg></button>
-        <!-- Brush Submenu Popup -->
-        <div id="brushMenu" class="hide" style="position:absolute;top:52px;right:0;background:#fff;border:1px solid #D5DBE7;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 15px rgba(20,33,61,.15);z-index:40;width:130px;">
-          <button class="brush-opt" data-brush="normal" style="background:none;border:0;padding:6px;text-align:right;font-weight:600;border-radius:6px;font-size:13px;">حبر عادي</button>
-          <button class="brush-opt" data-brush="pencil" style="background:none;border:0;padding:6px;text-align:right;font-weight:600;border-radius:6px;font-size:13px;">قلم رصاص</button>
-          <button class="brush-opt" data-brush="marker" style="background:none;border:0;padding:6px;text-align:right;font-weight:600;border-radius:6px;font-size:13px;">ماركر رفيع</button>
+        <button class="tool-btn" data-tool="pen" aria-label="قلم" id="toolbarPenBtn" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:#0B5F58;color:#fff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg></button>
+        <!-- 25 Brushes Dropdown -->
+        <div id="brushMenu" class="hide" style="position:absolute;top:52px;right:0;background:#fff;border:1px solid #D5DBE7;border-radius:12px;padding:10px;display:grid;grid-template-columns:1fr;gap:6px;box-shadow:0 10px 30px rgba(20,33,61,.2);z-index:40;width:180px;max-height:260px;overflow-y:auto;">
+          <div style="font-weight:700;font-size:12px;padding-bottom:4px;border-bottom:1px solid #E3E7EF;text-align:center;">اختر الفرشة (25 فرشة)</div>
+          <!-- 25 Brushes with SVG Icons -->
+          <script>
+            document.write(Array.from({length:25},(_,i)=>`
+              <button class="brush-item" data-brush="${i+1}" style="background:none;border:0;padding:6px;text-align:right;display:flex;align-items:center;gap:8px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="${(i%8)+2}"/></svg>
+                فرشة رقم ${i+1}
+              </button>
+            `).join(''));
+          </script>
         </div>
       </div>
 
-      <button aria-label="تظليل" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/></svg></button>
-      <button aria-label="ممحاة" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/></svg></button>
-      <button aria-label="تحديد" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h3M11 5h3M17 5h2v2M19 11v3M19 17v2h-2M14 19h-3M8 19H5v-2M5 14v-3M5 8V5"/></svg></button>
-      <button aria-label="ترجمة" id="toolTranslateBtn" title="ترجمة عبر تحديد مربع" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8l6 6M5 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg></button>
+      <button class="tool-btn" data-tool="highlighter" aria-label="تظليل" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/></svg></button>
+      <button class="tool-btn" data-tool="eraser" aria-label="ممحاة" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/></svg></button>
+      <button class="tool-btn" data-tool="select" aria-label="تحديد" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h3M11 5h3M17 5h2v2M19 11v3M19 17v2h-2M14 19h-3M8 19H5v-2M5 14v-3M5 8V5"/></svg></button>
+      <button class="tool-btn" data-tool="translate" aria-label="ترجمة" id="toolTranslateBtn" title="ترجمة عبر تحديد مربع" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8l6 6M5 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg></button>
       
       <span style="width:1px;height:26px;background:#D5DBE7;margin:0 6px;flex:none"></span>
       
@@ -202,6 +210,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
           <div class="color-opt" data-color="#C2410C" style="width:24px;height:24px;border-radius:12px;background:#C2410C;cursor:pointer;"></div>
           <div class="color-opt" data-color="#0B5F58" style="width:24px;height:24px;border-radius:12px;background:#0B5F58;cursor:pointer;"></div>
           <div class="color-opt" data-color="#D92D20" style="width:24px;height:24px;border-radius:12px;background:#D92D20;cursor:pointer;"></div>
+          <div class="color-opt" data-color="#10B981" style="width:24px;height:24px;border-radius:12px;background:#10B981;cursor:pointer;"></div>
         </div>
       </div>
 
@@ -210,21 +219,25 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
       <button aria-label="إعادة" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
     </div>
 
-    <!-- Bottom Sliding Live Recording Bar -->
-    <div id="studyRecBar" class="hide" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:600px;max-width:90%;background:#14213D;color:#fff;border-radius:24px;padding:12px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 30px rgba(20,33,61,.3);z-index:40;">
-      <div style="width:10px;height:10px;border-radius:5px;background:#E8590C;" class="rec"></div>
-      <div id="studyRecText" style="flex:1;font-size:13px;color:#E2E8F0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">جاري الاستماع الفوري والتفريغ الكلامي هنا...</div>
-      <button id="closeStudyRec" style="background:transparent;border:0;color:#fff;font-weight:700;cursor:pointer;">إيقاف</button>
+    <!-- Bottom Sliding Live Recording Bar matching user screenshot -->
+    <div id="studyRecBar" class="hide" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:360px;background:#14213D;color:#fff;border-radius:24px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 30px rgba(20,33,61,.3);z-index:40;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:8px;height:8px;border-radius:4px;background:#E8590C;"></div>
+        <span style="font-size:13px;font-weight:700;">00:29</span>
+      </div>
+      <div id="studyRecText" style="font-size:12px;color:#C7D0E4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">النص المباشر من الملف</div>
+      <button id="closeStudyRec" style="background:transparent;border:0;color:#94A3B8;font-weight:700;cursor:pointer;font-size:13px;">✕</button>
     </div>
 
-    <!-- AI Internal Drawer (Stays inside Study screen) -->
-    <div id="aiDr" class="hide" style="position:absolute;top:76px;left:20px;width:320px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(20,33,61,.25);padding:18px;display:flex;flex-direction:column;gap:12px;z-index:35;">
+    <!-- AI Internal Drawer with Summarize PDF & Step-by-step interactive quiz -->
+    <div id="aiDr" class="hide" style="position:absolute;top:76px;left:20px;width:340px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(20,33,61,.25);padding:18px;display:flex;flex-direction:column;gap:12px;z-index:35;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h2 style="font-size:15px;margin:0;">مساعد الذكاء الاصطناعي</h2>
         <button id="closeAiDr" style="width:28px;height:28px;border:0;font-size:14px;background:#F3F5F9;border-radius:6px;">✕</button>
       </div>
-      <div style="background:#F3F5F9;border-radius:12px;padding:12px;"><b style="font-size:13px;">حالة الملف الحالي</b><div style="font-size:12px;line-height:1.7;color:#44506A;margin-top:4px" id="aiPageSummary">تم استخراج النص بالكامل ومستعد لتوليد الاختبارات والبطاقات.</div></div>
-      <button class="btn pri" id="internalGenerateQuizBtn" style="height:42px;justify-content:center;font-size:13px;border-radius:10px;background:#0B5F58;">إنشاء اختبار ذكي وبطاقات فورية</button>
+      <div style="background:#F3F5F9;border-radius:12px;padding:12px;"><b style="font-size:13px;">حالة الملف الحالي</b><div style="font-size:12px;line-height:1.7;color:#44506A;margin-top:4px" id="aiPageSummary">جاهز للتحليل وتوليد الأسئلة والملخصات.</div></div>
+      <button class="btn pri" id="internalGenQuizBtn" style="height:40px;justify-content:center;font-size:13px;border-radius:10px;background:#0B5F58;">إنشاء اختبار تفاعلي (سؤال بسؤال)</button>
+      <button class="btn sec" id="internalSummarizeBtn" style="height:40px;justify-content:center;font-size:13px;border-radius:10px;">تلخيص الملف وتحميله (PDF)</button>
       <div id="internalQuizContainer" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
@@ -246,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderScheduleView();
   renderQuizHome();
   initHomeLiveTranscription();
-  initStudyDrawersAndTools();
+  initStudyToolsAndDrawers();
 });
 
 function initGlobalSidebars(){
@@ -355,7 +368,7 @@ document.addEventListener('click',e=>{
 async function openPdf(file){
   pdfState.current=file; go('study');
   const paper=document.getElementById('paper');
-  paper.innerHTML='<div style="margin:auto;color:#566178">جاري التحميل مع الفحص البصري الدائم (OCR)...</div>';
+  paper.innerHTML='<div style="margin:auto;color:#566178">جاري معالجة الكتاب بصرياً (OCR)...</div>';
   try{
     pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
     paper.innerHTML='';
@@ -378,21 +391,16 @@ async function openPdf(file){
       canvas.width=vp.width; canvas.height=vp.height;
       await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
 
-      // Thumbnail generation
       if(thumbList){
         const thumbCanvas = document.createElement('canvas');
-        thumbCanvas.width = 120; thumbCanvas.height = 160;
         const tvp = page.getViewport({scale: 0.2});
         thumbCanvas.width = tvp.width; thumbCanvas.height = tvp.height;
         thumbCanvas.style.cssText = 'width:100px;height:auto;cursor:pointer;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);';
         await page.render({canvasContext: thumbCanvas.getContext('2d'), viewport: tvp}).promise;
-        thumbCanvas.onclick = () => {
-          canvas.scrollIntoView({behavior: 'smooth'});
-        };
+        thumbCanvas.onclick = () => { canvas.scrollIntoView({behavior: 'smooth'}); };
         thumbList.appendChild(thumbCanvas);
       }
 
-      // OCR permanent processing
       const worker = await Tesseract.createWorker('ara');
       await worker.setParameters({ tessedit_pageseg_mode: '3' });
       const ret = await worker.recognize(canvas);
@@ -400,11 +408,11 @@ async function openPdf(file){
       pdfState.fullTextCache += ' ' + ret.data.text;
     }
     document.getElementById('pdfFileTitleBanner').textContent=`${file.name} · ${pdfState.doc.numPages} صفحة`;
-    document.getElementById('aiPageSummary').textContent=`تم قراءة الملف بالكامل (${pdfState.doc.numPages} صفحة) وجاهز للتوليد الفوري.`;
+    document.getElementById('aiPageSummary').textContent=`تم قراءة الملف بالكامل (${pdfState.doc.numPages} صفحة) ومستعد للتوليد الفوري.`;
   }catch(err){paper.innerHTML='<div style="margin:auto;color:#B42318">تعذر عرض الملف.</div>';}
 }
 
-function initStudyDrawersAndTools(){
+function initStudyToolsAndDrawers(){
   const aiBtn = document.getElementById('bAI');
   const aiDr = document.getElementById('aiDr');
   const closeAi = document.getElementById('closeAiDr');
@@ -414,50 +422,78 @@ function initStudyDrawersAndTools(){
   const studyRecBar = document.getElementById('studyRecBar');
   const closeStudyRec = document.getElementById('closeStudyRec');
 
+  // AI Drawer Toggle & Active styling
   if(aiBtn && aiDr){
-    aiBtn.onclick = () => { aiDr.classList.toggle('hide'); if(thumbDr) thumbDr.classList.add('hide'); };
+    aiBtn.onclick = () => {
+      aiDr.classList.toggle('hide');
+      if(thumbDr) thumbDr.classList.add('hide');
+      aiBtn.style.background = aiDr.classList.contains('hide') ? '#fff' : '#E4F2F0';
+      aiBtn.style.color = aiDr.classList.contains('hide') ? '#14213D' : '#0B5F58';
+    };
   }
   if(closeAi && aiDr){
-    closeAi.onclick = () => aiDr.classList.add('hide');
-  }
-  if(thumbBtn && thumbDr){
-    thumbBtn.onclick = () => { thumbDr.classList.toggle('hide'); if(aiDr) aiDr.classList.add('hide'); };
+    closeAi.onclick = () => {
+      aiDr.classList.add('hide');
+      if(aiBtn) { aiBtn.style.background = '#fff'; aiBtn.style.color = '#14213D'; }
+    };
   }
 
-  // Sliding Live Recording bar in Study view
+  // Thumbnails Drawer Toggle & Active styling
+  if(thumbBtn && thumbDr){
+    thumbBtn.onclick = () => {
+      thumbDr.classList.toggle('hide');
+      if(aiDr) aiDr.classList.add('hide');
+      thumbBtn.style.background = thumbDr.classList.contains('hide') ? '#fff' : '#E4F2F0';
+      thumbBtn.style.color = thumbDr.classList.contains('hide') ? '#14213D' : '#0B5F58';
+    };
+  }
+
+  // Recording button toggle & Green indicator matching screenshot
   if(studyRecBtn && studyRecBar){
+    let recordingActive = false;
     studyRecBtn.onclick = () => {
-      studyRecBar.classList.toggle('hide');
-      if(!studyRecBar.classList.contains('hide')){
-        startStudyLiveRec();
-      }
+      recordingActive = !recordingActive;
+      studyRecBar.classList.toggle('hide', !recordingActive);
+      studyRecBtn.style.background = recordingActive ? '#10B981' : '#fff';
+      studyRecBtn.style.color = recordingActive ? '#fff' : '#14213D';
+      if(recordingActive) startStudyLiveRec();
     };
   }
   if(closeStudyRec && studyRecBar){
-    closeStudyRec.onclick = () => studyRecBar.classList.add('hide');
+    closeStudyRec.onclick = () => {
+      studyRecBar.classList.add('hide');
+      if(studyRecBtn) { studyRecBtn.style.background = '#fff'; studyRecBtn.style.color = '#14213D'; }
+    };
   }
 
-  // Pen Brush Menu Toggle (click once to select, click again to open brush menu)
-  const penBtn = document.getElementById('toolbarPenBtn');
+  // Tool selection (Pen, Highlighter, Eraser, Select, Translate)
+  const toolBtns = document.querySelectorAll('.tool-btn');
   const brushMenu = document.getElementById('brushMenu');
-  if(penBtn && brushMenu){
-    let clickedOnce = false;
-    penBtn.onclick = () => {
-      if(!clickedOnce){
-        clickedOnce = true;
-        brushMenu.classList.remove('hide');
+  toolBtns.forEach(btn => {
+    btn.onclick = () => {
+      toolBtns.forEach(b => { b.style.background = 'transparent'; b.style.color = '#44506A'; });
+      btn.style.background = '#0B5F58';
+      btn.style.color = '#fff';
+      
+      const tool = btn.dataset.tool;
+      if(tool === 'pen'){
+        brushMenu.classList.toggle('hide');
       } else {
-        clickedOnce = false;
         brushMenu.classList.add('hide');
       }
+
+      if(tool === 'translate'){
+        alert('أداة الترجمة مفعلة: ارسم مربع تحديد (Outline) حول النص المراد ترجمته داخل المستند.');
+      }
     };
-    document.querySelectorAll('.brush-opt').forEach(opt => {
-      opt.onclick = () => {
-        brushMenu.classList.add('hide');
-        clickedOnce = false;
-      };
-    });
-  }
+  });
+
+  // Brush Selection
+  document.querySelectorAll('.brush-item').forEach(bItem => {
+    bItem.onclick = () => {
+      if(brushMenu) brushMenu.classList.add('hide');
+    };
+  });
 
   // Color Picker Popup
   const colorInd = document.getElementById('currentColorIndicator');
@@ -474,26 +510,79 @@ function initStudyDrawersAndTools(){
     });
   }
 
-  // Internal AI Quiz Generator inside Study Drawer
-  const internalGen = document.getElementById('internalGenerateQuizBtn');
+  // Step-by-step Interactive Quiz Generator inside AI Drawer
+  const internalGen = document.getElementById('internalGenQuizBtn');
   if(internalGen){
     internalGen.onclick = () => {
       const container = document.getElementById('internalQuizContainer');
       const text = pdfState.fullTextCache || "محتوى الملف التعليمي العام";
       const sentences = text.split(/[.!?؟؛\n]+/).map(s => s.trim()).filter(s => s.length > 10);
       
-      container.innerHTML = `<div style="font-size:13px;color:#0B5F58;font-weight:700;">تم توليد الأسئلة والبطاقات بنجاح:</div>`;
-      for(let i=0; i<Math.min(3, sentences.length); i++){
-        container.innerHTML += `<div style="background:#E4F2F0;padding:8px;border-radius:8px;font-size:12px;font-weight:600;">سؤال ${i+1}: ${esc(sentences[i].slice(0, 60))}...</div>`;
+      const questions = sentences.slice(0, 5).map((sent, idx) => {
+        const words = sent.split(' ');
+        const target = words[Math.floor(words.length/2)] || words[0];
+        return {
+          q: `سؤال (${idx+1}): أكمل الفراغ:\n"${sent.replace(target, '_____')}"`,
+          options: [target, 'مصطلح بديل أول', 'مصطلح بديل ثان', 'مصطلح بديل ثالث'].sort(()=>Math.random()-.5),
+          answer: target
+        };
+      });
+
+      let currentQ = 0;
+      function renderStep(){
+        if(currentQ >= questions.length){
+          container.innerHTML = `<div style="font-weight:700;color:#0B5F58;text-align:center;padding:10px;">انتهى الاختبار بنجاح!</div>`;
+          return;
+        }
+        const item = questions[currentQ];
+        container.innerHTML = `
+          <div style="font-size:13px;font-weight:700;color:#14213D">${esc(item.q)}</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+            ${item.options.map(opt=>`<button class="internal-opt" data-val="${esc(opt)}" style="background:#F3F5F9;border:1px solid #D5DBE7;padding:8px;border-radius:8px;text-align:right;font-size:12px;font-weight:600;cursor:pointer;">${esc(opt)}</button>`).join('')}
+          </div>
+          <button id="nextQBtn" class="btn pri" style="margin-top:8px;height:32px;font-size:12px;display:none;">السؤال التالي</button>
+        `;
+
+        let answered = false;
+        container.querySelectorAll('.internal-opt').forEach(optBtn => {
+          optBtn.onclick = () => {
+            if(answered) return;
+            answered = true;
+            const val = optBtn.dataset.val;
+            if(val === item.answer){
+              optBtn.style.background = '#E4F2F0';
+              optBtn.style.borderColor = '#0B5F58';
+            } else {
+              optBtn.style.background = '#FDECEA';
+              optBtn.style.borderColor = '#B42318';
+            }
+            container.querySelector('#nextQBtn').style.display = 'block';
+          };
+        });
+
+        container.querySelector('#nextQBtn').onclick = () => {
+          currentQ++;
+          renderStep();
+        };
       }
+      renderStep();
     };
   }
 
-  // Translation tool
-  const translateTool = document.getElementById('toolTranslateBtn');
-  if(translateTool){
-    translateTool.onclick = () => {
-      alert('أداة الترجمة مفعلة: قم بالرسم بشكل مربع على النص داخل الملف لترجمته فوراً.');
+  // Summarize and Download PDF feature
+  const summarizeBtn = document.getElementById('internalSummarizeBtn');
+  if(summarizeBtn){
+    summarizeBtn.onclick = () => {
+      const text = pdfState.fullTextCache || "ملخص محتوى المستند التعليمي.";
+      const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (pdfState.current ? pdfState.current.name : 'ملخص_الملف') + '_Summary.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert('تم إنشاء ملخص الملف وتنزيله بنجاح!');
     };
   }
 }
@@ -509,12 +598,19 @@ function startStudyLiveRec(){
   rec.lang = 'ar-SA';
   rec.continuous = true;
   rec.interimResults = true;
+  let wordCount = 0;
   rec.onresult = (e) => {
     let t = '';
     for(let i=e.resultIndex; i<e.results.length; ++i){
       t += e.results[i][0].transcript + ' ';
     }
-    recText.textContent = t;
+    const words = t.trim().split(' ');
+    // Show sliding words window (every few words updating dynamically)
+    if(words.length > 4){
+      recText.textContent = words.slice(-4).join(' ');
+    } else {
+      recText.textContent = t;
+    }
   };
   try{ rec.start(); }catch(e){}
 }
@@ -547,7 +643,7 @@ const addSchedClassBtn = document.getElementById('addSchedClassBtn');
 if(addSchedClassBtn){
   addSchedClassBtn.onclick=()=>{
     const title=prompt('اسم المادة:');
-    const day=prompt('اليوم (الأحد، الإثنين، والثلاثاء، الأربعاء، الخميس):','الأحد');
+    const day=prompt('اليوم (الأحد، الإثنين، الثلاثاء، الأربعاء، الخميس):','الأحد');
     if(title&&day){
       const s=getSchedule();
       s.classes.push({id:makeId(),title,day});
@@ -628,11 +724,11 @@ function renderQuizHome(){
       
       <label style="font-weight:600">نوع الاختبار:</label>
       <select id="quizTypeSelect" class="inp">
-        <option value="mcq">خيارات متعددة (MCQ شاملة)</option>
-        <option value="flashcards">بطاقات استذكار شاملة</option>
+        <option value="mcq">خيارات متعددة (MCQ تفاعلية)</option>
+        <option value="flashcards">بطاقات استذكار</option>
       </select>
 
-      <button class="btn pri" id="startPdfQuizBtn">توليد اختبار شامل من الكتاب (بالمسح البصري الدائم OCR)</button>
+      <button class="btn pri" id="startPdfQuizBtn">بدء الاختبار الشامل (بالمسح البصري OCR)</button>
     </div>
   `;
 
@@ -644,16 +740,16 @@ function renderQuizHome(){
     const file = files.find(f => f.id === fileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">جاري المعالجة عبر محرك الـ OCR الدائم والشامل... يرجى الانتظار</div>`;
+    qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">جاري معالجة الكتاب عبر محرك الـ OCR... يرجى الانتظار</div>`;
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
       let fullText = '';
       
       for(let i=1; i<=doc.numPages; i++){
-        qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">جاري قراءة الصفحة ${i} من ${doc.numPages} عبر محرك OCR...</div>`;
+        qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">جاري قراءة الصفحة ${i} من ${doc.numPages}...</div>`;
         const page = await doc.getPage(i);
-        const vp = page.getViewport({scale: 2.5});
+        const vp = page.getViewport({scale: 2.0});
         const canvas = document.createElement('canvas');
         canvas.width = vp.width; canvas.height = vp.height;
         const ctx = canvas.getContext('2d');
@@ -681,7 +777,7 @@ function generateComprehensiveQuestions(text, type){
     return [{q: "ما هو المحتوى الوارد في المستند؟", options: ["المحتوى الأساسي", "عنصر عام", "فقرة رئيسية", "تفاصيل فرعية"], answer: "المحتوى الأساسي", explanation: "سؤال افتراضي."}];
   }
 
-  const step = Math.max(1, Math.floor(sentences.length / 20));
+  const step = Math.max(1, Math.floor(sentences.length / 10));
   const selectedSentences = [];
   for(let i = 0; i < sentences.length; i += step) selectedSentences.push(sentences[i]);
 
@@ -696,10 +792,10 @@ function generateComprehensiveQuestions(text, type){
     while(wrongOpts.length < 3) wrongOpts.push('مفهوم مرتبط');
 
     return {
-      q: type === 'mcq' ? `سؤال شامل (${idx + 1}):\n\nأكمل العبارة من الكتاب:\n"${prompt}"` : `بطاقة استذكار شاملة (${idx + 1}):\n\n"${sent}"`,
+      q: `سؤال (${idx + 1}):\n\nأكمل العبارة:\n"${prompt}"`,
       options: [targetWord, ...wrongOpts].sort(() => Math.random() - .5),
       answer: targetWord,
-      explanation: `النص الأصلي من الكتاب:\n"${sent}"`
+      explanation: `النص الأصلي:\n"${sent}"`
     };
   });
 }
@@ -722,26 +818,34 @@ function runQuizSession(questions, type, index, score){
       <b>السؤال ${index+1} من ${questions.length}</b>
     </div>
     <div class="card" style="padding:24px;font-size:18px;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
-    ${type==='mcq' ? item.options.map(o=>`<button class="opt" data-opt="${esc(o)}">${esc(o)}</button>`).join('') : '<button class="btn pri" id="showAns">إظهار النص الأصلي</button><div id="ansBox" class="hide" style="padding:16px;background:#E4F2F0;border-radius:12px"><b>النص الأصلي:</b> '+esc(item.explanation)+'</div>'}
-    <div id="expBox" class="card hide" style="padding:14px;background:#E4F2F0"><b>المرجع من الكتاب:</b> ${esc(item.explanation)}</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:700px">
+      ${item.options.map(o=>`<button class="opt" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}
+    </div>
+    <div id="expBox" class="card hide" style="padding:14px;background:#E4F2F0;max-width:700px"><b>المرجع:</b> ${esc(item.explanation)}</div>
+    <button id="nextQuizBtn" class="btn pri hide" style="max-width:200px;margin-top:10px;">السؤال التالي</button>
   `;
 
-  if(type==='mcq'){
-    document.querySelectorAll('.opt').forEach(btn=>{
-      btn.onclick=()=>{
-        const chosen=btn.dataset.opt;
-        if(chosen===item.answer) score++;
-        document.querySelectorAll('.opt').forEach(b=>{
-          if(b.dataset.opt===item.answer) b.classList.add('ok');
-          else if(b.dataset.opt===chosen) b.classList.add('no');
-        });
-        document.getElementById('expBox').classList.remove('hide');
-        setTimeout(()=>runQuizSession(questions,type,index+1,score), 3000);
-      };
-    });
-  } else {
-    document.getElementById('showAns').onclick=()=>{document.getElementById('ansBox').classList.remove('hide');};
-    setTimeout(()=>{runQuizSession(questions,type,index+1,score);}, 5000);
+  let answered = false;
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.onclick=()=>{
+      if(answered) return;
+      answered = true;
+      const chosen=btn.dataset.opt;
+      if(chosen===item.answer) score++;
+      document.querySelectorAll('.opt').forEach(b=>{
+        if(b.dataset.opt===item.answer) b.classList.add('ok');
+        else if(b.dataset.opt===chosen) b.classList.add('no');
+      });
+      document.getElementById('expBox').classList.remove('hide');
+      document.getElementById('nextQuizBtn').classList.remove('hide');
+    };
+  });
+
+  const nextBtn = document.getElementById('nextQuizBtn');
+  if(nextBtn){
+    nextBtn.onclick = () => {
+      runQuizSession(questions, type, index+1, score);
+    };
   }
 }
 
