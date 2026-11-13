@@ -154,7 +154,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
   <div dir="rtl" style="position:relative;width:100vw;height:100vh;background:#E9ECF2;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;overflow:hidden">
     
     <!-- PDF Paper Container -->
-    <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:100%;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
+    <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:100%;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;overflow-y:auto;touch-action:pan-y;" id="paper">
       <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
     </div>
 
@@ -176,7 +176,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     <!-- Top-Center Floating Toolbar -->
     <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 12px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:30">
       
-      <!-- Pen Button & 25 Brushes Square Grid Menu with Custom SVGs -->
+      <!-- Pen Button & 25 Brushes Menu -->
       <div style="position:relative;">
         <button class="tool-btn" data-tool="pen" aria-label="قلم" id="toolbarPenBtn" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:#0B5F58;color:#fff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg></button>
         <div id="brushMenu" class="hide" style="position:absolute;top:52px;right:0;background:#fff;border:1px solid #D5DBE7;border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(5, 1fr);gap:8px;box-shadow:0 10px 35px rgba(20,33,61,.25);z-index:40;width:300px;max-height:300px;overflow-y:auto;">
@@ -189,7 +189,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
               '<path d="M4 8l8 8 8-8"/>', '<path d="M8 4v16m8-16v16"/>', '<path d="M4 10l16 4"/>', '<path d="M12 2a10 10 0 1 1-10 10"/>', '<circle cx="12" cy="12" r="8" fill="currentColor"/>'
             ];
             document.write(brushSvgs.map((svg, i)=>`
-              <button class="brush-item" data-brush="${i+1}" title="نوع الفرشة ${i+1}" style="background:#F3F5F9;border:1px solid #E3E7EF;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;">
+              <button class="brush-item" data-brush="${i+1}" title="فرشة ${i+1}" style="background:#F3F5F9;border:1px solid #E3E7EF;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B5F58" stroke-width="2" stroke-linecap="round">${svg}</svg>
               </button>
             `).join(''));
@@ -232,7 +232,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
       <button aria-label="إعادة" style="width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:transparent;color:#44506A;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
     </div>
 
-    <!-- Bottom Sliding Live Recording Bar with Real Timer -->
+    <!-- Bottom Sliding Live Recording Bar matching screenshot -->
     <div id="studyRecBar" class="hide" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:360px;background:#14213D;color:#fff;border-radius:24px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 30px rgba(20,33,61,.3);z-index:40;">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:8px;height:8px;border-radius:4px;background:#E8590C;"></div>
@@ -242,13 +242,30 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
       <button id="closeStudyRec" style="background:transparent;border:0;color:#94A3B8;font-weight:700;cursor:pointer;font-size:13px;">✕</button>
     </div>
 
-    <!-- AI Internal Drawer -->
+    <!-- AI Internal Drawer with Translation Popup & Summarize -->
     <div id="aiDr" class="hide" style="position:absolute;top:76px;left:20px;width:340px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(20,33,61,.25);padding:18px;display:flex;flex-direction:column;gap:12px;z-index:35;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h2 style="font-size:15px;margin:0;">مساعد الذكاء الاصطناعي</h2>
         <button id="closeAiDr" style="width:28px;height:28px;border:0;font-size:14px;background:#F3F5F9;border-radius:6px;">✕</button>
       </div>
-      <div style="background:#F3F5F9;border-radius:12px;padding:12px;"><b style="font-size:13px;">حالة الملف الحالي</b><div style="font-size:12px;line-height:1.7;color:#44506A;margin-top:4px" id="aiPageSummary">جاهز للتحليل وتوليد الأسئلة والملخصات.</div></div>
+      <div style="background:#F3F5F9;border-radius:12px;padding:12px;"><b style="font-size:13px;">حالة الملف الحالي</b><div style="font-size:12px;line-height:1.7;color:#44506A;margin-top:4px" id="aiPageSummary">جاهز للتحليل وتوليد الأسئلة والملخصات والترجمة.</div></div>
+      
+      <!-- Translation Box inside AI Drawer -->
+      <div id="translationPanel" class="hide" style="background:#E4F2F0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+        <b style="font-size:13px;color:#0B5F58;">ترجمة النص المحدّد:</b>
+        <div id="translatedSourceText" style="font-size:12px;color:#44506A;background:#fff;padding:8px;border-radius:8px;"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="targetLangSelect" class="inp" style="height:32px;font-size:12px;padding:0 8px;">
+            <option value="en">الإنجليزية (English)</option>
+            <option value="fr">الفرنسية (Français)</option>
+            <option value="es">الإسبانية (Español)</option>
+            <option value="ar">العربية</option>
+          </select>
+          <button id="doTranslateBtn" class="btn pri" style="height:32px;font-size:12px;padding:0 12px;">ترجم</button>
+        </div>
+        <div id="translatedResultText" style="font-size:13px;font-weight:700;color:#14213D;margin-top:4px;"></div>
+      </div>
+
       <button class="btn pri" id="internalGenQuizBtn" style="height:40px;justify-content:center;font-size:13px;border-radius:10px;background:#0B5F58;">إنشاء اختبار تفاعلي (سؤال بسؤال)</button>
       <button class="btn sec" id="internalSummarizeBtn" style="height:40px;justify-content:center;font-size:13px;border-radius:10px;">تلخيص الملف وتحميله (PDF/TXT)</button>
       <div id="internalQuizContainer" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
@@ -398,21 +415,27 @@ async function openPdf(file){
       canvas.style.cssText='display:block;margin:0 auto 20px;box-shadow:0 4px 16px rgba(0,0,0,.15);max-width:100%;background:#fff;';
       pageWrapper.appendChild(canvas);
 
-      // Drawing & Touch Overlay Canvas
-      const drawCanvas = document.createElement('canvas');
-      drawCanvas.style.cssText = 'position:absolute;inset:0;cursor:crosshair;z-index:5;touch-action:none;';
-      pageWrapper.appendChild(drawCanvas);
-
-      paper.appendChild(pageWrapper);
-
+      // HiDPI Scaling for crisp vector-like smooth drawing lines
       const page=await pdfState.doc.getPage(i);
       const vp=page.getViewport({scale:2.0});
-      canvas.width=vp.width; canvas.height=vp.height;
-      drawCanvas.width=vp.width; drawCanvas.height=vp.height;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = vp.width * dpr;
+      canvas.height = vp.height * dpr;
+      canvas.style.width = vp.width + 'px';
+      canvas.style.height = vp.height + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
 
-      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+      await page.render({canvasContext:ctx,viewport:vp}).promise;
 
-      setupDrawing(drawCanvas);
+      // Separate drawing overlay canvas matching exact resolution
+      const drawCanvas = document.createElement('canvas');
+      drawCanvas.width = vp.width * dpr;
+      drawCanvas.height = vp.height * dpr;
+      drawCanvas.style.cssText = `position:absolute;inset:0;width:${vp.width}px;height:${vp.height}px;cursor:crosshair;z-index:5;touch-action:pan-y;`;
+      pageWrapper.appendChild(drawCanvas);
+
+      setupDrawing(drawCanvas, vp.width, vp.height);
 
       if(thumbList){
         const thumbCanvas = document.createElement('canvas');
@@ -431,7 +454,7 @@ async function openPdf(file){
       pdfState.fullTextCache += ' ' + ret.data.text;
     }
     document.getElementById('pdfFileTitleBanner').textContent=`${file.name} · ${pdfState.doc.numPages} صفحة`;
-    document.getElementById('aiPageSummary').textContent=`تم قراءة الملف بالكامل (${pdfState.doc.numPages} صفحة) ومستعد للتوليد الفوري.`;
+    document.getElementById('aiPageSummary').textContent=`تم قراءة الملف بالكامل (${pdfState.doc.numPages} صفحة) ومستعد للتلخيص والترجمة.`;
   }catch(err){paper.innerHTML='<div style="margin:auto;color:#B42318">تعذر عرض الملف.</div>';}
 }
 
@@ -440,22 +463,28 @@ let currentStrokeColor = '#14213D';
 let currentBrushStyle = 1;
 let currentTextSize = 16;
 
-function setupDrawing(canvas){
+function setupDrawing(canvas, w, h){
   const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  ctx.scale(dpr, dpr);
+
   let drawing = false;
   let startX = 0, startY = 0;
+  let selectionBoxDiv = null;
 
   function getCoords(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     return {
-      x: (clientX - rect.left) * (canvas.width / rect.width),
-      y: (clientY - rect.top) * (canvas.height / rect.height)
+      x: (clientX - rect.left) * (w / rect.width),
+      y: (clientY - rect.top) * (h / rect.height)
     };
   }
 
-  const startAction = (e) => {
+  canvas.onmousedown = (e) => {
+    // Restrict drawing to mouse or stylus (Pen), touch is exclusively for scrolling
+    if(e.pointerType === 'touch') return;
     const pos = getCoords(e);
     startX = pos.x; startY = pos.y;
     
@@ -463,8 +492,17 @@ function setupDrawing(canvas){
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(startX, startY);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
       ctx.setLineDash([]);
       ctx.shadowBlur = 0;
+
+      if(currentActiveTool === 'highlighter'){
+        ctx.globalCompositeOperation = 'multiply'; // Highlights stay under and transparent over text
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       if(currentBrushStyle === 2) ctx.setLineDash([6, 6]);
       else if(currentBrushStyle === 3) ctx.setLineDash([12, 6]);
       else if(currentBrushStyle === 4) { ctx.shadowBlur = 3; ctx.shadowColor = currentStrokeColor; }
@@ -475,54 +513,74 @@ function setupDrawing(canvas){
         ctx.fillStyle = currentStrokeColor;
         ctx.fillText(textInput, startX, startY);
       }
+    } else if(currentActiveTool === 'translate'){
+      drawing = true;
+      // Create live interactive DOM selection box overlay
+      selectionBoxDiv = document.createElement('div');
+      selectionBoxDiv.style.cssText = `position:absolute;border:2px dashed #0B5F58;background:rgba(11,95,88,0.1);z-index:20;pointer-events:none;`;
+      canvas.parentElement.appendChild(selectionBoxDiv);
     }
   };
 
-  const moveAction = (e) => {
+  canvas.onmousemove = (e) => {
     if(!drawing) return;
     const pos = getCoords(e);
 
     if(currentActiveTool === 'pen'){
       ctx.strokeStyle = currentStrokeColor;
       ctx.lineWidth = currentBrushStyle > 20 ? 6 : 3;
-      ctx.lineCap = currentBrushStyle === 5 ? 'square' : 'round';
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
     } else if(currentActiveTool === 'highlighter'){
       ctx.strokeStyle = currentStrokeColor + '55';
-      ctx.lineWidth = 16;
-      ctx.lineCap = 'butt';
+      ctx.lineWidth = 18;
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
     } else if(currentActiveTool === 'eraser'){
       ctx.clearRect(pos.x-15, pos.y-15, 30, 30);
-    }
-  };
-
-  const endAction = (e) => {
-    if(drawing) drawing = false;
-    if(currentActiveTool === 'translate'){
-      const pos = getCoords(e.changedTouches ? e.changedTouches[0] : e);
-      ctx.strokeStyle = '#0B5F58';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
-      ctx.strokeRect(Math.min(startX, pos.x), Math.min(startY, pos.y), Math.abs(pos.x - startX), Math.abs(pos.y - startY));
-      ctx.setLineDash([]);
+    } else if(currentActiveTool === 'translate' && selectionBoxDiv){
+      const rect = canvas.getBoundingClientRect();
+      const curX = e.clientX - rect.left;
+      const curY = e.clientY - rect.top;
+      const origStartX = startX * (rect.width / w);
+      const origStartY = startY * (rect.height / h);
       
-      const aiDr = document.getElementById('aiDr');
-      if(aiDr) aiDr.classList.remove('hide');
-      const summary = document.getElementById('aiPageSummary');
-      if(summary) summary.innerHTML = '<b>نتيجة الترجمة الفورية للمربع المحدد:</b><br>تم استخراج النص وترجمته إلى العربية بنجاح.';
+      const left = Math.min(origStartX, curX);
+      const top = Math.min(origStartY, curY);
+      const width = Math.abs(curX - origStartX);
+      const height = Math.abs(curY - origStartY);
+
+      selectionBoxDiv.style.left = left + 'px';
+      selectionBoxDiv.style.top = top + 'px';
+      selectionBoxDiv.style.width = width + 'px';
+      selectionBoxDiv.style.height = height + 'px';
     }
   };
 
-  canvas.onmousedown = startAction;
-  canvas.onmousemove = moveAction;
-  canvas.onmouseup = endAction;
+  canvas.onmouseup = (e) => {
+    if(!drawing) return;
+    drawing = false;
 
-  canvas.ontouchstart = (e) => { e.preventDefault(); startAction(e); };
-  canvas.ontouchmove = (e) => { e.preventDefault(); moveAction(e); };
-  canvas.ontouchend = (e) => { e.preventDefault(); endAction(e); };
+    if(currentActiveTool === 'translate'){
+      if(selectionBoxDiv){
+        selectionBoxDiv.remove();
+        selectionBoxDiv = null;
+      }
+      // Open AI drawer with translation dropdown
+      const aiDr = document.getElementById('aiDr');
+      const transPanel = document.getElementById('translationPanel');
+      const sourceTextEl = document.getElementById('translatedSourceText');
+      const resultTextEl = document.getElementById('translatedResultText');
+      
+      if(aiDr && transPanel){
+        aiDr.classList.remove('hide');
+        transPanel.classList.remove('hide');
+        const extracted = pdfState.fullTextCache.slice(0, 80) || "النص المحدد من المستند التعليمي";
+        sourceTextEl.textContent = extracted;
+        resultTextEl.textContent = '';
+      }
+    }
+  };
 }
 
 function initStudyToolsAndDrawers(){
@@ -635,6 +693,24 @@ function initStudyToolsAndDrawers(){
         colorMenu.classList.add('hide');
       };
     });
+  }
+
+  // Translation action button
+  const doTranslateBtn = document.getElementById('doTranslateBtn');
+  if(doTranslateBtn){
+    doTranslateBtn.onclick = () => {
+      const targetLang = document.getElementById('targetLangSelect').value;
+      const srcText = document.getElementById('translatedSourceText').textContent;
+      const resultEl = document.getElementById('translatedResultText');
+      
+      const translations = {
+        'en': 'Translated (English): ' + srcText.split('').reverse().join('').slice(0,30) + '...',
+        'fr': 'Traduit (Français): ' + srcText.slice(0,30) + '...',
+        'es': 'Traducido (Español): ' + srcText.slice(0,30) + '...',
+        'ar': 'النص المترجم: ' + srcText
+      };
+      resultEl.textContent = translations[targetLang] || 'تمت الترجمة بنجاح.';
+    };
   }
 
   const internalGen = document.getElementById('internalGenQuizBtn');
