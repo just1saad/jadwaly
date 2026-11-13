@@ -33,7 +33,7 @@ button{cursor:pointer}
 h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 .mut{color:#566178;font-size:13px}
 .fab{width:44px;height:44px;border:0;border-radius:12px;background:#fff;color:#14213D;box-shadow:0 2px 10px rgba(20,33,61,.15);display:flex;align-items:center;justify-content:center}
-.opt{display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:16px;font-weight:600;width:100%;text-align:right}
+.opt{display:flex;align-items:center;gap:14px;min-height:60px;padding:10px 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:16px;font-weight:600;width:100%;text-align:right}
 .opt:hover{border-color:#9bb}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
 .hide{display:none!important}
@@ -251,11 +251,16 @@ function renderQuizHome(){
   qMain.innerHTML=`
     <h1>الاختبارات الذكية والبطاقات</h1>
     <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:700px">
-      <label>اختر الملف:</label>
+      <label style="font-weight:600">اختر الملف:</label>
       <select id="quizFileSelect" class="inp">${files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select>
-      <label>نوع الاختبار:</label>
-      <select id="quizTypeSelect" class="inp"><option value="mcq">خيارات متعددة (MCQ شاملة)</option><option value="flashcards">بطاقات استذكار شاملة</option></select>
-      <button class="btn pri" id="startPdfQuizBtn">✨ توليد اختبار شامل من كامل الكتاب</button>
+      
+      <label style="font-weight:600">نوع الاختبار:</label>
+      <select id="quizTypeSelect" class="inp">
+        <option value="mcq">خيارات متعددة (MCQ شاملة)</option>
+        <option value="flashcards">بطاقات استذكار شاملة</option>
+      </select>
+
+      <button class="btn pri" id="startPdfQuizBtn">✨ توليد اختبار شامل من الكتاب (مع الفحص البصري الدائم)</button>
     </div>
   `;
 
@@ -265,55 +270,42 @@ function renderQuizHome(){
     const file = files.find(f => f.id === fileId);
     if(!file) return;
 
-    qMain.innerHTML=`<div style="margin:auto;text-align:center">جاري قراءة كامل الكتاب واستخراج النص الأصلي بدقة...</div>`;
+    qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري تفعيل الفحص البصري الشامل (OCR) لكامل صفحات الكتاب... يرجى الانتظار</div>`;
 
     try{
       const doc = await pdfjsLib.getDocument({data: new Uint8Array(file.data)}).promise;
       let fullText = '';
       
-      // سحب النص كاملاً بدون أي حذف أو تصفية لضمان الشمولية
+      // تشغيل المسح البصري (OCR) دائماً وبشكل إجباري لكل صفحات الكتاب لضمان نقاء الحروف
       for(let i=1; i<=doc.numPages; i++){
+        qMain.innerHTML=`<div style="margin:auto;text-align:center;font-size:16px;font-weight:600">🔄 جاري قراءة الصفحة ${i} من ${doc.numPages} بصرياً (OCR)...</div>`;
         const page = await doc.getPage(i);
-        const textContent = await page.getTextContent();
-        fullText += ' ' + textContent.items.map(it => it.str).join(' ');
+        const vp = page.getViewport({scale: 1.5});
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+        const worker = await Tesseract.createWorker('ara');
+        const ret = await worker.recognize(canvas);
+        await worker.terminate();
+        fullText += ' ' + ret.data.text;
       }
 
-      // إذا كان الملف عبارة عن صور (Scanned)، نستخدم OCR لكامل الصفحات
-      if(fullText.trim().length < 50 && window.Tesseract){
-        qMain.innerHTML=`<div style="margin:auto;text-align:center">جاري قراءة صفحات الكتاب بالذكاء البصري (OCR)...</div>`;
-        fullText = '';
-        for(let i=1; i<=doc.numPages; i++){
-          const page = await doc.getPage(i);
-          const vp = page.getViewport({scale: 1.5});
-          const canvas = document.createElement('canvas');
-          canvas.width = vp.width; canvas.height = vp.height;
-          await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
-          const worker = await Tesseract.createWorker('ara');
-          const ret = await worker.recognize(canvas);
-          await worker.terminate();
-          fullText += ' ' + ret.data.text;
-        }
-      }
-
-      // توليد الأسئلة من كامل النص المتاح
       const questions = generateComprehensiveQuestions(fullText, type);
       runQuizSession(questions, type, 0, 0);
     } catch(err) {
-      alert('حدث خطأ أثناء قراءة الكتاب.');
+      alert('حدث خطأ أثناء معالجة الكتاب بصرياً.');
       renderQuizHome();
     }
   };
 }
 
 function generateComprehensiveQuestions(text, type){
-  // تقسيم النص إلى جمل كاملة لضمان شمولية الأسئلة لكل مواضيع الكتاب
   const sentences = text.split(/[.!?؟؛\n]+/).map(s => s.trim()).filter(s => s.length > 10);
   
   if(!sentences.length){
     return [{q: "ما هو المحتوى الوارد في المستند؟", options: ["المحتوى الأساسي", "عنصر عام", "فقرة رئيسية", "تفاصيل فرعية"], answer: "المحتوى الأساسي", explanation: "سؤال افتراضي."}];
   }
 
-  // أخذ عينة شاملة موزعة على كامل الكتاب (توليد حتى 20 سؤالاً لتغطية أكبر قدر ممكن)
   const step = Math.max(1, Math.floor(sentences.length / 20));
   const selectedSentences = [];
   for(let i = 0; i < sentences.length; i += step){
