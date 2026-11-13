@@ -1,337 +1,468 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b5f58">
-  <title>رفيق التحصيلي</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --ink: #14213d;
-      --muted: #657087;
-      --green: #0b5f58;
-      --green-light: #eaf5f2;
-      --line: #e3e8f0;
-      --background: #f5f7fb;
-      --white: #fff;
-      --red: #b42318;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--background);
-      color: var(--ink);
-      font-family: "IBM Plex Sans Arabic", sans-serif;
-    }
-
-    button, input, textarea, select { font: inherit; }
-
-    button { cursor: pointer; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--white);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .topbar-inner {
-      width: min(1120px, calc(100% - 32px));
-      min-height: 72px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      font-size: 19px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .brand span { color: var(--green); }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .nav button {
-      border: 0;
-      border-radius: 10px;
-      padding: 9px 13px;
-      background: transparent;
-      color: var(--ink);
-    }
-
-    .nav button:hover,
-    .nav button.active {
-      background: var(--green-light);
-      color: var(--green);
-    }
-
-    main {
-      width: min(1120px, calc(100% - 32px));
-      margin: 28px auto 60px;
-    }
-
-    .view { display: none; }
-    .view.on { display: block; }
-
-    .hero {
-      padding: 32px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #0b5f58, #14213d);
-      color: white;
-    }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(25px, 5vw, 38px);
-    }
-
-    .hero p {
-      max-width: 650px;
-      margin: 0;
-      line-height: 1.9;
-      color: #eef7f5;
-    }
-
-    .actions, .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .actions { margin-top: 22px; }
-
-    .btn {
-      min-height: 42px;
-      padding: 9px 15px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: white;
-      color: var(--ink);
-      font-weight: 600;
-    }
-
-    .btn:hover { filter: brightness(.97); }
-
-    .btn.pri {
-      border-color: var(--green);
-      background: var(--green);
-      color: white;
-    }
-
-    .btn.sec { background: white; }
-
-    .section-title {
-      margin: 28px 0 14px;
-      font-size: 21px;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .feature-card, .card {
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: var(--white);
-      box-shadow: 0 4px 16px #14213d08;
-    }
-
-    .feature-card {
-      min-height: 130px;
-      padding: 18px;
-    }
-
-    .feature-card strong {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 16px;
-    }
-
-    .mut { color: var(--muted); }
-
-    .library-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 14px;
-    }
-
-    .study-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      font-weight: 700;
-      overflow-wrap: anywhere;
-    }
-
-    #paper {
-      position: relative;
-      min-height: 65vh;
-      overflow: auto; /* تم التعديل من hidden إلى auto لتمكين التمرير */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: #fff;
-    }
-
-    .toolbar { margin-bottom: 12px; }
-
-    @media (max-width: 760px) {
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 12px 0;
-      }
-
-      .nav { width: 100%; }
-      .nav button { padding: 8px 10px; }
-      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .hero { padding: 24px 20px; }
-    }
-
-    @media (max-width: 420px) {
-      .features { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>رفيق التحصيلي</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- مكتبة عارض ملفات PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+#stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
+.scr{position:absolute;inset:0;display:none}
+.scr.on{display:flex}
+.side{width:230px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none}
+.nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
+.nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
+.nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
+.main{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:18px;min-width:0;overflow:hidden}
+.card{background:#fff;border:1px solid #E3E7EF;border-radius:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;border:0;font-size:15px;font-weight:700}
+.pri{background:#0B5F58;color:#fff}.sec{background:#fff;border:1px solid #D5DBE7;color:#14213D}
+h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
+.mut{color:#566178;font-size:13px}
+.fab{width:44px;height:44px;border:0;border-radius:12px;background:#fff;color:#14213D;box-shadow:0 2px 10px rgba(20,33,61,.15);display:flex;align-items:center;justify-content:center}
+.fab.on{background:#0B5F58;color:#fff}
+.tb{width:44px;height:44px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;background:transparent;color:#44506A;flex:none}
+.tb.on{background:#0B5F58;color:#fff}
+.sw{width:24px;height:24px;border-radius:12px;border:0;flex:none;padding:0}
+.sw.on{box-shadow:0 0 0 3px #fff,0 0 0 5px #14213D}
+.opt{display:flex;align-items:center;gap:14px;height:64px;padding:0 20px;border-radius:14px;background:#fff;border:2px solid #E3E7EF;font-size:17px;font-weight:600;width:100%;text-align:right}
+.opt:hover{border-color:#9bb}
+.opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
+.chip{padding:8px 16px;border-radius:20px;border:1px solid #D5DBE7;background:#fff;font-size:14px;color:#14213D}
+.chip.on{background:#14213D;color:#fff;border-color:#14213D}
+@keyframes p{50%{opacity:.35}}.rec{animation:p 1s infinite}
+.hide{display:none!important}
+</style>
 </head>
-
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">رفيق <span>التحصيلي</span></div>
+<div id="stage">
 
-      <nav class="nav" aria-label="التنقل">
-        <button type="button" data-go="home" class="active">الرئيسية</button>
-        <button type="button" data-go="library">مكتبتي</button>
-        <button type="button" data-go="study">الدراسة</button>
-      </nav>
+<!-- HOME -->
+<div class="scr on" id="home" data-side>
+ <div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div><h1>أهلاً بك، رفيق التحصيلي</h1><div class="mut" style="font-size:15px;margin-top:4px">نظم مذاكرتك واحفظ ملفاتك بكل أمان</div></div>
+    <button class="btn sec" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px">
+   <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة</h2><span style="font-size:13px;color:#C7D0E4">يُفرَّغ مباشرة على الجهاز</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px" id="homeLiveText">[هنا يظهر النص أثناء التسجيل مباشرة…]</div>
+    <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:52px;border-radius:26px;padding:0 24px"><i data-i="dot"></i>ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4">سجل صوتك بكل سهولة</span></div>
+   </div>
+   <div class="card" style="padding:22px"><div style="display:flex;justify-content:space-between"><h2>جدول اليوم</h2><a href="#" data-go="schedule" style="color:#0B5F58;font-weight:600;font-size:14px;text-decoration:none">عرض الكل</a></div><div id="todayList"></div></div>
+  </div>
+  <h2>موادك</h2>
+  <div id="subjGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px"></div>
+  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px"><div style="width:44px;height:44px;border-radius:12px;background:#E6EDFB;color:#1D4ED8;display:flex;align-items:center;justify-content:center"><i data-i="pen"></i></div><div style="flex:1"><div style="font-size:15px;font-weight:700">الملف الحالي</div><div class="mut" id="homeCurrentFile">اختر ملفاً من المكتبة للبدء</div></div><button class="btn pri" id="homeOpenLast" style="display:none">افتح</button></div>
+ </div>
+</div>
+
+<!-- LIBRARY -->
+<div class="scr" id="library" data-side>
+ <div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة</h1><button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button></div>
+  <div style="display:flex;gap:10px"><button class="chip on">الكل</button><button class="chip">الرياضيات</button><button class="chip">الفيزياء</button><button class="chip">الكيمياء</button><button class="chip">الأحياء</button></div>
+  <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;max-height:600px;padding:4px"></div>
+ </div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="scr" id="schedule" data-side>
+ <div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>الجدول</h1><button class="btn pri" id="addScheduleBtn"><i data-i="plus"></i>إضافة جلسة</button></div>
+  <div class="card" style="padding:16px;flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:10px" id="week"></div>
+  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:14px"><i data-i="spark"></i><div style="flex:1;font-size:15px"><b>اقتراح المساعد:</b> <span class="mut" style="font-size:15px">ركز اليوم على مراجعة الأساسيات وحل التجميعات.</span></div></div>
+ </div>
+</div>
+
+<!-- QUIZZES -->
+<div class="scr" id="quizzes" data-side>
+ <div class="main" id="qMain"></div>
+</div>
+
+<!-- RECORDINGS -->
+<div class="scr" id="recordings" data-side>
+ <div class="main">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><i data-i="dot"></i><span>تسجيل جديد</span></button></div>
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
+   <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px" id="recList"></div>
+   <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;min-height:0">
+    <div id="liveBox" class="hide" style="background:#14213D;color:#fff;border-radius:14px;padding:16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="rec" style="width:12px;height:12px;border-radius:6px;background:#E8590C"></span><b id="timer">00:00</b><span style="font-size:13px;color:#C7D0E4">التسجيل الصوتي يعمل</span></div><div style="line-height:1.9;font-size:15px" id="recLiveContent">التسجيل قيد العمل...</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2 id="recTitle">تسجيل صوتي جديد</h2><div style="display:flex;gap:8px"><button class="btn sec">ملخص</button><button class="btn pri" data-go="quizzes">اختبرني</button></div></div>
+    <div style="background:#F3F5F9;border-radius:14px;padding:16px;height:70px;display:flex;align-items:center;gap:14px"><button class="fab"><i data-i="play"></i></button><svg style="flex:1" height="40" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 20h400" stroke="#D5DBE7"/><path id="wave" stroke="#0B5F58" stroke-width="3" stroke-linecap="round"/></svg><span class="mut" id="recDuration">00:00</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- STUDY -->
+<div class="scr" id="study" style="background:#E9ECF2">
+ <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:834px;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;display:flex;flex-direction:column;gap:16px;overflow:auto;" id="paper">
+   <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
+ </div>
+ <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center">
+   <button class="fab" data-go="library" aria-label="رجوع"><i data-i="back"></i></button>
+   <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
+ </div>
+ <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
+   <button class="fab" id="bPages" aria-label="الصفحات"><i data-i="grid"></i></button>
+   <button class="fab" id="bRec" aria-label="تسجيل"><i data-i="mic"></i></button>
+   <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
+ </div>
+ <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 12px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
+ <div id="pagesDr" class="hide" style="position:absolute;top:70px;bottom:12px;right:12px;width:130px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
+ <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px">
+  <h2 style="font-size:16px">مساعد المذاكرة</h2>
+  <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">ملخص الصفحة</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">عرض تفاصيل الصفحة الحالية وتلخيصها هنا.</div></div>
+  <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">اختبرني على هذا الملف</button>
+  <div style="flex:1"></div><div class="mut" style="display:flex;gap:8px;align-items:center"><i data-i="lock" data-s="16"></i>الملف على جهازك فقط</div>
+ </div>
+</div>
+
+</div>
+
+<script>
+/* --- نظام إدارة البيانات (IndexedDB لملفات الـ PDF) --- */
+const DB_NAME = 'tahseeli-study-app';
+const DB_VERSION = 1;
+const STORE = 'files';
+
+let appState = {
+  files: [],
+  currentFile: null,
+  pdfDoc: null,
+  pageNum: 1,
+  numPages: 0,
+  rendering: false
+};
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE, { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function dbAction(mode, action, value) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, mode);
+    const store = tx.objectStore(STORE);
+    const req = action === 'getAll' ? store.getAll() : action === 'delete' ? store.delete(value) : store.put(value);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+    tx.oncomplete = () => db.close();
+  });
+}
+
+function makeId() {
+  return crypto.randomUUID ? crypto.randomUUID() : 'f-' + Date.now();
+}
+
+// عنصر إدخال الملفات المخفي
+const hiddenFileInput = document.createElement('input');
+hiddenFileInput.type = 'file';
+hiddenFileInput.accept = 'application/pdf,.pdf';
+hiddenFileInput.style.display = 'none';
+document.body.appendChild(hiddenFileInput);
+
+hiddenFileInput.addEventListener('change', async () => {
+  const file = hiddenFileInput.files[0];
+  if (!file) return;
+  try {
+    const record = {
+      id: makeId(),
+      name: file.name,
+      size: file.size,
+      data: await file.arrayBuffer()
+    };
+    await dbAction('readwrite', 'put', record);
+    await refreshLibrary();
+    alert('تم استيراد وحفظ ملف الـ PDF بنجاح!');
+    openPdfRecord(record);
+  } catch (err) {
+    console.error(err);
+    alert('تعذر حفظ الملف، قد تكون المساحة ممتلئة.');
+  }
+});
+
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-import-pdf]')) {
+    e.preventDefault();
+    hiddenFileInput.value = '';
+    hiddenFileInput.click();
+  }
+});
+
+async function refreshLibrary() {
+  try {
+    appState.files = await dbAction('readonly', 'getAll');
+  } catch(e) {
+    appState.files = [];
+  }
+  
+  const libGrid = $('#libGrid');
+  if (!libGrid) return;
+  
+  if (appState.files.length === 0) {
+    libGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">مكتبتك فارغة حالياً. اضغط على "استيراد PDF" لإضافة أول ملف.</div>';
+    return;
+  }
+
+  libGrid.innerHTML = appState.files.map(file => `
+    <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px;position:relative">
+      <div style="aspect-ratio:3/4;border-radius:10px;background:#E4F2F0;color:#0B5F58;display:flex;align-items:center;justify-content:center;cursor:pointer" data-open-file="${file.id}">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>
+      </div>
+      <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${file.name}">${file.name}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn pri" style="flex:1;height:32px;font-size:13px;justify-content:center" data-open-file="${file.id}">افتح</button>
+        <button class="btn sec" style="height:32px;font-size:13px;color:#B42318;border-color:#FDECEA" data-del-file="${file.id}">حذف</button>
+      </div>
     </div>
-  </header>
+  `).join('');
+}
 
-  <main>
-    <section class="view on" id="home">
-      <div class="hero">
-        <h1>خطوتك القادمة نحو التفوق</h1>
-        <p>مكان واحد لتنظيم مذاكرتك، حفظ ملفات PDF، كتابة الملاحظات، والتدرب على ما تراجعه.</p>
-        <div class="actions">
-          <button class="btn pri" type="button">استيراد PDF</button>
-          <button class="btn" type="button" data-go="library">فتح مكتبتي</button>
-        </div>
-      </div>
+document.addEventListener('click', async e => {
+  const openBtn = e.target.closest('[data-open-file]');
+  if (openBtn) {
+    const fileId = openBtn.dataset.openFile;
+    const file = appState.files.find(f => f.id === fileId);
+    if (file) openPdfRecord(file);
+    return;
+  }
+  const delBtn = e.target.closest('[data-del-file]');
+  if (delBtn) {
+    const fileId = delBtn.dataset.delFile;
+    if (confirm('هل تريد حذف هذا الملف؟')) {
+      await dbAction('readwrite', 'delete', fileId);
+      await refreshLibrary();
+    }
+  }
+});
 
-      <h2 class="section-title">أدوات المذاكرة</h2>
-      <div class="features">
-        <article class="feature-card">
-          <strong>الجدول الدراسي</strong>
-          <span class="mut">أضف مهامك ومواعيد المراجعة.</span>
-          <div class="actions"><button class="btn sec" type="button">الجدول الدراسي</button></div>
-        </article>
+async function openPdfRecord(file) {
+  appState.currentFile = file;
+  appState.pageNum = 1;
+  go('study');
+  
+  const paper = $('#paper');
+  paper.innerHTML = '<div style="margin:auto;color:#566178">جاري تحميل ملف الـ PDF...</div>';
+  
+  try {
+    const typedarray = new Uint8Array(file.data);
+    appState.pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
+    appState.numPages = appState.pdfDoc.numPages;
+    
+    $('#pdfFileTitleBanner').textContent = `${file.name} · 1 / ${appState.numPages}`;
+    $('#homeCurrentFile').textContent = `${file.name} · صفحة 1 / ${appState.numPages}`;
+    $('#homeOpenLast').style.display = 'inline-flex';
+    $('#homeOpenLast').onclick = () => openPdfRecord(file);
+    
+    renderPage(appState.pageNum);
+    buildThumbnails();
+  } catch (err) {
+    console.error(err);
+    paper.innerHTML = '<div style="margin:auto;color:#B42318">تعذر عرض ملف PDF. تأكد من سلامة الملف.</div>';
+  }
+}
 
-        <article class="feature-card">
-          <strong>الملاحظات</strong>
-          <span class="mut">اكتب ملاحظاتك واحفظها على جهازك.</span>
-          <div class="actions"><button class="btn sec" type="button">الملاحظات</button></div>
-        </article>
+async function renderPage(num) {
+  if (!appState.pdfDoc || appState.rendering) return;
+  appState.rendering = true;
+  
+  const page = await appState.pdfDoc.getPage(num);
+  const viewport = page.getViewport({ scale: 1.3 });
+  
+  const paper = $('#paper');
+  paper.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:10px;">
+      <canvas id="pdfCanvas" style="box-shadow:0 4px 16px rgba(0,0,0,0.15);background:#fff;max-width:100%"></canvas>
+    </div>
+  `;
+  
+  const canvas = $('#pdfCanvas');
+  const context = canvas.getContext('2d');
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+  
+  await page.render({ canvasContext: context, viewport: viewport }).promise;
+  appState.rendering = false;
+  
+  $('#pdfFileTitleBanner').textContent = `${appState.currentFile.name} · ${appState.pageNum} / ${appState.numPages}`;
+  $('#aiPageSummary').textContent = `أنت الآن في الصفحة رقم ${appState.pageNum} من إجمالي ${appState.numPages} صفحات في هذا الملف.`;
+}
 
-        <article class="feature-card">
-          <strong>تدريب واختبار</strong>
-          <span class="mut">أنشئ أسئلة مراجعة بسيطة من النص.</span>
-          <div class="actions"><button class="btn sec" type="button">تدريب واختبار</button></div>
-        </article>
+function buildThumbnails() {
+  const pagesDr = $('#pagesDr');
+  if (!appState.pdfDoc) return;
+  let html = '';
+  for (let i = 1; i <= appState.numPages; i++) {
+    html += `<div class="pdf-thumb" data-p="${i}" style="aspect-ratio:3/4;border-radius:8px;background:#fff;border:1px solid ${i === appState.pageNum ? '#0B5F58' : '#D5DBE7'};display:flex;align-items:center;justify-content:center;font-size:12px;color:#566178;cursor:pointer">${i}</div>`;
+  }
+  pagesDr.innerHTML = html;
+  
+  pagesDr.querySelectorAll('.pdf-thumb').forEach(th => {
+    th.onclick = () => {
+      appState.pageNum = +th.dataset.p;
+      renderPage(appState.pageNum);
+      buildThumbnails();
+    };
+  });
+}
 
-        <article class="feature-card">
-          <strong>التسجيل الصوتي</strong>
-          <span class="mut">سجل صوتك واكتب تفريغًا عند دعم المتصفح.</span>
-          <div class="actions"><button class="btn sec" type="button">التسجيل الصوتي</button></div>
-        </article>
-      </div>
-    </section>
+/* --- التصميم والأيقونات والواجهات المأخوذة من full.html --- */
+const IC={
+home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+lib:'<path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
+mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',
+dot:'<circle cx="12" cy="12" r="6" fill="currentColor"/>',
+pen:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>',
+hl:'<path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/>',
+er:'<path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/>',
+sel:'<path d="M5 5h3M11 5h3M17 5h2v2M19 11v3M19 17v2h-2M14 19h-3M8 19H5v-2M5 14v-3M5 8V5"/>',
+txt:'<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
+back:'<path d="M9 6l6 6-6 6"/>',
+grid:'<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
+spark:'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
+lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+play:'<path d="M8 5l11 7-11 7z" fill="currentColor"/>',
+file:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>',
+check:'<path d="M5 12l5 5 9-10"/>'};
 
-    <section class="view" id="library">
-      <h1 class="section-title">مكتبتي</h1>
-      <div class="actions" style="margin:0 0 16px">
-        <button class="btn pri" type="button">استيراد PDF</button>
-      </div>
-      <div id="libGrid" class="library-grid"></div>
-    </section>
+function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const SUBJ=[['الرياضيات','#1D4ED8','#E6EDFB'],['الفيزياء','#0B5F58','#E4F2F0'],['الكيمياء','#9A3412','#FBEBE0'],['الأحياء','#6D28D9','#EEE8FA']];
+const NAV=[['home','الرئيسية','home'],['library','المكتبة','lib'],['schedule','الجدول','cal'],['quizzes','الاختبارات','q'],['recordings','التسجيلات','mic']];
 
-    <section class="view" id="study">
-      <div class="card study-heading">
-        <span>اختر ملف PDF من مكتبتك لبدء الدراسة</span>
-        <button class="btn sec" type="button" data-go="library">العودة إلى المكتبة</button>
-      </div>
+// بناء الشريط الجانبي للشاشات
+$$('[data-side]').forEach(sc=>{
+  const id=sc.id;
+  const s=document.createElement('div');
+  s.className='side';
+  s.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px"><div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ت</div><b style="font-size:18px">رفيق التحصيلي</b></div>'+NAV.map(n=>'<button class="nav '+(n[0]==id?'on':'')+'" data-go="'+n[0]+'">'+ico(n[2],22)+'<span>'+n[1]+'</span></button>').join('')+'<div style="flex:1"></div><div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">'+ico('lock',22)+'<span>كل ملفاتك محفوظة على جهازك فقط</span></div>';
+  sc.prepend(s);
+});
 
-      <div class="toolbar">
-        <button class="btn sec" id="prevPage" type="button">الصفحة السابقة</button>
-        <button class="btn sec" id="bPages" type="button">رقم الصفحة</button>
-        <button class="btn sec" id="nextPage" type="button">الصفحة التالية</button>
-        <button class="btn sec" type="button">الملاحظات</button>
-      </div>
+$$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
 
-      <div id="paper">
-        <div class="mut" style="padding:24px;text-align:center">
-          افتح ملف PDF من مكتبتك لعرضه هنا.
-        </div>
-      </div>
-    </section>
-  </main>
+// بيانات جدول اليوم
+$('#todayList').innerHTML=[['٤:٠٠ م','مراجعة الرياضيات','حل تجميعات القسم الكمي'],['٥:٣٠ م','اختبار قصير — الفيزياء','الفصل الأول والثاني'],['٧:٠٠ م','مراجعة الكيمياء','الجدول الدوري والتفاعلات']].map(r=>'<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #EDF0F5"><b style="width:64px;font-size:14px;color:#0B5F58">'+r[0]+'</b><div><div style="font-size:15px;font-weight:600">'+r[1]+'</div><div class="mut">'+r[2]+'</div></div></div>').join('');
 
-  <script src="./app.js"></script>
-  <script>
-    document.addEventListener('click', event => {
-      const button = event.target.closest('[data-go]');
-      if (!button) return;
+$('#subjGrid').innerHTML=SUBJ.map(s=>'<div class="card" style="padding:16px;text-align:right;display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:10px;background:'+s[2]+';color:'+s[1]+';display:flex;align-items:center;justify-content:center">'+ico('file',22)+'</div><b style="font-size:17px">'+s[0]+'</b></div><div class="mut">جاهز للمراجعة</div><div style="height:6px;border-radius:3px;background:#E9ECF3"><div style="height:6px;width:60%;border-radius:3px;background:'+s[1]+'"></div></div></div>').join('');
 
-      const target = button.dataset.go;
-      if (!document.getElementById(target)) return;
+// جدول الأسبوع
+const D=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+$('#week').innerHTML=D.map((d,i)=>'<div style="display:flex;flex-direction:column;gap:8px"><div style="text-align:center;font-weight:700;font-size:14px;padding:6px;border-radius:10px;'+(i==3?'background:#0B5F58;color:#fff':'background:#F3F5F9')+'">'+d+'</div>'+[0,1].map(k=>{const s=SUBJ[(i+k)%4];return '<div style="background:'+s[2]+';color:'+s[1]+';border-radius:10px;padding:10px;font-size:13px;font-weight:600;line-height:1.6">'+s[0]+'<div style="font-weight:400;color:#44506A">مذاكرة وتجميعات</div></div>'}).join('')+'</div>').join('');
 
-      document.querySelectorAll('.view').forEach(view => view.classList.remove('on'));
-      document.getElementById(target).classList.add('on');
+// الاختبارات
+const Q={opts:['القانون الأول لنيوتن','قانون حفظ الأبخرة','قانون الجذب العام','قانون الزخم'],ans:0};
+function qList(){
+  $('#qMain').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات التدريبية</h1></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">'+SUBJ.map(s=>'<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:10px;align-items:center"><div style="width:40px;height:40px;border-radius:10px;background:'+s[2]+';color:'+s[1]+';display:flex;align-items:center;justify-content:center">'+ico('q',22)+'</div><b style="font-size:17px">اختبار '+s[0]+'</b></div><div class="mut">١٠ أسئلة شاملة</div><button class="btn pri qStart" style="justify-content:center">ابدأ الاختبار</button></div>').join('')+'</div>';
+  $$('.qStart').forEach(b=>b.onclick=()=>qRun(0));
+}
+function qRun(n){
+  const T=3;
+  if(n>=T){
+    $('#qMain').innerHTML='<div class="card" style="margin:auto;padding:40px;width:520px;text-align:center;display:flex;flex-direction:column;gap:14px"><div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">'+ico('check',36)+'</div><h1>أنهيت الاختبار بنجاح!</h1><div class="mut" style="font-size:16px">ممتاز، واصل تقدمك نحو القمة.</div><button class="btn pri" id="qBack">العودة للاختبارات</button></div>';
+    $('#qBack').onclick=qList;
+    return;
+  }
+  $('#qMain').innerHTML='<div style="display:flex;align-items:center;gap:14px"><button class="fab" id="qX">'+ico('back',22)+'</button><div style="flex:1;height:8px;border-radius:4px;background:#E3E7EF"><div style="height:8px;border-radius:4px;background:#0B5F58;width:'+((n+1)/T*100)+'%"></div></div><b>'+(n+1)+' / '+T+'</b></div><div style="max-width:760px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center"><div class="card" style="padding:28px;font-size:20px;line-height:1.9;font-weight:600">أي من الخيارات التالية يمثل القانون الأساسي للحركة؟</div>'+Q.opts.map((o,i)=>'<button class="opt" data-k="'+i+'"><b style="width:36px;height:36px;border-radius:18px;background:#EEF1F6;display:flex;align-items:center;justify-content:center;flex:none">'+'أبجد'[i]+'</b>'+o+'</button>').join('')+'<div id="qFb" class="card hide" style="padding:16px;background:#F3F5F9"><b>الشرح:</b> <span class="mut" style="font-size:15px">الإجابة الصحيحة هي الخيار الأول.</span></div><button class="btn pri hide" id="qNext" style="align-self:flex-start">التالي</button></div>';
+  $('#qX').onclick=qList;
+  let done=0;
+  $$('.opt').forEach(b=>b.onclick=()=>{
+    if(done)return;done=1;
+    $$('.opt').forEach(x=>{if(+x.dataset.k==Q.ans)x.classList.add('ok')});
+    if(+b.dataset.k!=Q.ans)b.classList.add('no');
+    $('#qFb').classList.remove('hide');
+    $('#qNext').classList.remove('hide');
+  });
+  $('#qNext').onclick=()=>qRun(n+1);
+}
+qList();
 
-      document.querySelectorAll('.nav [data-go]').forEach(item => {
-        item.classList.toggle('active', item.dataset.go === target);
-      });
-    });
+// التسجيلات الصوتية
+let recInterval=null, recSec=0, isRecording=false;
+function updateTimer(){
+  const m=String(Math.floor(recSec/60)).padStart(2,'0'), s=String(recSec%60).padStart(2,'0');
+  $('#timer').textContent=m+':'+s;
+  $('#recDuration').textContent=m+':'+s;
+}
+function toggleRecording(){
+  isRecording=!isRecording;
+  if(isRecording){
+    recSec=0; updateTimer();
+    recInterval=setInterval(()=>{recSec++; updateTimer();},1000);
+    $('#liveBox').classList.remove('hide');
+    $('#recBtn').innerHTML='<i data-i="dot"></i><span>إيقاف التسجيل</span>';
+    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+  } else {
+    clearInterval(recInterval);
+    $('#liveBox').classList.add('hide');
+    $('#recBtn').innerHTML='<i data-i="dot"></i><span>تسجيل جديد</span>';
+    $$('[data-i]').forEach(e=>e.outerHTML=ico(e.dataset.i,+e.dataset.s||22));
+  }
+}
+$('#recBtn').onclick=toggleRecording;
+$('#homeRecBtn').onclick=()=>{ go('recordings'); toggleRecording(); };
 
-    document.getElementById('prevPage').addEventListener('click', () => {
-      const app = window.StudyApp;
-      if (!app?.pdf || app.page <= 1) return;
-      app.page--;
-      app.renderPdfPage();
-    });
+// أدوات التصفح والدراسة
+const TL=[['pen','قلم'],['hl','تظليل'],['er','ممحاة']], COL=['#14213D','#1D4ED8','#C2410C','#0B5F58'];
+let tool='pen', col=COL[0];
+$('#tools').innerHTML=TL.map((t,i)=>'<button class="tb '+(i==0?'on':'')+'" data-t="'+t[0]+'">'+ico(t[0],22)+'</button>').join('')+'<span style="width:1px;height:26px;background:#D5DBE7;margin:0 6px"></span><div style="display:flex;gap:12px;padding:0 6px">'+COL.map((c,i)=>'<button class="sw '+(i==0?'on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>').join('')+'</div>';
 
-    document.getElementById('nextPage').addEventListener('click', () => {
-      const app = window.StudyApp;
-      if (!app?.pdf || app.page >= app.pdf.numPages) return;
-      app.page++;
-      app.renderPdfPage();
-    });
-  </script>
+$$('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;$$('[data-t]').forEach(x=>x.classList.toggle('on',x==b))});
+$$('[data-c]').forEach(b=>b.onclick=()=>{col=b.dataset.c;$$('[data-c]').forEach(x=>x.classList.toggle('on',x==b))});
+
+$('#bPages').onclick=()=>{$('#pagesDr').classList.toggle('hide');$('#bPages').classList.toggle('on')};
+$('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.toggle('on')};
+
+// التنقل بين الشاشات
+function go(id){
+  $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  if(g){e.preventDefault();go(g.dataset.go);}
+});
+
+// تحجيم الشاشة تلقائياً مثل full.html
+function fit(){
+  const k=Math.min(innerWidth/1194,innerHeight/834);
+  const st=$('#stage');
+  st.style.transform='scale('+k+')';
+  st.style.left=(innerWidth-1194*k)/2+'px';
+  st.style.top=(innerHeight-834*k)/2+'px';
+}
+addEventListener('resize',fit);
+fit();
+
+// تحميل المكتبة عند البدء
+refreshLibrary();
+</script>
 </body>
 </html>
