@@ -14,19 +14,16 @@
 </script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;height:100vh;width:100vw;background:#F3F5F9;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;overflow:hidden;display:flex}
+html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden;position:fixed;width:100%;height:100%}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
-
-#app{display:flex;width:100vw;height:100vh;overflow:hidden;background:#F3F5F9;position:relative}
-.scr{position:absolute;inset:0;display:none;background:#F3F5F9;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
+.scr{position:absolute;inset:0;display:none}
 .scr.on{display:flex}
-
-.side{width:260px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:20}
+.side{width:230px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%}
 .nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
-
 .main{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:18px;min-width:0;height:100%;overflow-y:auto}
 .card{background:#fff;border:1px solid #E3E7EF;border-radius:16px}
 .btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;border:0;font-size:15px;font-weight:700;justify-content:center}
@@ -44,16 +41,14 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
 @keyframes p{50%{opacity:.35}}.rec{animation:p 1s infinite}
 .hide{display:none!important}
-.modal-bg{position:fixed;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-bg{position:absolute;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-box{background:#fff;border-radius:20px;padding:24px;width:480px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
 .inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
 </style>
 </head>
 <body>
+<div id="stage">
 
-<div id="app">
-
-<!-- SIDEBAR NAVIGATION GENERATOR -->
 <script>
 const NAV_ITEMS=[
   ['home','الرئيسية','home'],
@@ -70,15 +65,15 @@ const NAV_ITEMS=[
 <!-- HOME -->
 <div class="scr on" id="home" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
     <div><h1>أهلاً بك في رفيق المذاكرة</h1><div class="mut" style="font-size:15px;margin-top:4px">مساحتك المتكاملة لتنظيم الملاحظات، ملفات PDF، والتسجيل الصوتي الذكي</div></div>
     <div style="display:flex;gap:10px">
       <button class="btn sec" data-go="notebooks"><i data-i="file"></i>دفتر جديد</button>
       <button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
-   <div class="card" style="padding:22px;display:flex;flex-direction:column;min-height:220px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+   <div class="card" style="padding:22px;display:flex;flex-direction:column">
      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><h2>الجدول المدرسي اليومي</h2><a href="#" data-go="schedule" style="color:#0B5F58;font-weight:600;font-size:14px;text-decoration:none">إدارة الجدول</a></div>
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
@@ -89,7 +84,7 @@ const NAV_ITEMS=[
    </div>
   </div>
   <h2>مكتبة ملفاتك السريعة</h2>
-  <div id="homeLibPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;max-height:180px;overflow:hidden"></div>
+  <div id="homeLibPreview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-height:170px;overflow:hidden"></div>
  </div>
 </div>
 
@@ -97,25 +92,25 @@ const NAV_ITEMS=[
 <div class="scr" id="library" data-side>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center"><h1>المكتبة وملفات PDF</h1><button class="btn pri" data-import-pdf><i data-i="plus"></i>استيراد PDF</button></div>
-  <div id="libGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
+  <div id="libGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
-<!-- NOTEBOOKS (CollaNote Style Notes) -->
+<!-- NOTEBOOKS -->
 <div class="scr" id="notebooks" data-side>
  <div class="main">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>دفاتر الملاحظات الرقمية</h1>
     <button class="btn pri" id="createNewNotebookBtn"><i data-i="plus"></i>إنشاء دفتر جديد</button>
   </div>
-  <div id="notebooksGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
+  <div id="notebooksGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;overflow-y:auto;flex:1;padding:4px"></div>
  </div>
 </div>
 
 <!-- SCHEDULE -->
 <div class="scr" id="schedule" data-side>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
     <h1>الجدول المدرسي والتخطيط الرقمي</h1>
     <div style="display:flex;gap:10px">
       <button class="btn sec" id="uploadSchedImgBtn">رفع صورة الجدول</button>
@@ -167,7 +162,7 @@ const NAV_ITEMS=[
 <div class="scr" id="tools" data-side>
  <div class="main">
   <h1>الأدوات والذكاء الاصطناعي</h1>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
     <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px">
       <h2>🌐 الترجمة الفورية (90+ لغة)</h2>
       <textarea id="translateInput" class="inp" rows="3" placeholder="اكتب النص هنا للترجمة..."></textarea>
@@ -202,21 +197,21 @@ const NAV_ITEMS=[
  </div>
 </div>
 
-<!-- STUDY & PDF VIEWER -->
-<div class="scr" id="study" style="background:#E9ECF2;position:absolute;inset:0">
- <div dir="ltr" style="position:absolute;inset:0;padding:80px 30px 30px;display:flex;flex-direction:column;align-items:center;overflow-y:auto;" id="paper">
-   <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF أو دفتر ملاحظات للبدء</div>
+<!-- STUDY -->
+<div class="scr" id="study" style="background:#E9ECF2">
+ <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:834px;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
+   <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
  </div>
- <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:10">
+ <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center">
    <button class="fab" data-go="library" aria-label="رجوع"><i data-i="back"></i></button>
    <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
  </div>
- <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:10">
+ <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
    <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة"><i data-i="mic"></i></button>
    <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
  </div>
- <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:10" id="tools"></div>
- <div id="aiDr" class="hide" style="position:absolute;top:76px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:15">
+ <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
+ <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px">
   <h2 style="font-size:16px">مساعد المذاكرة والذكاء الاصطناعي</h2>
   <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
   <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">إنشاء اختبار ذكي وبطاقات</button>
@@ -254,7 +249,6 @@ check:'<path d="M5 12l5 5 9-10"/>'};
 
 function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
 
-// Inject dynamic sidebar into all screens with data-side
 $$('[data-side]').forEach(sc=>{
   const id=sc.id;
   const s=document.createElement('div');
@@ -445,7 +439,7 @@ $('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.t
 $('#studyRecFab').onclick=()=>{ go('recordings'); startAudioRecording(); };
 
 /* ==========================================
-   3. أدوات الرسم المتقدمة وراحة اليد (Palm Rejection)
+   3. أدوات الرسم وراحة اليد (Palm Rejection)
    ========================================== */
 const TL=[['select','مؤشر'],['pen','قلم حبر'],['hl','تظليل ماركر'],['er','ممحاة'],['hand','راحة اليد']];
 const COL=['#14213D','#1D4ED8','#C2410C','#0B5F58','#D92D20','#7C3AED'];
@@ -582,13 +576,13 @@ function initAnnotationLayer(canvas,pageNo,file){
 updateAnnotationTools();
 
 /* ==========================================
-   4. دفاتر الملاحظات الرقمية (CollaNote Notebooks)
+   4. دفاتر الملاحظات الرقمية
    ========================================== */
 async function loadNotebooks(){
   const notes=await storeAction('notebooks','readonly','getAll');
   const grid=$('#notebooksGrid');
   if(!notes.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">لا توجد دفاتر ملاحظات. اضغط «إنشاء دفتر جديد» لبدء تدوين ملاحظاتك بخط يدك.</div>';
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#566178">لا توجد دفاتر ملاحظات. اضغط «إنشاء دفتر جديد» لبدء تدوين ملاحظاتك.</div>';
     return;
   }
   grid.innerHTML=notes.map(n=>`
@@ -638,7 +632,7 @@ async function deleteNotebook(id){
 }
 
 function openNotebook(id){
-  alert('جاري فتح دفتر الملاحظات للرسم والكتابة الاحترافية...');
+  alert('جاري فتح دفتر الملاحظات للرسم والكتابة...');
 }
 
 /* ==========================================
@@ -666,7 +660,7 @@ $('#addSchedClassBtn').onclick=()=>{
     </div>
   `);
   $('#saveScBtn').onclick=()=>{
-    const title=$('#scTitle'].value.trim();
+    const title=$('#scTitle').value.trim();
     if(!title) return alert('أدخل اسم المادة');
     const sched=getSchedule();
     sched.classes.push({id:makeId(),title,day:$('#scDay'].value});
@@ -704,7 +698,7 @@ function renderScheduleView(){
     html+=`<div style="margin-bottom:16px;text-align:center"><b style="display:block;margin-bottom:8px">صورة الجدول المدرسي المرفوعة:</b><img src="${sched.image}" style="max-width:100%;max-height:260px;border-radius:12px;border:1px solid #D5DBE7"/><div style="margin-top:8px"><button class="btn sec" id="removeSchedImg">حذف الصورة</button></div></div>`;
   }
 
-  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">`;
   html+=DAYS.map(day=>{
     const dayClasses=sched.classes.filter(c=>c.day===day);
     return `<div style="background:#F3F5F9;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px">
@@ -754,7 +748,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ==========================================
-   6. الاختبارات الذكية والبطاقات التعليمية
+   6. الاختبارات الذكية والبطاقات مع معالجة الرموز (OCR)
    ========================================== */
 async function renderQuizHome(){
   const files=pdfState.files;
@@ -874,7 +868,7 @@ function generateSmartQuestions(text, type){
 function runQuizSession(questions, type, index, score){
   if(index>=questions.length){
     $('#qMain').innerHTML=`
-      <div class="card" style="margin:auto;padding:40px;width:500px;max-width:100%;text-align:center;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
         <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
         <h1>انتهى الاختبار بنجاح!</h1>
         <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
@@ -966,7 +960,7 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   7. التسجيل الصوتي المتزامن مع الثواني
+   7. التسجيل الصوتي المتزامن
    ========================================== */
 let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null,segments:[]};
 
@@ -1128,7 +1122,7 @@ $('#recBtn').onclick=()=>recState.active?stopAudioRecording():startAudioRecordin
 $('#homeRecBtn').onclick=()=>{if(recState.active)stopAudioRecording();else{go('recordings');startAudioRecording();}};
 
 /* ==========================================
-   8. ميزات الأدوات والذكاء الاصطناعي
+   8. أدوات الذكاء الاصطناعي
    ========================================== */
 $('#doTranslateBtn').onclick=()=>{
   const txt=$('#translateInput').value.trim();
@@ -1143,7 +1137,7 @@ $('#askAiBtn').onclick=()=>{
 };
 
 /* ==========================================
-   9. التنقل
+   9. التنقل والتحجيم الثابت (Fit Stage)
    ========================================== */
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
@@ -1158,7 +1152,34 @@ document.addEventListener('click',e=>{
   if(g){e.preventDefault();go(g.dataset.go);}
 });
 
-// Initial Load
+function fit(){
+  const st = document.getElementById('stage');
+  const baseWidth = 1194;
+  const baseHeight = 834;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const scale = Math.min(vw / baseWidth, vh / baseHeight);
+
+  st.style.position = 'absolute';
+  st.style.width = baseWidth + 'px';
+  st.style.height = baseHeight + 'px';
+  st.style.transformOrigin = 'top left';
+  st.style.transform = 'scale(' + scale + ')';
+  st.style.left = Math.max(0, (vw - baseWidth * scale) / 2) + 'px';
+  st.style.top = Math.max(0, (vh - baseHeight * scale) / 2) + 'px';
+}
+
+window.addEventListener('resize', fit);
+window.addEventListener('orientationchange', () => setTimeout(fit, 150));
+window.addEventListener('pageshow', fit);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', fit);
+  window.visualViewport.addEventListener('scroll', fit);
+}
+fit();
+
+// التهيئة الأولية
 loadLibrary();
 renderScheduleView();
 renderQuizHome();
