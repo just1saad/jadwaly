@@ -340,29 +340,28 @@ async function openPdf(file){
     pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
     paper.innerHTML='';
     
-    for(let i=1; i<=pdfState.doc.numPages; i++){
-      const pageWrapper=document.createElement('div');
-      pageWrapper.style.cssText='position:relative;display:flex;justify-content:center;flex:none;margin:0 auto 20px;width:max-content;max-width:100%;';
-      const canvas=document.createElement('canvas');
-      canvas.style.cssText='display:block;box-shadow:0 4px 16px rgba(0,0,0,.15);max-width:100%;height:auto;background:#fff;';
-      pageWrapper.appendChild(canvas);
-      paper.appendChild(pageWrapper);
+          for(let i=1;i<=doc.numPages;i++){
+        const page=await doc.getPage(i);
+        const textContent=await page.getTextContent();
+        let pageText=textContent.items.map(item=>item.str).join(' ').trim();
+        
+        // إذا ظهرت رموز تالفة أو مربعات ()، يتم تحويل الصفحة إلى صورة وقراءتها بالـ OCR تلقائياً
+        if(pageText.includes('') || pageText.length < 25 || /[\ufffd]/g.test(pageText)){
+          if(window.Tesseract){
+            try{
+              if(!ocrWorker) ocrWorker=await Tesseract.createWorker('ara+eng');
+              const viewport=page.getViewport({scale:1.6});
+              const scanCanvas=document.createElement('canvas');
+              scanCanvas.width=Math.ceil(viewport.width);scanCanvas.height=Math.ceil(viewport.height);
+              await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
+              const result=await ocrWorker.recognize(scanCanvas);
+              pageText = result.data.text || pageText;
+            }catch(ocrError){console.warn('OCR error',ocrError);}
+          }
+        }
+        fullText+=' '+pageText;
+      }
 
-      const page=await pdfState.doc.getPage(i);
-      const vp=page.getViewport({scale:1.35});
-      canvas.width=vp.width;
-      canvas.height=vp.height;
-      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-
-      const overlay=document.createElement('canvas');
-      overlay.className='annotation-layer';
-      overlay.dataset.page=String(i);
-      overlay.width=canvas.width;
-      overlay.height=canvas.height;
-      overlay.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none;';
-      pageWrapper.appendChild(overlay);
-      initAnnotationLayer(overlay, i, file);
-    }
 
     $('#pdfFileTitleBanner').textContent=`${file.name} (${pdfState.doc.numPages} صفحة)`;
     $('#aiPageSummary').textContent=`الملف: ${file.name}\nإجمالي الصفحات: ${pdfState.doc.numPages}`;
