@@ -46,8 +46,6 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .modal-bg{position:absolute;inset:0;background:rgba(20,33,61,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-box{background:#fff;border-radius:20px;padding:24px;width:480px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
 .inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
-
-
 </style>
 </head>
 <body>
@@ -126,8 +124,8 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
-      <label class="mut" style="font-weight:700">النص المفرّغ (قابل للتعديل والحفظ):</label>
-      <textarea id="recTranscriptArea" class="inp" style="flex:1;resize:none;line-height:1.9;font-size:15px" placeholder="سيظهر التفريغ الصوتي هنا…"></textarea>
+      <label class="mut" style="font-weight:700">النص المفرّغ (اضغط على أي سطر للانتقال لتلك الدقيقة وتشغيل الصوت):</label>
+      <div id="transcriptSegmentsBox" class="inp" style="flex:1;overflow-y:auto;line-height:1.9;font-size:15px;background:#F9FAFB;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
       <div style="display:flex;justify-content:flex-end">
         <button class="btn sec hide" id="saveRecTextBtn">حفظ التعديلات</button>
       </div>
@@ -147,6 +145,7 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
    <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
  </div>
  <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
+   <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة"><i data-i="mic"></i></button>
    <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
  </div>
  <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
@@ -178,6 +177,7 @@ dot:'<circle cx="12" cy="12" r="6" fill="currentColor"/>',
 pen:'<path d="M4 20l4-1 11-11-3-3L5 16z"/>',
 hl:'<path d="M9 14l7-7 3 3-7 7H9z"/><path d="M4 20h8"/>',
 er:'<path d="M8 20h12M5 15l9-9 5 5-6 6H8z"/>',
+hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8.5M6 14l-1.5-1.5a2.12 2.12 0 0 0-3 3l4.5 4.5H15a4 4 0 0 0 4-4v-3a2 2 0 0 0-4 0v-1"/>',
 back:'<path d="M9 6l6 6-6 6"/>',
 grid:'<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>',
 spark:'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
@@ -244,7 +244,7 @@ async function storeAction(storeName,mode,action,val){
 }
 
 /* ==========================================
-   2. إدارة ملفات PDF وعرضها (تمرير مستمر لجميع الصفحات)
+   2. إدارة ملفات PDF وعرضها
    ========================================== */
 let pdfState={files:[],current:null,doc:null};
 
@@ -338,9 +338,8 @@ async function openPdf(file){
   paper.innerHTML='<div style="margin:auto;color:#566178">جاري تحميل جميع صفحات الملف…</div>';
   try{
     pdfState.doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
-    paper.innerHTML=''; // تفريغ الحاوية
+    paper.innerHTML='';
     
-    // رسم الصفحات بشكل متتابع مع طبقة مستقلة للتعليقات والرسم فوق كل صفحة.
     for(let i=1; i<=pdfState.doc.numPages; i++){
       const pageWrapper=document.createElement('div');
       pageWrapper.style.cssText='position:relative;display:flex;justify-content:center;flex:none;margin:0 auto 20px;width:max-content;max-width:100%;';
@@ -375,31 +374,54 @@ async function openPdf(file){
 
 $('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.toggle('on')};
 
+// زر التسجيل السريع في شاشة الدراسة
+$('#studyRecFab').onclick=()=>{
+  go('recordings');
+  startAudioRecording();
+};
+
 /* ==========================================
-   3. شريط أدوات الرسم والقلم واللوازم
+   3. شريط أدوات الرسم مع ميزة راحة اليد (Palm Rejection)
    ========================================== */
-const TL=[['select','مؤشر'],['pen','قلم'],['hl','تظليل'],['er','ممحاة'],['text','نص']];
+const TL=[['select','مؤشر'],['pen','قلم'],['hl','تظليل'],['er','ممحاة'],['hand','راحة اليد']];
 const COL=['#14213D','#1D4ED8','#C2410C','#0B5F58','#D92D20'];
-let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null;
+let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null,palmRejection=true;
 
 $('#tools').innerHTML=
   '<button class="tb" data-action="undo" title="تراجع" aria-label="تراجع">↶</button>'+
   '<button class="tb" data-action="redo" title="إعادة" aria-label="إعادة">↷</button>'+
   '<span style="width:1px;height:26px;background:#D5DBE7;margin:0 4px"></span>'+
-  TL.map((t,i)=>'<button class="tb '+(t[0]==='pen'?'on':'')+'" data-t="'+t[0]+'" title="'+t[1]+'" aria-label="'+t[1]+'">'+(t[0]==='select'?'↖':t[0]==='text'?'T':ico(t[0],22))+'</button>').join('')+
+  TL.map((t,i)=>'<button class="tb '+(t[0]==='pen'?'on':'')+'" data-t="'+t[0]+'" title="'+t[1]+'" aria-label="'+t[1]+'">'+(t[0]==='select'?'↖':ico(t[0],22))+'</button>').join('')+
   '<span style="width:1px;height:26px;background:#D5DBE7;margin:0 4px"></span>'+
   '<div style="display:flex;gap:9px;padding:0 4px">'+COL.map((c,i)=>'<button class="sw '+(i===0?'on':'')+'" data-c="'+c+'" title="لون" style="background:'+c+'"></button>').join('')+'</div>'+
   '<select id="penSize" title="سُمك القلم" style="height:34px;border:1px solid #D5DBE7;border-radius:8px;padding:0 5px;background:#fff;color:#14213D"><option value="2">رفيع</option><option value="3" selected>متوسط</option><option value="6">عريض</option><option value="10">سميك</option></select>';
 
 function updateAnnotationTools(){
-  $$('#tools [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===activeTool));
+  $$('#tools [data-t]').forEach(b=>{
+    if(b.dataset.t==='hand'){
+      b.classList.toggle('on', palmRejection);
+      b.title = palmRejection ? 'راحة اليد مفعلة (تجاهل لمس الإصبع)' : 'راحة اليد معطلة';
+    } else {
+      b.classList.toggle('on', b.dataset.t===activeTool);
+    }
+  });
   $$('#tools [data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===activeColor));
   $$('#tools [data-action="undo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex<=0;
   $$('#tools [data-action="redo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex>=lastAnnotationCanvas._history.length-1;
   $$('#tools [data-action]').forEach(b=>b.style.opacity=b.disabled?'.35':'1');
-  $$('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er','text'].includes(activeTool)?'auto':'none');
+  $$('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er'].includes(activeTool)?'auto':'none');
 }
-$$('#tools [data-t]').forEach(b=>b.onclick=()=>{activeTool=b.dataset.t;updateAnnotationTools();});
+
+$$('#tools [data-t]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.t==='hand'){
+    palmRejection=!palmRejection;
+    updateAnnotationTools();
+    return;
+  }
+  activeTool=b.dataset.t;
+  updateAnnotationTools();
+});
+
 $$('#tools [data-c]').forEach(b=>b.onclick=()=>{activeColor=b.dataset.c;updateAnnotationTools();});
 $('#penSize').onchange=e=>{activeSize=Number(e.target.value)||3;};
 $('#tools [data-action="undo"]').onclick=()=>undoAnnotation();
@@ -446,29 +468,23 @@ async function persistAnnotation(canvas){
   try{await storeAction('files','readwrite','put',pdfState.current);}catch(err){console.warn('تعذر حفظ التعليق',err);}
 }
 function initAnnotationLayer(canvas,pageNo,file){
-  canvas.style.pointerEvents=['pen','hl','er','text'].includes(activeTool)?'auto':'none';
+  canvas.style.pointerEvents=['pen','hl','er'].includes(activeTool)?'auto':'none';
   canvas._history=[];
   canvas._historyIndex=-1;
   const saved=file.annotations&&file.annotations[pageNo];
   const finish=()=>{
     snapshotAnnotation(canvas);
     canvas.addEventListener('pointerdown',e=>{
-      if(!['pen','hl','er','text'].includes(activeTool))return;
+      if(!['pen','hl','er'].includes(activeTool))return;
+      // ميزة راحة اليد: إذا كانت مفعلة، تجاهل أي لمس بالإصبع وسمح فقط بالقلم أو الماوس
+      if(palmRejection && e.pointerType==='touch') return;
+      
       e.preventDefault();
       lastAnnotationCanvas=canvas;
       const rect=canvas.getBoundingClientRect();
       const x=(e.clientX-rect.left)*(canvas.width/rect.width);
       const y=(e.clientY-rect.top)*(canvas.height/rect.height);
-      if(activeTool==='text'){
-        const value=prompt('اكتب النص الذي تريد إضافته إلى الصفحة:');
-        if(value){
-          const ctx=canvas.getContext('2d');
-          ctx.save();ctx.fillStyle=activeColor;ctx.font=`${Math.max(22,activeSize*7)}px IBM Plex Sans Arabic, sans-serif`;
-          ctx.direction='rtl';ctx.textAlign='right';ctx.fillText(value,x,y);ctx.restore();
-          snapshotAnnotation(canvas);persistAnnotation(canvas);
-        }
-        return;
-      }
+      
       drawingNow=true;lastDrawPoint={x,y};canvas.setPointerCapture(e.pointerId);
       const ctx=canvas.getContext('2d');
       ctx.beginPath();ctx.moveTo(x,y);
@@ -482,6 +498,7 @@ function initAnnotationLayer(canvas,pageNo,file){
     });
     canvas.addEventListener('pointermove',e=>{
       if(!drawingNow||!lastDrawPoint)return;
+      if(palmRejection && e.pointerType==='touch') return;
       const rect=canvas.getBoundingClientRect();
       const x=(e.clientX-rect.left)*(canvas.width/rect.width);
       const y=(e.clientY-rect.top)*(canvas.height/rect.height);
@@ -620,7 +637,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ==========================================
-   5. الاختبارات الذكية واستخراج النصوص (معالجة الأخطاء)
+   5. الاختبارات الذكية المطورة مع شرح الإجابات
    ========================================== */
 async function renderQuizHome(){
   const files=pdfState.files;
@@ -647,30 +664,29 @@ async function renderQuizHome(){
       <div>
         <label style="font-weight:600;display:block;margin-bottom:6px">اختر نوع الاختبار:</label>
         <select id="quizTypeSelect" class="inp">
-          <option value="mcq">أسئلة خيارات متعددة (MCQ)</option>
-          <option value="essay">أسئلة مقالية</option>
-          <option value="flashcards">بطاقات استذكار (Flashcards)</option>
+          <option value="mcq">أسئلة خيارات متعددة (MCQ) مع الشرح</option>
+          <option value="essay">أسئلة مقالية وتوضيحية</option>
+          <option value="flashcards">بطاقات استذكار ذكية (Flashcards)</option>
         </select>
       </div>
       <div>
-        <button class="btn pri" id="startPdfQuizBtn">${ico('spark',20)} استخراج النص وتوليد الاختبار</button>
+        <button class="btn pri" id="startPdfQuizBtn">${ico('spark',20)} توليد اختبار ذكي ودقيق</button>
       </div>
     </div>
   `;
 
   $('#startPdfQuizBtn').onclick=async()=>{
-    const fileId=$('#quizFileSelect').value;
-    const type=$('#quizTypeSelect').value;
+    const fileId=$('#quizFileSelect'].value;
+    const type=$('#quizTypeSelect'].value;
     const file=files.find(f=>f.id===fileId);
     if(!file) return;
 
-    $('#qMain').innerHTML='<div style="margin:auto;text-align:center;color:#566178">جاري استخراج النصوص (وقد تتم معالجة الصفحات المصورة بالتعرّف الضوئي OCR)…</div>';
+    $('#qMain').innerHTML='<div style="margin:auto;text-align:center;color:#566178">جاري تحليل محتوى الملف وتوليد أسئلة ذكية وخيارات دقيقة…</div>';
 
     try{
       const doc=await pdfjsLib.getDocument({data:new Uint8Array(file.data)}).promise;
       let fullText='';
       let ocrWorker=null;
-      // استخراج النص العادي أولاً، ثم استخدام OCR للصفحات المصورة التي لا تحتوي على نص قابل للتحديد.
       for(let i=1;i<=doc.numPages;i++){
         const page=await doc.getPage(i);
         const textContent=await page.getTextContent();
@@ -685,14 +701,14 @@ async function renderQuizHome(){
             await page.render({canvasContext:scanCanvas.getContext('2d'),viewport}).promise;
             const result=await ocrWorker.recognize(scanCanvas);
             fullText+=' '+(result.data.text||'');
-          }catch(ocrError){console.warn('تعذر OCR للصفحة '+i,ocrError);}
+          }catch(ocrError){console.warn('OCR error',ocrError);}
         }
       }
       if(ocrWorker){try{await ocrWorker.terminate();}catch{}}
 
-      const questions=generateQuestionsFromText(fullText, type);
+      const questions=generateSmartQuestions(fullText, type);
       if(!questions.length){
-        alert('لم يتم العثور على كلمات أو نصوص كافية في هذا الملف. تأكد أن الملف يحتوي على نصوص قابلة للتحديد وليست صوراً ماسحة ضوئياً (Scanned Images).');
+        alert('لم يتم العثور على كلمات أو نصوص كافية في هذا الملف. تأكد أن الملف يحتوي على نصوص قابلة للقراءة.');
         renderQuizHome();
         return;
       }
@@ -700,33 +716,62 @@ async function renderQuizHome(){
       runQuizSession(questions, type, 0, 0);
     }catch(err){
       console.error(err);
-      alert('حدث خطأ أثناء قراءة الملف واستخراج النصوص. حاول استخدام ملف PDF آخر.');
+      alert('حدث خطأ أثناء قراءة الملف. حاول استخدام ملف PDF آخر.');
       renderQuizHome();
     }
   };
 }
 
-function generateQuestionsFromText(text, type){
-  const sentences=text.replace(/\s+/g,' ').split(/[.!?؟؛\n]+/).map(s=>s.trim()).filter(s=>s.length>=18);
-  const stopWords=new Set(['من','في','على','إلى','عن','هذا','هذه','ذلك','التي','الذي','هو','هي','ثم','كما','كان','كانت','مع','ما','لا','قد','أن','إن','بين','عند','كل','تم','يتم','the','and','for','with','that','this','from']);
-  const allTerms=[...new Set((text.match(/[\u0600-\u06FF]{3,}|[A-Za-z]{4,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase())))];
+function generateSmartQuestions(text, type){
+  // تصفية وتنظيف الجمل المفيدة من النص
+  const rawSentences=text.replace(/\s+/g,' ').split(/[.!?؟؛\n]+/).map(s=>s.trim()).filter(s=>s.length>=22);
+  const sentences=[...new Set(rawSentences)]; // إزالة التكرار لمنع تكرار الأسئلة
+  const stopWords=new Set(['من','في','على','إلى','عن','هذا','هذه','ذلك','التي','الذي','هو','هي','ثم','كما','كان','كانت','مع','ما','لا','قد','أن','إن','بين','عند','كل','تم','يتم','the','and','for','with','that','this','from','are','was','were']);
+  
+  const allWords=[...new Set((text.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{5,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase())))];
   const questions=[];
-  sentences.slice(0,12).forEach((sent)=>{
+
+  sentences.forEach((sent)=>{
+    const words=(sent.match(/[\u0600-\u06FF]{4,}|[A-Za-z]{5,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase()));
+    if(words.length===0) return;
+
+    // اختيار كلمة مفتاحية أساسية من الجملة لتكون هي الإجابة
+    const keyword=words[Math.floor(words.length/2)];
+    const questionPrompt=sent.replace(keyword, '________');
+
+    // توليد خيارات خاطئة ذكية ومختلفة تماماً عن الإجابة الصحيحة
+    const distractors=allWords.filter(w=>w.toLowerCase()!==keyword.toLowerCase()&&!sent.toLowerCase().includes(w.toLowerCase()));
+    const shuffledDistractors=distractors.sort(()=>Math.random()-.5).slice(0,3);
+    
+    const options=[keyword, ...shuffledDistractors].sort(()=>Math.random()-.5);
+    
+    // شرح دقيق للسبب بناءً على سياق الجملة الأصلية
+    const explanation=`السبب من النص: "${sent}" حيث تمثل الكلمة المفقودة العنصر الأساسي في هذه القاعدة أو المعلومة.`;
+
     if(type==='mcq'){
-      const terms=(sent.match(/[\u0600-\u06FF]{3,}|[A-Za-z]{4,}/g)||[]).filter(w=>!stopWords.has(w.toLowerCase()));
-      if(!terms.length)return;
-      const answer=terms[Math.min(terms.length-1,Math.floor(terms.length/2))];
-      const distractors=allTerms.filter(w=>w.toLowerCase()!==answer.toLowerCase()&&!sent.toLowerCase().includes(w.toLowerCase()));
-      const options=[answer,...distractors.slice(0,3)];
-      while(options.length<4)options.push(['غير مذكور في النص','لا ينطبق','معلومة أخرى'][options.length-1]);
-      questions.push({q:`أكمل العبارة بالكلمة المناسبة:\n${sent.replace(answer,'________')}`,options:options.sort(()=>Math.random()-.5),answer});
+      questions.push({
+        q: `أكمل الفراغ بالكلمة الصحيحة بناءً على سياق الملف:\n\n${questionPrompt}`,
+        options: options,
+        answer: keyword,
+        explanation: explanation
+      });
     }else if(type==='essay'){
-      questions.push({q:`اشرح الفكرة الواردة في العبارة التالية المستخرجة من الملف: «${sent}»`,answer:sent});
+      questions.push({
+        q: `اشرح باختصار الفكرة الواردة في العبارة التالية:\n\n«${sent}»`,
+        answer: sent,
+        explanation: `المرجع الأساسي في الملف: ${sent}`
+      });
     }else{
-      questions.push({q:`ما الفكرة أو المعلومة الأساسية في العبارة التالية؟ «${sent}»`,answer:sent});
+      // Flashcards ذكية وغير مكشوفة
+      questions.push({
+        q: `ما هي القاعدة أو المصطلح الأساسي المرتبط بالعبارة التالية؟\n\n«${sent.replace(keyword, '[...]')}»`,
+        answer: `الإجابة / المصطلح المفتاحي: ${keyword}\n\nالتوضيح الكامل: ${sent}`,
+        explanation: sent
+      });
     }
   });
-  return questions.slice(0,10);
+
+  return questions.sort(()=>Math.random()-.5).slice(0, 10);
 }
 
 function runQuizSession(questions, type, index, score){
@@ -735,8 +780,8 @@ function runQuizSession(questions, type, index, score){
       <div class="card" style="margin:auto;padding:40px;width:500px;text-align:center;display:flex;flex-direction:column;gap:14px">
         <div style="width:72px;height:72px;border-radius:36px;background:#E4F2F0;color:#0B5F58;margin:auto;display:flex;align-items:center;justify-content:center">${ico('check',36)}</div>
         <h1>انتهى الاختبار بنجاح!</h1>
-        <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة: ${score} / ${questions.length}</div>
-        <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">اختبار جديد</button>
+        <div style="font-size:18px;font-weight:700;color:#0B5F58">النتيجة النهائية: ${score} / ${questions.length}</div>
+        <button class="btn pri" style="justify-content:center" onclick="renderQuizHome()">بدء اختبار جديد</button>
       </div>`;
     return;
   }
@@ -753,19 +798,24 @@ function runQuizSession(questions, type, index, score){
             ${esc(opt)}
           </button>
         `).join('')}
+      </div>
+      <div id="explanationBox" class="card hide" style="padding:16px;margin-top:12px;background:#E4F2F0;border-color:#0B5F58;color:#0B5F58;line-height:1.7;">
+        <b>💡 الشرح والتوضيح:</b> <span id="explanationText"></span>
       </div>`;
   } else if(type==='essay'){
     contentHtml=`
       <textarea id="essayAns" class="inp" rows="4" placeholder="اكتب إجابتك هنا..."></textarea>
-      <button class="btn pri" id="submitEssay" style="margin-top:10px">إرسال الإجابة</button>
-      <div id="essayFeedback" class="card hide" style="padding:14px;margin-top:10px"><b>الإجابة المستخرجة من الملف:</b> <span class="mut">${esc(item.answer)}</span></div>`;
+      <button class="btn pri" id="submitEssay" style="margin-top:10px">عرض الإجابة النموذجية والشرح</button>
+      <div id="essayFeedback" class="card hide" style="padding:16px;margin-top:10px;background:#E4F2F0;color:#0B5F58;line-height:1.7;">
+        <b>📌 الإجابة النموذجية والشرح:</b><br><span id="essayExplanationText"></span>
+      </div>`;
   } else {
     contentHtml=`
-      <div id="fcCard" class="card" style="padding:30px;text-align:center;background:#F3F5F9;cursor:pointer;font-size:18px;font-weight:600">
-        اضغط هنا لعرض الإجابة (قلب البطاقة)
+      <div id="fcCard" class="card" style="padding:35px;text-align:center;background:#F3F5F9;cursor:pointer;font-size:18px;font-weight:600;line-height:1.7">
+        اضغط هنا لعرض الإجابة والشرح (قلب البطاقة)
       </div>
-      <div id="fcAns" class="card hide" style="padding:20px;background:#E4F2F0;color:#0B5F58;font-size:16px">
-        <b>الإجابة:</b> ${esc(item.answer)}
+      <div id="fcAns" class="card hide" style="padding:24px;background:#E4F2F0;color:#0B5F58;font-size:16px;line-height:1.8">
+        <b>💡 الإجابة والتوضيح:</b><br><span style="white-space:pre-line">${esc(item.answer)}</span>
       </div>
       <div style="display:flex;gap:10px;margin-top:10px">
         <button class="btn sec" id="fcWrong">لم أكن أعرفها</button>
@@ -780,7 +830,7 @@ function runQuizSession(questions, type, index, score){
       <b>${index+1} / ${questions.length}</b>
     </div>
     <div style="max-width:740px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center">
-      <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600">${esc(item.q)}</div>
+      <div class="card" style="padding:24px;font-size:18px;line-height:1.8;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
       ${contentHtml}
     </div>`;
 
@@ -796,11 +846,17 @@ function runQuizSession(questions, type, index, score){
           if(b.dataset.opt===item.answer) b.classList.add('ok');
           else if(b.dataset.opt===chosen && !correct) b.classList.add('no');
         });
-        setTimeout(()=>runQuizSession(questions, type, index+1, score), 1200);
+        
+        // إظهار الشرح والتوضيح بعد الإجابة
+        $('#explanationText').textContent = item.explanation;
+        $('#explanationBox').classList.remove('hide');
+
+        setTimeout(()=>runQuizSession(questions, type, index+1, score), 4000);
       };
     });
   } else if(type==='essay'){
     $('#submitEssay').onclick=()=>{
+      $('#essayExplanationText').textContent = item.explanation;
       $('#essayFeedback').classList.remove('hide');
       $('#submitEssay').textContent='السؤال التالي';
       $('#submitEssay').onclick=()=>runQuizSession(questions, type, index+1, score+1);
@@ -818,9 +874,9 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   6. التسجيل الصوتي
+   6. التسجيل الصوتي والمزامنة الزمنية مع النصوص
    ========================================== */
-let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null};
+let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null,segments:[]};
 
 async function loadRecordings(){
   recState.recordings=await storeAction('recordings','readonly','getAll');
@@ -847,7 +903,31 @@ function selectRecording(id){
   recState.selectedId=id;
   renderRecList();
   $('#recTitle').textContent=rec.title;
-  $('#recTranscriptArea').value=rec.transcript||'';
+  
+  // عرض المقاطع الزمنية بشكل تفاعلي
+  const segBox=$('#transcriptSegmentsBox');
+  if(rec.segments && rec.segments.length > 0){
+    segBox.innerHTML = rec.segments.map(seg=>`
+      <div class="transcript-seg" data-time="${seg.time}" style="padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #E3E7EF;cursor:pointer;display:flex;gap:10px;align-items:center">
+        <span style="font-size:12px;font-weight:700;color:#0B5F58;background:#E4F2F0;padding:2px 8px;border-radius:6px">${seg.timeStr}</span>
+        <span style="flex:1">${esc(seg.text)}</span>
+      </div>
+    `).join('');
+    
+    segBox.querySelectorAll('.transcript-seg').forEach(el=>{
+      el.onclick=()=>{
+        const seconds = parseFloat(el.dataset.time);
+        const player = $('#audioPlayer');
+        if(player && !player.paused || player.src){
+          player.currentTime = seconds;
+          player.play();
+        }
+      };
+    });
+  } else {
+    segBox.innerHTML = `<div style="padding:10px">${esc(rec.transcript || 'لا توجد تفاصيل زمنية مسجلة')}</div>`;
+  }
+
   $('#delRecBtn').classList.remove('hide');
   $('#saveRecTextBtn').classList.remove('hide');
   const player=$('#audioPlayer');
@@ -867,9 +947,11 @@ document.addEventListener('click',e=>{
 $('#saveRecTextBtn').onclick=async()=>{
   const rec=recState.recordings.find(r=>r.id===recState.selectedId);
   if(!rec) return;
-  rec.transcript=$('#recTranscriptArea').value;
+  // تحديث النص العام
+  const segBox=$('#transcriptSegmentsBox');
+  rec.transcript = segBox.innerText;
   await storeAction('recordings','readwrite','put',rec);
-  alert('تم حفظ النص');
+  alert('تم حفظ التعديلات بنجاح');
 };
 
 $('#delRecBtn').onclick=async()=>{
@@ -877,7 +959,7 @@ $('#delRecBtn').onclick=async()=>{
   await storeAction('recordings','readwrite','delete',recState.selectedId);
   recState.selectedId=null;
   $('#recTitle').textContent='اختر تسجيلاً أو ابدأ تسجيلاً جديداً';
-  $('#recTranscriptArea').value='';
+  $('#transcriptSegmentsBox').innerHTML='';
   $('#audioPlayer').classList.add('hide');
   $('#delRecBtn').classList.add('hide');
   $('#saveRecTextBtn').classList.add('hide');
@@ -893,6 +975,7 @@ async function startAudioRecording(){
     recState.stream=await navigator.mediaDevices.getUserMedia({audio:true});
     recState.chunks=[];
     recState.finalText='';
+    recState.segments=[];
     recState.sec=0;
     recState.active=true;
 
@@ -907,7 +990,8 @@ async function startAudioRecording(){
         date:new Date().toLocaleDateString('ar-SA'),
         duration:`${m}:${s}`,
         audioBlob:blob,
-        transcript:recState.finalText.trim()
+        transcript:recState.finalText.trim(),
+        segments:recState.segments
       };
       await storeAction('recordings','readwrite','put',newRec);
       await loadRecordings();
@@ -924,8 +1008,19 @@ async function startAudioRecording(){
       recState.recognition.onresult=e=>{
         let interim='';
         for(let i=e.resultIndex;i<e.results.length;i++){
-          if(e.results[i].isFinal) recState.finalText+=e.results[i][0].transcript+' ';
-          else interim+=e.results[i][0].transcript;
+          if(e.results[i].isFinal){
+            const txt = e.results[i][0].transcript.trim();
+            recState.finalText+=txt+' ';
+            const m=String(Math.floor(recState.sec/60)).padStart(2,'0');
+            const s=String(recState.sec%60).padStart(2,'0');
+            recState.segments.push({
+              time: recState.sec,
+              timeStr: `${m}:${s}`,
+              text: txt
+            });
+          } else {
+            interim+=e.results[i][0].transcript;
+          }
         }
         const display=recState.finalText+interim;
         $('#recLiveContent').textContent=display||'تحدث الآن…';
@@ -991,17 +1086,9 @@ function fit(){
   const st = document.getElementById('stage');
   const baseWidth = 1194;
   const baseHeight = 834;
-
-  // Use the actual device screen width as a fallback when Safari
-  // is displaying the page in "Request Desktop Website" mode.
   const vv = window.visualViewport;
-  const screenWidth = window.screen && window.screen.width
-    ? window.screen.width
-    : window.innerWidth;
-  const vw = Math.min(
-    vv && vv.width ? vv.width : window.innerWidth,
-    screenWidth
-  );
+  const screenWidth = window.screen && window.screen.width ? window.screen.width : window.innerWidth;
+  const vw = Math.min(vv && vv.width ? vv.width : window.innerWidth, screenWidth);
   const vh = vv && vv.height ? vv.height : window.innerHeight;
 
   const scale = Math.min(vw / baseWidth, vh / baseHeight);
