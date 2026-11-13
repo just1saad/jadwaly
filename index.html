@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>رفيق المذاكرة</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1083,24 +1083,14 @@ document.addEventListener('click',e=>{
 });
 
 function fit(){
+  const k = Math.min(window.innerWidth / 1194, window.innerHeight / 834);
   const st = document.getElementById('stage');
-  const baseWidth = 1194;
-  const baseHeight = 834;
-  
-  // الاعتماد على مساحة العرض والارتفاع الفعلية للمتصفح مباشرة
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  const scale = Math.min(vw / baseWidth, vh / baseHeight);
-
-  st.style.position = 'absolute';
-  st.style.width = baseWidth + 'px';
-  st.style.height = baseHeight + 'px';
-  st.style.transformOrigin = 'top left';
-  st.style.transform = 'scale(' + scale + ')';
-  st.style.left = Math.max(0, (vw - baseWidth * scale) / 2) + 'px';
-  st.style.top = Math.max(0, (vh - baseHeight * scale) / 2) + 'px';
+  st.style.transform = 'scale(' + k + ')';
+  st.style.left = (window.innerWidth - 1194 * k) / 2 + 'px';
+  st.style.top = (window.innerHeight - 834 * k) / 2 + 'px';
 }
+window.addEventListener('resize', fit);
+fit();
 
 window.addEventListener('resize', fit);
 window.addEventListener('orientationchange', () => setTimeout(fit, 150));
