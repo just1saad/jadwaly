@@ -14,21 +14,23 @@
 </script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#cfd5e0;overflow:hidden;position:fixed;width:100%;height:100%}
+html,body{margin:0;padding:0;width:100%;height:100%;height:100dvh;background:#F3F5F9;overflow:hidden;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
-#stage{position:absolute;left:0;top:0;width:1194px;height:834px;transform-origin:0 0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;color:#14213D;background:#F3F5F9;overflow:hidden}
-.scr{position:absolute;inset:0;display:none}
+
+.scr{position:absolute;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden}
 .scr.on{display:flex}
-.side{width:230px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%}
+
+.side{width:240px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10}
 .nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
+
 .main{flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:18px;min-width:0;height:100%;overflow-y:auto}
 .card{background:#fff;border:1px solid #E3E7EF;border-radius:16px}
 .btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;border:0;font-size:15px;font-weight:700;justify-content:center}
 .pri{background:#0B5F58;color:#fff}.sec{background:#fff;border:1px solid #D5DBE7;color:#14213D}
-h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
+h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 .mut{color:#566178;font-size:13px}
 .fab{width:44px;height:44px;border:0;border-radius:12px;background:#fff;color:#14213D;box-shadow:0 2px 10px rgba(20,33,61,.15);display:flex;align-items:center;justify-content:center}
 .fab.on{background:#0B5F58;color:#fff}
@@ -41,13 +43,12 @@ h1{margin:0;font-size:28px}h2{margin:0;font-size:18px}
 .opt.ok{border-color:#0B5F58;background:#E4F2F0}.opt.no{border-color:#B42318;background:#FDECEA}
 @keyframes p{50%{opacity:.35}}.rec{animation:p 1s infinite}
 .hide{display:none!important}
-.modal-bg{position:absolute;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-bg{position:fixed;inset:0;background:rgba(20,33,61,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-box{background:#fff;border-radius:20px;padding:24px;width:480px;max-width:100%;box-shadow:0 20px 50px rgba(20,33,61,.25);display:flex;flex-direction:column;gap:14px}
 .inp{width:100%;padding:10px 14px;border:1px solid #D5DBE7;border-radius:10px;font-size:15px;color:#14213D;background:#fff}
 </style>
 </head>
 <body>
-<div id="stage">
 
 <script>
 const NAV_ITEMS=[
@@ -199,19 +200,19 @@ const NAV_ITEMS=[
 
 <!-- STUDY -->
 <div class="scr" id="study" style="background:#E9ECF2">
- <div dir="ltr" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1040px;height:834px;background:#fff;box-shadow:0 0 24px rgba(20,33,61,.12);padding:92px 64px 56px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
+ <div dir="ltr" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;padding:92px 64px 56px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;" id="paper">
    <div style="margin:auto;text-align:center;color:#566178">اختر ملف PDF من مكتبتك لعرضه هنا</div>
  </div>
- <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center">
+ <div style="position:absolute;top:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:20">
    <button class="fab" data-go="library" aria-label="رجوع"><i data-i="back"></i></button>
    <div class="card" id="pdfFileTitleBanner" style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:13px;font-weight:600;border:0;box-shadow:0 2px 10px rgba(20,33,61,.15)">لا يوجد ملف مفتوح</div>
  </div>
- <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px">
+ <div style="position:absolute;top:12px;left:12px;display:flex;gap:8px;z-index:20">
    <button class="fab" id="studyRecFab" title="تسجيل صوتي سريع أثناء المذاكرة"><i data-i="mic"></i></button>
    <button class="fab" id="bAI" aria-label="المساعد"><i data-i="spark"></i></button>
  </div>
- <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22)" id="tools"></div>
- <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px">
+ <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:20" id="tools"></div>
+ <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:20">
   <h2 style="font-size:16px">مساعد المذاكرة والذكاء الاصطناعي</h2>
   <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
   <button class="btn pri" style="height:48px;justify-content:center" data-go="quizzes">إنشاء اختبار ذكي وبطاقات</button>
@@ -221,8 +222,6 @@ const NAV_ITEMS=[
 
 <!-- MODAL CONTAINER -->
 <div id="modalRoot" class="modal-bg hide"></div>
-
-</div>
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -525,7 +524,6 @@ function initAnnotationLayer(canvas,pageNo,file){
     snapshotAnnotation(canvas);
     canvas.addEventListener('pointerdown',e=>{
       if(!['pen','hl','er','hand'].includes(activeTool))return;
-      
       if(e.pointerType === 'touch' && activeTool !== 'hand') return;
 
       e.preventDefault();
@@ -1136,7 +1134,7 @@ $('#askAiBtn').onclick=()=>{
 };
 
 /* ==========================================
-   9. التنقل والتحجيم الثابت باستخدام visualViewport
+   9. التنقل السلس
    ========================================== */
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
@@ -1150,35 +1148,6 @@ document.addEventListener('click',e=>{
   const g=e.target.closest('[data-go]');
   if(g){e.preventDefault();go(g.dataset.go);}
 });
-
-function fit(){
-  const st = document.getElementById('stage');
-  const baseWidth = 1194;
-  const baseHeight = 834;
-  
-  // الاعتماد على visualViewport لتجنب مشاكل أشرطة المتصفح المتحركة على الجوال والآيباد
-  const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-  const scale = Math.min(vw / baseWidth, vh / baseHeight);
-
-  st.style.position = 'absolute';
-  st.style.width = baseWidth + 'px';
-  st.style.height = baseHeight + 'px';
-  st.style.transformOrigin = 'top left';
-  st.style.transform = 'scale(' + scale + ')';
-  st.style.left = Math.max(0, (vw - baseWidth * scale) / 2) + 'px';
-  st.style.top = Math.max(0, (vh - baseHeight * scale) / 2) + 'px';
-}
-
-window.addEventListener('resize', fit);
-window.addEventListener('orientationchange', () => setTimeout(fit, 200));
-window.addEventListener('pageshow', fit);
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', fit);
-  window.visualViewport.addEventListener('scroll', fit);
-}
-fit();
 
 // التهيئة الأولية
 loadLibrary();
