@@ -18,11 +18,11 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-/* التخطيط الثابت والمستقر لمتصفحات الايباد والسفاري */
-.scr{position:fixed;inset:0;display:none;flex-direction:row-reverse;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
+/* ضبط التخطيط بحيث يكون الشريط الجانبي يميناً والمحتوى يساراً بشكل ثابت */
+.scr{position:fixed;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
-.side{width:240px;background:#fff;border-right:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10;overflow-y:auto}
+.side{width:240px;background:#fff;border-left:1px solid #E3E7EF;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex:none;height:100%;z-index:10;overflow-y:auto}
 .nav{display:flex;align-items:center;gap:12px;padding:0 14px;height:48px;border-radius:12px;border:0;background:transparent;color:#44506A;font-size:16px;width:100%;text-align:right}
 .nav.on{background:#E4F2F0;color:#0B5F58;font-weight:700}
 .nav:hover{background:#EEF1F6}.nav.on:hover{background:#E4F2F0}
@@ -57,18 +57,17 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
     <b style="font-size:18px">رفيق المذاكرة</b>
   </div>
-  <button class="nav" data-go="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>الرئيسية</span></button>
-  <button class="nav" data-go="library"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/></svg><span>المكتبة وملفات PDF</span></button>
-  <button class="nav" data-go="notebooks"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><span>الدفاتر والملاحظات</span></button>
-  <button class="nav" data-go="schedule"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>الجدول والتخطيط</span></button>
-  <button class="nav" data-go="quizzes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg><span>الاختبارات والبطاقات</span></button>
-  <button class="nav" data-go="recordings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>التسجيلات الصوتية</span></button>
-  <button class="nav" data-go="tools"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg><span>الأدوات والذكاء الاصطناعي</span></button>
-  <button class="nav" data-go="community"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg><span>المجتمع الإبداعي</span></button>
+  <button class="nav" data-go="home">🏠<span>الرئيسية</span></button>
+  <button class="nav" data-go="library">📚<span>المكتبة وملفات PDF</span></button>
+  <button class="nav" data-go="notebooks">📔<span>الدفاتر والملاحظات</span></button>
+  <button class="nav" data-go="schedule">📅<span>الجدول والتخطيط</span></button>
+  <button class="nav" data-go="quizzes">🎯<span>الاختبارات والبطاقات</span></button>
+  <button class="nav" data-go="recordings">🎙️<span>التسجيلات الصوتية</span></button>
+  <button class="nav" data-go="tools">🛠️<span>الأدوات والذكاء الاصطناعي</span></button>
+  <button class="nav" data-go="community">🌐<span>المجتمع الإبداعي</span></button>
   <div style="flex:1"></div>
   <div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-    <span>مزامنة آمنة عبر iCloud</span>
+    🔒 <span>مزامنة آمنة عبر iCloud</span>
   </div>
 </template>
 
@@ -90,7 +89,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
    </div>
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة ASMR</h2><span style="font-size:13px;color:#C7D0E4">تسجيل وتفريغ متزامن</span></div>
-    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;max-height:78px;overflow:auto" id="homeLiveText">اضغط الزر أدناه لبدء التسجيل الصوتي…</div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;max-height:78px;overflow:auto" id="homeLiveText">اضغط الزر أدناه لبدء التسجيل الصوتي والتفريغ الفوري…</div>
     <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز</span></div>
    </div>
   </div>
@@ -229,6 +228,15 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
    <button class="fab" id="bAI" aria-label="المساعد">✨</button>
  </div>
  <div style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#fff;border-radius:18px;height:60px;padding:0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 20px rgba(20,33,61,.22);z-index:20" id="tools"></div>
+ 
+ <!-- شريط التسجيل السفلي المصغر داخل صفحة المذاكرة -->
+ <div id="studyRecBar" class="hide" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#14213D;color:#fff;border-radius:16px;padding:12px 20px;box-shadow:0 6px 24px rgba(20,33,61,.3);display:flex;align-items:center;gap:16px;z-index:30;width:90%;max-width:600px;">
+   <span class="rec" style="width:10px;height:10px;border-radius:50%;background:#E8590C;flex:none"></span>
+   <b id="studyRecTimer" style="font-size:14px;flex:none">00:00</b>
+   <div id="studyRecText" style="flex:1;font-size:14px;color:#E6EBF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">جاري الاستماع والتفريغ الفوري…</div>
+   <button class="btn" id="stopStudyRecBtn" style="background:#E8590C;color:#fff;height:36px;padding:0 14px;font-size:13px;border-radius:10px;flex:none">إيقاف وحفظ</button>
+ </div>
+
  <div id="aiDr" class="hide" style="position:absolute;top:70px;bottom:12px;left:12px;width:300px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(20,33,61,.22);padding:16px;display:flex;flex-direction:column;gap:12px;z-index:20">
   <h2 style="font-size:16px">مساعد المذاكرة والذكاء الاصطناعي</h2>
   <div style="background:#F3F5F9;border-radius:14px;padding:14px"><b style="font-size:14px">حالة الملف</b><div style="font-size:13px;line-height:1.8;color:#44506A;margin-top:6px" id="aiPageSummary">افتح ملفاً لعرض تفاصيله.</div></div>
@@ -441,7 +449,6 @@ async function openPdf(file){
 }
 
 document.getElementById('bAI').onclick=()=>{document.getElementById('aiDr').classList.toggle('hide');document.getElementById('bAI').classList.toggle('on')};
-document.getElementById('studyRecFab').onclick=()=>{ go('recordings'); startAudioRecording(); };
 
 /* ==========================================
    3. أدوات الرسم والقلم واليد
@@ -767,9 +774,12 @@ async function renderQuizHome(){
   const qMain = document.getElementById('qMain');
   if(!qMain) return;
   const files=pdfState.files;
+  const tpl = document.getElementById('sidebarTemplate');
+  const sideHtml = tpl ? tpl.innerHTML : '';
+
   if(!files.length){
     qMain.innerHTML=`
-      <div class="side" id="side-quizzes"></div>
+      <div class="side" id="side-quizzes">${sideHtml}</div>
       <div class="main">
         <div style="display:flex;justify-content:space-between;align-items:center"><h1>الاختبارات الذكية والبطاقات</h1></div>
         <div class="card" style="padding:40px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
@@ -778,21 +788,10 @@ async function renderQuizHome(){
           <button class="btn pri" data-import-pdf style="justify-content:center">استيراد PDF الآن</button>
         </div>
       </div>`;
-    // إعادة تعبئة الشريط الجانبي لتلك الصفحة
-    const tpl = document.getElementById('sidebarTemplate');
-    if(tpl) {
-      const side = document.getElementById('side-quizzes');
-      if(side && !side.hasChildNodes()){
-        side.appendChild(tpl.content.cloneNode(true));
-        side.querySelectorAll('[data-go]').forEach(b=>{ if(b.dataset.go==='quizzes')b.classList.add('on'); });
-      }
-    }
+    const side = document.getElementById('side-quizzes');
+    if(side) side.querySelectorAll('[data-go]').forEach(b=>{ if(b.dataset.go==='quizzes')b.classList.add('on'); });
     return;
   }
-
-  // إعادة بناء الشريط الجانبي أولاً لضمان ظهوره
-  const tpl = document.getElementById('sidebarTemplate');
-  const sideHtml = tpl ? tpl.innerHTML : '';
 
   qMain.innerHTML=`
     <div class="side" id="side-quizzes">${sideHtml}</div>
@@ -1014,15 +1013,147 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   7. التسجيل الصوتي المتزامن
+   7. التسجيل الصوتي المتزامن (الرئيسية + صفحة التسجيلات)
    ========================================== */
-let recState={active:false,recorder:null,stream:null,chunks:[],recognition:null,finalText:'',timer:null,sec:0,recordings:[],selectedId:null,segments:[]};
+let globalRecState = {
+  active: false,
+  recorder: null,
+  stream: null,
+  chunks: [],
+  recognition: null,
+  finalText: '',
+  timer: null,
+  sec: 0,
+  segments: []
+};
 
+async function startGlobalRecording(onUpdateCallback){
+  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم');
+  try{
+    globalRecState.stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    globalRecState.chunks = [];
+    globalRecState.finalText = '';
+    globalRecState.segments = [];
+    globalRecState.sec = 0;
+    globalRecState.active = true;
+
+    globalRecState.recorder = new MediaRecorder(globalRecState.stream);
+    globalRecState.recorder.ondataavailable = e => { if(e.data.size>0) globalRecState.chunks.push(e.data); };
+    globalRecState.recorder.onstop = async () => {
+      const blob = new Blob(globalRecState.chunks, {type: globalRecState.recorder.mimeType || 'audio/webm'});
+      const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
+      const recordings = await storeAction('recordings','readonly','getAll');
+      const newRec = {
+        id: makeId(),
+        title: 'تسجيل ' + (recordings.length + 1),
+        date: new Date().toLocaleDateString('ar-SA'),
+        duration: `${m}:${s}`,
+        audioBlob: blob,
+        transcript: globalRecState.finalText.trim(),
+        segments: globalRecState.segments
+      };
+      await storeAction('recordings','readwrite','put',newRec);
+    };
+    globalRecState.recorder.start();
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SR){
+      globalRecState.recognition = new SR();
+      globalRecState.recognition.lang = 'ar-SA';
+      globalRecState.recognition.continuous = true;
+      globalRecState.recognition.interimResults = true;
+      globalRecState.recognition.onresult = e => {
+        let interim = '';
+        for(let i = e.resultIndex; i < e.results.length; i++){
+          if(e.results[i].isFinal){
+            const txt = e.results[i][0].transcript.trim();
+            globalRecState.finalText += txt + ' ';
+            const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
+            globalRecState.segments.push({time: globalRecState.sec, timeStr: `${m}:${s}`, text: txt});
+          } else {
+            interim += e.results[i][0].transcript;
+          }
+        }
+        const display = globalRecState.finalText + interim;
+        if(onUpdateCallback) onUpdateCallback(display, globalRecState.sec);
+      };
+      globalRecState.recognition.start();
+    }
+
+    globalRecState.timer = setInterval(()=>{
+      globalRecState.sec++;
+      const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
+      if(onUpdateCallback) onUpdateCallback(globalRecState.finalText, globalRecState.sec);
+    }, 1000);
+
+  } catch(err){
+    alert('تعذر استخدام الميكروفون.');
+  }
+}
+
+function stopGlobalRecording(){
+  if(!globalRecState.active) return;
+  globalRecState.active = false;
+  clearInterval(globalRecState.timer);
+  if(globalRecState.recognition){ try{ globalRecState.recognition.stop(); }catch{} }
+  if(globalRecState.recorder && globalRecState.recorder.state !== 'inactive') globalRecState.recorder.stop();
+  if(globalRecState.stream) globalRecState.stream.getTracks().forEach(t => t.stop());
+}
+
+// زر الصفحة الرئيسية للتسجيل الفوري
+const homeRecBtn = document.getElementById('homeRecBtn');
+if(homeRecBtn){
+  homeRecBtn.onclick = () => {
+    if(!globalRecState.active){
+      homeRecBtn.textContent = 'إيقاف التسجيل';
+      document.getElementById('homeRecStatus').textContent = 'جاري التسجيل والتفريغ…';
+      startGlobalRecording((text, sec)=>{
+        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
+        document.getElementById('homeLiveText').textContent = `[${m}:${s}] ${text || 'تحدث الآن…'}`;
+      });
+    } else {
+      stopGlobalRecording();
+      homeRecBtn.textContent = 'ابدأ التسجيل';
+      document.getElementById('homeRecStatus').textContent = 'تم حفظ التسجيل في قائمة التسجيلات!';
+    }
+  };
+}
+
+// زر صفحة المذاكرة (PDF) للتسجيل عبر شريط سفلي مصغر
+const studyRecFab = document.getElementById('studyRecFab');
+const studyRecBar = document.getElementById('studyRecBar');
+const stopStudyRecBtn = document.getElementById('stopStudyRecBtn');
+
+if(studyRecFab){
+  studyRecFab.onclick = () => {
+    if(!globalRecState.active){
+      studyRecBar.classList.remove('hide');
+      startGlobalRecording((text, sec)=>{
+        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
+        document.getElementById('studyRecTimer').textContent = `${m}:${s}`;
+        document.getElementById('studyRecText').textContent = text || 'جاري الاستماع والتفريغ الفوري…';
+      });
+    } else {
+      stopGlobalRecording();
+      studyRecBar.classList.add('hide');
+    }
+  };
+}
+
+if(stopStudyRecBtn){
+  stopStudyRecBtn.onclick = () => {
+    stopGlobalRecording();
+    studyRecBar.classList.add('hide');
+    alert('تم ايقاف التسجيل وحفظه بنجاح!');
+  };
+}
+
+// إدارة قائمة التسجيلات المنفصلة
+let recState={recordings:[],selectedId:null};
 async function loadRecordings(){
   recState.recordings=await storeAction('recordings','readonly','getAll');
   renderRecList();
 }
-
 function renderRecList(){
   const listEl=document.getElementById('recList');
   if(!listEl) return;
@@ -1038,63 +1169,31 @@ function renderRecList(){
   `).join('');
 }
 
-function selectRecording(id){
-  const rec=recState.recordings.find(r=>r.id===id);
-  if(!rec) return;
-  recState.selectedId=id;
-  renderRecList();
-  document.getElementById('recTitle').textContent=rec.title;
-  
-  const segBox=document.getElementById('transcriptSegmentsBox');
-  if(!segBox) return;
-  if(rec.segments && rec.segments.length > 0){
-    segBox.innerHTML = rec.segments.map(seg=>`
-      <div class="transcript-seg" data-time="${seg.time}" style="padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #E3E7EF;cursor:pointer;display:flex;gap:10px;align-items:center">
-        <span style="font-size:12px;font-weight:700;color:#0B5F58;background:#E4F2F0;padding:2px 8px;border-radius:6px">${seg.timeStr}</span>
-        <span style="flex:1">${esc(seg.text)}</span>
-      </div>
-    `).join('');
-    
-    segBox.querySelectorAll('.transcript-seg').forEach(el=>{
-      el.onclick=()=>{
-        const seconds = parseFloat(el.dataset.time);
-        const player = document.getElementById('audioPlayer');
-        if(player && player.src){
-          player.currentTime = seconds;
-          player.play();
-        }
-      };
-    });
-  } else {
-    segBox.innerHTML = `<div style="padding:10px">${esc(rec.transcript || 'لا توجد تفاصيل زمنية')}</div>`;
-  }
-
-  document.getElementById('delRecBtn').classList.remove('hide');
-  document.getElementById('saveRecTextBtn').classList.remove('hide');
-  const player=document.getElementById('audioPlayer');
-  if(rec.audioBlob){
-    player.src=URL.createObjectURL(rec.audioBlob);
-    player.classList.remove('hide');
-  }else{
-    player.classList.add('hide');
-  }
-}
-
 document.addEventListener('click',e=>{
   const sel=e.target.closest('[data-sel-rec]');
-  if(sel) selectRecording(sel.dataset.selRec);
+  if(sel){
+    const rec=recState.recordings.find(r=>r.id===sel.dataset.selRec);
+    if(rec){
+      recState.selectedId=rec.id;
+      renderRecList();
+      document.getElementById('recTitle').textContent=rec.title;
+      const segBox=document.getElementById('transcriptSegmentsBox');
+      if(rec.segments && rec.segments.length > 0){
+        segBox.innerHTML = rec.segments.map(seg=>`
+          <div style="padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #E3E7EF;display:flex;gap:10px;align-items:center">
+            <span style="font-size:12px;font-weight:700;color:#0B5F58;background:#E4F2F0;padding:2px 8px;border-radius:6px">${seg.timeStr}</span>
+            <span style="flex:1">${esc(seg.text)}</span>
+          </div>
+        `).join('');
+      } else {
+        segBox.innerHTML = `<div style="padding:10px">${esc(rec.transcript || 'لا توجد تفاصيل')}</div>`;
+      }
+      document.getElementById('delRecBtn').classList.remove('hide');
+      const player=document.getElementById('audioPlayer');
+      if(rec.audioBlob){ player.src=URL.createObjectURL(rec.audioBlob); player.classList.remove('hide'); }
+    }
+  }
 });
-
-const saveRecTextBtn = document.getElementById('saveRecTextBtn');
-if(saveRecTextBtn){
-  saveRecTextBtn.onclick=async()=>{
-    const rec=recState.recordings.find(r=>r.id===recState.selectedId);
-    if(!rec) return;
-    rec.transcript = document.getElementById('transcriptSegmentsBox').innerText;
-    await storeAction('recordings','readwrite','put',rec);
-    alert('تم الحفظ بنجاح');
-  };
-}
 
 const delRecBtn = document.getElementById('delRecBtn');
 if(delRecBtn){
@@ -1106,82 +1205,29 @@ if(delRecBtn){
     document.getElementById('transcriptSegmentsBox').innerHTML='';
     document.getElementById('audioPlayer').classList.add('hide');
     document.getElementById('delRecBtn').classList.add('hide');
-    document.getElementById('saveRecTextBtn').classList.add('hide');
     await loadRecordings();
   };
 }
 
-async function startAudioRecording(){
-  if(!navigator.mediaDevices?.getUserMedia)return alert('الميكروفون غير مدعوم');
-  try{
-    recState.stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    recState.chunks=[]; recState.finalText=''; recState.segments=[]; recState.sec=0; recState.active=true;
-    recState.recorder=new MediaRecorder(recState.stream);
-    recState.recorder.ondataavailable=e=>{if(e.data.size>0)recState.chunks.push(e.data);};
-    recState.recorder.onstop=async()=>{
-      const blob=new Blob(recState.chunks,{type:recState.recorder.mimeType||'audio/webm'});
-      const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
-      const newRec={id:makeId(),title:'تسجيل '+(recState.recordings.length+1),date:new Date().toLocaleDateString('ar-SA'),duration:`${m}:${s}`,audioBlob:blob,transcript:recState.finalText.trim(),segments:recState.segments};
-      await storeAction('recordings','readwrite','put',newRec);
-      await loadRecordings();
-      selectRecording(newRec.id);
-    };
-    recState.recorder.start();
-
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(SR){
-      recState.recognition=new SR();
-      recState.recognition.lang='ar-SA';
-      recState.recognition.continuous=true;
-      recState.recognition.interimResults=true;
-      recState.recognition.onresult=e=>{
-        let interim='';
-        for(let i=e.resultIndex;i<e.results.length;i++){
-          if(e.results[i].isFinal){
-            const txt=e.results[i][0].transcript.trim();
-            recState.finalText+=txt+' ';
-            const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
-            recState.segments.push({time:recState.sec,timeStr:`${m}:${s}`,text:txt});
-          }else{interim+=e.results[i][0].transcript;}
-        }
-        const display=recState.finalText+interim;
-        if(document.getElementById('recLiveContent')) document.getElementById('recLiveContent').textContent=display||'تحدث الآن…';
-        if(document.getElementById('homeLiveText')) document.getElementById('homeLiveText').textContent=display||'جاري التسجيل…';
-      };
-      recState.recognition.start();
-    }
-
-    if(document.getElementById('liveBox')) document.getElementById('liveBox').classList.remove('hide');
-    if(document.getElementById('recBtn')) document.getElementById('recBtn').innerHTML='<span>إيقاف وحفظ</span>';
-    if(document.getElementById('homeRecBtn')) document.getElementById('homeRecBtn').textContent='إيقاف التسجيل';
-    if(document.getElementById('homeRecStatus')) document.getElementById('homeRecStatus').textContent='جاري التسجيل…';
-
-    recState.timer=setInterval(()=>{
-      recState.sec++;
-      const m=String(Math.floor(recState.sec/60)).padStart(2,'0'),s=String(recState.sec%60).padStart(2,'0');
-      if(document.getElementById('timer')) document.getElementById('timer').textContent=`${m}:${s}`;
-    },1000);
-  }catch(err){alert('تعذر استخدام الميكروفون.');}
-}
-
-function stopAudioRecording(){
-  if(!recState.active)return;
-  recState.active=false;
-  clearInterval(recState.timer);
-  if(recState.recognition){try{recState.recognition.stop();}catch{}}
-  if(recState.recorder&&recState.recorder.state!=='inactive')recState.recorder.stop();
-  if(recState.stream)recState.stream.getTracks().forEach(t=>t.stop());
-
-  if(document.getElementById('liveBox')) document.getElementById('liveBox').classList.add('hide');
-  if(document.getElementById('recBtn')) document.getElementById('recBtn').innerHTML='<span>تسجيل جديد</span>';
-  if(document.getElementById('homeRecBtn')) document.getElementById('homeRecBtn').textContent='ابدأ التسجيل';
-  if(document.getElementById('homeRecStatus')) document.getElementById('homeRecStatus').textContent='جاهز';
-}
-
 const recBtn = document.getElementById('recBtn');
-if(recBtn) recBtn.onclick=()=>recState.active?stopAudioRecording():startAudioRecording();
-const homeRecBtn = document.getElementById('homeRecBtn');
-if(homeRecBtn) homeRecBtn.onclick=()=>{if(recState.active)stopAudioRecording();else{go('recordings');startAudioRecording();}};
+if(recBtn){
+  recBtn.onclick = () => {
+    if(!globalRecState.active){
+      recBtn.innerHTML = '<span>إيقاف وحفظ</span>';
+      document.getElementById('liveBox').classList.remove('hide');
+      startGlobalRecording((text, sec)=>{
+        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
+        document.getElementById('timer').textContent = `${m}:${s}`;
+        document.getElementById('recLiveContent').textContent = text || 'تحدث الآن…';
+      });
+    } else {
+      stopGlobalRecording();
+      recBtn.innerHTML = '<span>تسجيل جديد</span>';
+      document.getElementById('liveBox').classList.add('hide');
+      loadRecordings();
+    }
+  };
+}
 
 /* ==========================================
    8. أدوات الذكاء الاصطناعي
