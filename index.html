@@ -245,7 +245,9 @@ grid:'<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" heigh
 spark:'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
 lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
 file:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>',
-check:'<path d="M5 12l5 5 9-10"/>'};
+check:'<path d="M5 12l5 5 9-10"/>',
+undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 015.5 5.5v0a5.5 5.5 0 01-5.5 5.5H11"/>',
+redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 004 14.5v0A5.5 5.5 0 009.5 20H13"/>'};
 
 function ico(n,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
 
@@ -439,15 +441,15 @@ $('#bAI').onclick=()=>{$('#aiDr').classList.toggle('hide');$('#bAI').classList.t
 $('#studyRecFab').onclick=()=>{ go('recordings'); startAudioRecording(); };
 
 /* ==========================================
-   3. أدوات الرسم وراحة اليد (Palm Rejection)
+   3. أدوات الرسم وفعالية زر اليد والقلم
    ========================================== */
-const TL=[['select','مؤشر'],['pen','قلم حبر'],['hl','تظليل ماركر'],['er','ممحاة'],['hand','راحة اليد']];
+const TL=[['select','مؤشر'],['pen','قلم حبر'],['hl','تظليل ماركر'],['er','ممحاة'],['hand','الكتابة باليد']];
 const COL=['#14213D','#1D4ED8','#C2410C','#0B5F58','#D92D20','#7C3AED'];
-let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null,palmRejection=true;
+let activeTool='pen',activeColor=COL[0],activeSize=3,drawingNow=false,lastDrawPoint=null,lastAnnotationCanvas=null;
 
 $('#tools').innerHTML=
-  '<button class="tb" data-action="undo" title="تراجع" aria-label="تراجع">↶</button>'+
-  '<button class="tb" data-action="redo" title="إعادة" aria-label="إعادة">↷</button>'+
+  '<button class="tb" data-action="undo" title="تراجع" aria-label="تراجع">'+ico('undo',20)+'</button>'+
+  '<button class="tb" data-action="redo" title="إعادة" aria-label="إعادة">'+ico('redo',20)+'</button>'+
   '<span style="width:1px;height:24px;background:#D5DBE7;margin:0 4px"></span>'+
   TL.map((t,i)=>'<button class="tb '+(t[0]==='pen'?'on':'')+'" data-t="'+t[0]+'" title="'+t[1]+'" aria-label="'+t[1]+'">'+(t[0]==='select'?'↖':ico(t[0],22))+'</button>').join('')+
   '<span style="width:1px;height:24px;background:#D5DBE7;margin:0 4px"></span>'+
@@ -456,26 +458,19 @@ $('#tools').innerHTML=
 
 function updateAnnotationTools(){
   $$('#tools [data-t]').forEach(b=>{
+    b.classList.toggle('on', b.dataset.t===activeTool);
     if(b.dataset.t==='hand'){
-      b.classList.toggle('on', palmRejection);
-      b.title = palmRejection ? 'راحة اليد مفعلة (تجاهل لمس الإصبع)' : 'راحة اليد معطلة';
-    } else {
-      b.classList.toggle('on', b.dataset.t===activeTool);
+      b.title = activeTool === 'hand' ? 'زر اليد مفعل (الكتابة باليد مسموحة)' : 'تفعيل الكتابة باليد والإصبع';
     }
   });
   $$('#tools [data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===activeColor));
   $$('#tools [data-action="undo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex<=0;
   $$('#tools [data-action="redo"]').disabled=!lastAnnotationCanvas||lastAnnotationCanvas._historyIndex>=lastAnnotationCanvas._history.length-1;
   $$('#tools [data-action]').forEach(b=>b.style.opacity=b.disabled?'.35':'1');
-  $$('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er'].includes(activeTool)?'auto':'none');
+  $$('.annotation-layer').forEach(c=>c.style.pointerEvents=['pen','hl','er','hand'].includes(activeTool)?'auto':'none');
 }
 
 $$('#tools [data-t]').forEach(b=>b.onclick=()=>{
-  if(b.dataset.t==='hand'){
-    palmRejection=!palmRejection;
-    updateAnnotationTools();
-    return;
-  }
   activeTool=b.dataset.t;
   updateAnnotationTools();
 });
@@ -522,15 +517,17 @@ async function persistAnnotation(canvas){
 }
 
 function initAnnotationLayer(canvas,pageNo,file){
-  canvas.style.pointerEvents=['pen','hl','er'].includes(activeTool)?'auto':'none';
+  canvas.style.pointerEvents=['pen','hl','er','hand'].includes(activeTool)?'auto':'none';
   canvas._history=[];
   canvas._historyIndex=-1;
   const saved=file.annotations&&file.annotations[pageNo];
   const finish=()=>{
     snapshotAnnotation(canvas);
     canvas.addEventListener('pointerdown',e=>{
-      if(!['pen','hl','er'].includes(activeTool))return;
-      if(palmRejection && e.pointerType==='touch') return;
+      if(!['pen','hl','er','hand'].includes(activeTool))return;
+      
+      if(e.pointerType === 'touch' && activeTool !== 'hand') return;
+
       e.preventDefault();
       lastAnnotationCanvas=canvas;
       const rect=canvas.getBoundingClientRect();
@@ -541,15 +538,17 @@ function initAnnotationLayer(canvas,pageNo,file){
       ctx.beginPath();ctx.moveTo(x,y);
       ctx.lineCap='round';ctx.lineJoin='round';
       ctx.strokeStyle=activeColor;
-      ctx.lineWidth=activeTool==='hl'?activeSize*5:activeSize;
-      ctx.globalAlpha=activeTool==='hl'?.28:1;
-      if(activeTool==='er'){ctx.globalAlpha=1;ctx.globalCompositeOperation='destination-out';ctx.lineWidth=activeSize*5;}
+      
+      let currentDrawTool = activeTool === 'hand' ? 'pen' : activeTool;
+      ctx.lineWidth=currentDrawTool==='hl'?activeSize*5:activeSize;
+      ctx.globalAlpha=currentDrawTool==='hl'?.28:1;
+      if(currentDrawTool==='er'){ctx.globalAlpha=1;ctx.globalCompositeOperation='destination-out';ctx.lineWidth=activeSize*5;}
       else ctx.globalCompositeOperation='source-over';
       ctx.lineTo(x+.1,y+.1);ctx.stroke();
     });
     canvas.addEventListener('pointermove',e=>{
       if(!drawingNow||!lastDrawPoint)return;
-      if(palmRejection && e.pointerType==='touch') return;
+      if(e.pointerType === 'touch' && activeTool !== 'hand') return;
       const rect=canvas.getBoundingClientRect();
       const x=(e.clientX-rect.left)*(canvas.width/rect.width);
       const y=(e.clientY-rect.top)*(canvas.height/rect.height);
@@ -1137,7 +1136,7 @@ $('#askAiBtn').onclick=()=>{
 };
 
 /* ==========================================
-   9. التنقل والتحجيم الثابت (Fit Stage)
+   9. التنقل والتحجيم الثابت باستخدام visualViewport
    ========================================== */
 function go(id){
   $$('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
@@ -1156,8 +1155,10 @@ function fit(){
   const st = document.getElementById('stage');
   const baseWidth = 1194;
   const baseHeight = 834;
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  
+  // الاعتماد على visualViewport لتجنب مشاكل أشرطة المتصفح المتحركة على الجوال والآيباد
+  const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
   const scale = Math.min(vw / baseWidth, vh / baseHeight);
 
@@ -1171,7 +1172,7 @@ function fit(){
 }
 
 window.addEventListener('resize', fit);
-window.addEventListener('orientationchange', () => setTimeout(fit, 150));
+window.addEventListener('orientationchange', () => setTimeout(fit, 200));
 window.addEventListener('pageshow', fit);
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', fit);
