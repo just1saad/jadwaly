@@ -51,7 +51,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<!-- شابلون الشريط الجانبي المشترك مع الأيقونات الأصلية -->
+<!-- شابلون الشريط الجانبي المشترك -->
 <template id="sidebarTemplate">
   <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
@@ -113,8 +113,8 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
      <div id="todayClassesList" style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
    </div>
    <div style="background:#14213D;color:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
-    <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة ASMR</h2><span style="font-size:13px;color:#C7D0E4">تسجيل وتفريغ متزامن</span></div>
-    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;max-height:78px;overflow:auto" id="homeLiveText">اضغط الزر أدناه لبدء التسجيل الصوتي والتفريغ الفوري…</div>
+    <div style="display:flex;justify-content:space-between"><h2>تسجيل محاضرة الصوت</h2><span style="font-size:13px;color:#C7D0E4">تسجيل صوتي وحفظ مباشر</span></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px;font-size:15px;line-height:1.8;color:#E6EBF5;min-height:78px;display:flex;align-items:center;justify-content:center;text-align:center" id="homeLiveText">اضغط الزر أدناه لبدء تسجيل المحاضرة (متوافق مع آيباد)…</div>
     <div style="display:flex;align-items:center;gap:14px"><button class="btn" id="homeRecBtn" style="background:#E8590C;color:#fff;height:44px;border-radius:22px;padding:0 20px">ابدأ التسجيل</button><span style="font-size:13px;color:#C7D0E4" id="homeRecStatus">جاهز</span></div>
    </div>
   </div>
@@ -169,28 +169,20 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 <div class="scr" id="recordings">
  <div class="side" id="side-recordings"></div>
  <div class="main">
-  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمزامنة</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><span>تسجيل جديد</span></button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><h1>التسجيلات الصوتية والمحفوظات</h1><button class="btn" id="recBtn" style="background:#E8590C;color:#fff"><span>تسجيل جديد</span></button></div>
   <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;flex:1;min-height:0">
    <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto" id="recList"></div>
    <div class="card" style="padding:22px;display:flex;flex-direction:column;gap:14px;min-height:0">
-    <div id="liveBox" class="hide" style="background:#14213D;color:#fff;border-radius:14px;padding:16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <span class="rec" style="width:12px;height:12px;border-radius:6px;background:#E8590C"></span>
-        <b id="timer">00:00</b>
-        <span style="font-size:13px;color:#C7D0E4" id="speechStatusBadge">جاري الاستماع والتفريغ المتزامن…</span>
-      </div>
-      <div style="line-height:1.9;font-size:15px;max-height:100px;overflow:auto" id="recLiveContent">تحدث الآن ليظهر النص هنا…</div>
-    </div>
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2 id="recTitle">اختر تسجيلًا أو ابدأ تسجيلاً جديداً</h2>
+      <h2 id="recTitle">اختر تسجيلًا صوتياً</h2>
       <button class="btn sec hide" id="delRecBtn" style="color:#B42318">حذف</button>
     </div>
     <audio id="audioPlayer" controls class="hide" style="width:100%;height:42px"></audio>
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
-      <label class="mut" style="font-weight:700">النص المفرّغ المتزامن:</label>
-      <div id="transcriptSegmentsBox" class="inp" style="flex:1;overflow-y:auto;line-height:1.9;font-size:15px;background:#F9FAFB;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
+      <label class="mut" style="font-weight:700">ملاحظات وملخص التسجيل (يمكنك كتابتها أو تعديلها هنا):</label>
+      <textarea id="transcriptSegmentsBox" class="inp" style="flex:1;resize:none;line-height:1.8;" placeholder="اكتب ملاحظاتك حول المحاضرة هنا..."></textarea>
       <div style="display:flex;justify-content:flex-end">
-        <button class="btn sec hide" id="saveRecTextBtn">حفظ التعديلات</button>
+        <button class="btn pri" id="saveRecTextBtn">حفظ الملاحظات</button>
       </div>
     </div>
    </div>
@@ -258,7 +250,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
  <div id="studyRecBar" class="hide" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#14213D;color:#fff;border-radius:16px;padding:12px 20px;box-shadow:0 6px 24px rgba(20,33,61,.3);display:flex;align-items:center;gap:16px;z-index:30;width:90%;max-width:600px;">
    <span class="rec" style="width:10px;height:10px;border-radius:50%;background:#E8590C;flex:none"></span>
    <b id="studyRecTimer" style="font-size:14px;flex:none">00:00</b>
-   <div id="studyRecText" style="flex:1;font-size:14px;color:#E6EBF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">جاري الاستماع والتفريغ الفوري…</div>
+   <div id="studyRecText" style="flex:1;font-size:14px;color:#E6EBF5">جاري تسجيل الصوت الحقيقي (متوافق مع آيباد)…</div>
    <button class="btn" id="stopStudyRecBtn" style="background:#E8590C;color:#fff;height:36px;padding:0 14px;font-size:13px;border-radius:10px;flex:none">إيقاف وحفظ</button>
  </div>
 
@@ -274,7 +266,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 <div id="modalRoot" class="modal-bg hide"></div>
 
 <script>
-// تعبئة القوائم الجانبية تلقائياً في كل الشاشات من القالب الثابت
+// تعبئة القوائم الجانبية تلقائياً في كل الشاشات
 document.addEventListener('DOMContentLoaded', () => {
   const tpl = document.getElementById('sidebarTemplate');
   if(tpl){
@@ -1038,27 +1030,22 @@ function runQuizSession(questions, type, index, score){
 }
 
 /* ==========================================
-   7. التسجيل الصوتي المتزامن (الرئيسية + صفحة التسجيلات)
+   7. التسجيل الصوتي الحقيقي المتوافق مع الآيباد
    ========================================== */
 let globalRecState = {
   active: false,
   recorder: null,
   stream: null,
   chunks: [],
-  recognition: null,
-  finalText: '',
   timer: null,
-  sec: 0,
-  segments: []
+  sec: 0
 };
 
 async function startGlobalRecording(onUpdateCallback){
-  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم');
+  if(!navigator.mediaDevices?.getUserMedia) return alert('الميكروفون غير مدعوم في هذا المتصفح');
   try{
     globalRecState.stream = await navigator.mediaDevices.getUserMedia({audio:true});
     globalRecState.chunks = [];
-    globalRecState.finalText = '';
-    globalRecState.segments = [];
     globalRecState.sec = 0;
     globalRecState.active = true;
 
@@ -1070,49 +1057,24 @@ async function startGlobalRecording(onUpdateCallback){
       const recordings = await storeAction('recordings','readonly','getAll');
       const newRec = {
         id: makeId(),
-        title: 'تسجيل ' + (recordings.length + 1),
+        title: 'تسجيل محاضرة ' + (recordings.length + 1),
         date: new Date().toLocaleDateString('ar-SA'),
         duration: `${m}:${s}`,
         audioBlob: blob,
-        transcript: globalRecState.finalText.trim(),
-        segments: globalRecState.segments
+        transcript: 'تم تسجيل المحاضرة بنجاح عبر الآيباد (استمع للتسجيل أو أضف ملاحظاتك هنا).'
       };
       await storeAction('recordings','readwrite','put',newRec);
     };
     globalRecState.recorder.start();
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(SR){
-      globalRecState.recognition = new SR();
-      globalRecState.recognition.lang = 'ar-SA';
-      globalRecState.recognition.continuous = true;
-      globalRecState.recognition.interimResults = true;
-      globalRecState.recognition.onresult = e => {
-        let interim = '';
-        for(let i = e.resultIndex; i < e.results.length; i++){
-          if(e.results[i].isFinal){
-            const txt = e.results[i][0].transcript.trim();
-            globalRecState.finalText += txt + ' ';
-            const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
-            globalRecState.segments.push({time: globalRecState.sec, timeStr: `${m}:${s}`, text: txt});
-          } else {
-            interim += e.results[i][0].transcript;
-          }
-        }
-        const display = globalRecState.finalText + interim;
-        if(onUpdateCallback) onUpdateCallback(display, globalRecState.sec);
-      };
-      globalRecState.recognition.start();
-    }
-
     globalRecState.timer = setInterval(()=>{
       globalRecState.sec++;
       const m = String(Math.floor(globalRecState.sec/60)).padStart(2,'0'), s = String(globalRecState.sec%60).padStart(2,'0');
-      if(onUpdateCallback) onUpdateCallback(globalRecState.finalText, globalRecState.sec);
+      if(onUpdateCallback) onUpdateCallback(globalRecState.sec, `${m}:${s}`);
     }, 1000);
 
   } catch(err){
-    alert('تعذر استخدام الميكروفون.');
+    alert('تعذر استخدام الميكروفون. تأكد من السماح للمتصفح بالوصول للميكروفون.');
   }
 }
 
@@ -1120,26 +1082,24 @@ function stopGlobalRecording(){
   if(!globalRecState.active) return;
   globalRecState.active = false;
   clearInterval(globalRecState.timer);
-  if(globalRecState.recognition){ try{ globalRecState.recognition.stop(); }catch{} }
   if(globalRecState.recorder && globalRecState.recorder.state !== 'inactive') globalRecState.recorder.stop();
   if(globalRecState.stream) globalRecState.stream.getTracks().forEach(t => t.stop());
 }
 
-// زر الصفحة الرئيسية للتسجيل الفوري
+// زر الصفحة الرئيسية للتسجيل الصوتي
 const homeRecBtn = document.getElementById('homeRecBtn');
 if(homeRecBtn){
   homeRecBtn.onclick = () => {
     if(!globalRecState.active){
       homeRecBtn.textContent = 'إيقاف التسجيل';
-      document.getElementById('homeRecStatus').textContent = 'جاري التسجيل والتفريغ…';
-      startGlobalRecording((text, sec)=>{
-        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
-        document.getElementById('homeLiveText').textContent = `[${m}:${s}] ${text || 'تحدث الآن…'}`;
+      document.getElementById('homeRecStatus').textContent = 'جاري تسجيل الصوت الآن…';
+      startGlobalRecording((sec, timeStr)=>{
+        document.getElementById('homeLiveText').textContent = `🔴 جاري تسجيل المحاضرة (${timeStr}) - الصوت يُحفظ مباشرة...`;
       });
     } else {
       stopGlobalRecording();
       homeRecBtn.textContent = 'ابدأ التسجيل';
-      document.getElementById('homeRecStatus').textContent = 'تم حفظ التسجيل في قائمة التسجيلات!';
+      document.getElementById('homeRecStatus').textContent = 'تم الحفظ في قائمة التسجيلات بنجاح!';
     }
   };
 }
@@ -1153,10 +1113,9 @@ if(studyRecFab){
   studyRecFab.onclick = () => {
     if(!globalRecState.active){
       studyRecBar.classList.remove('hide');
-      startGlobalRecording((text, sec)=>{
-        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
-        document.getElementById('studyRecTimer').textContent = `${m}:${s}`;
-        document.getElementById('studyRecText').textContent = text || 'جاري الاستماع والتفريغ الفوري…';
+      startGlobalRecording((sec, timeStr)=>{
+        document.getElementById('studyRecTimer').textContent = timeStr;
+        document.getElementById('studyRecText').textContent = `🔴 جاري التسجيل الحي للمحاضرة (${timeStr})...`;
       });
     } else {
       stopGlobalRecording();
@@ -1169,7 +1128,7 @@ if(stopStudyRecBtn){
   stopStudyRecBtn.onclick = () => {
     stopGlobalRecording();
     studyRecBar.classList.add('hide');
-    alert('تم ايقاف التسجيل وحفظه بنجاح!');
+    alert('تم إيقاف التسجيل وحفظه في قائمة التسجيلات بنجاح!');
   };
 }
 
@@ -1183,7 +1142,7 @@ function renderRecList(){
   const listEl=document.getElementById('recList');
   if(!listEl) return;
   if(!recState.recordings.length){
-    listEl.innerHTML='<div class="mut" style="text-align:center;padding:30px 10px">لا توجد تسجيلات</div>';
+    listEl.innerHTML='<div class="mut" style="text-align:center;padding:30px 10px">لا توجد تسجيلات محفوظة</div>';
     return;
   }
   listEl.innerHTML=recState.recordings.map(r=>`
@@ -1202,17 +1161,7 @@ document.addEventListener('click',e=>{
       recState.selectedId=rec.id;
       renderRecList();
       document.getElementById('recTitle').textContent=rec.title;
-      const segBox=document.getElementById('transcriptSegmentsBox');
-      if(rec.segments && rec.segments.length > 0){
-        segBox.innerHTML = rec.segments.map(seg=>`
-          <div style="padding:8px 12px;background:#fff;border-radius:8px;border:1px solid #E3E7EF;display:flex;gap:10px;align-items:center">
-            <span style="font-size:12px;font-weight:700;color:#0B5F58;background:#E4F2F0;padding:2px 8px;border-radius:6px">${seg.timeStr}</span>
-            <span style="flex:1">${esc(seg.text)}</span>
-          </div>
-        `).join('');
-      } else {
-        segBox.innerHTML = `<div style="padding:10px">${esc(rec.transcript || 'لا توجد تفاصيل')}</div>`;
-      }
+      document.getElementById('transcriptSegmentsBox').value = rec.transcript || '';
       document.getElementById('delRecBtn').classList.remove('hide');
       const player=document.getElementById('audioPlayer');
       if(rec.audioBlob){ player.src=URL.createObjectURL(rec.audioBlob); player.classList.remove('hide'); }
@@ -1220,14 +1169,25 @@ document.addEventListener('click',e=>{
   }
 });
 
+const saveRecTextBtn = document.getElementById('saveRecTextBtn');
+if(saveRecTextBtn){
+  saveRecTextBtn.onclick = async () => {
+    const rec = recState.recordings.find(r => r.id === recState.selectedId);
+    if(!rec) return alert('الرجاء اختيار تسجيل أولاً');
+    rec.transcript = document.getElementById('transcriptSegmentsBox').value;
+    await storeAction('recordings', 'readwrite', 'put', rec);
+    alert('تم حفظ الملاحظات بنجاح!');
+  };
+}
+
 const delRecBtn = document.getElementById('delRecBtn');
 if(delRecBtn){
   delRecBtn.onclick=async()=>{
     if(!recState.selectedId||!confirm('حذف هذا التسجيل؟')) return;
     await storeAction('recordings','readwrite','delete',recState.selectedId);
     recState.selectedId=null;
-    document.getElementById('recTitle').textContent='اختر تسجيلاً';
-    document.getElementById('transcriptSegmentsBox').innerHTML='';
+    document.getElementById('recTitle').textContent='اختر تسجيلًا صوتياً';
+    document.getElementById('transcriptSegmentsBox').value='';
     document.getElementById('audioPlayer').classList.add('hide');
     document.getElementById('delRecBtn').classList.add('hide');
     await loadRecordings();
@@ -1239,16 +1199,13 @@ if(recBtn){
   recBtn.onclick = () => {
     if(!globalRecState.active){
       recBtn.innerHTML = '<span>إيقاف وحفظ</span>';
-      document.getElementById('liveBox').classList.remove('hide');
-      startGlobalRecording((text, sec)=>{
-        const m = String(Math.floor(sec/60)).padStart(2,'0'), s = String(sec%60).padStart(2,'0');
-        document.getElementById('timer').textContent = `${m}:${s}`;
-        document.getElementById('recLiveContent').textContent = text || 'تحدث الآن…';
+      startGlobalRecording((sec, timeStr)=>{
+        document.getElementById('recTitle').textContent = `جاري التسجيل... (${timeStr})`;
       });
     } else {
       stopGlobalRecording();
       recBtn.innerHTML = '<span>تسجيل جديد</span>';
-      document.getElementById('liveBox').classList.add('hide');
+      document.getElementById('recTitle').textContent = 'اختر تسجيلًا صوتياً';
       loadRecordings();
     }
   };
