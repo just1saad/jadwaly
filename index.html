@@ -18,7 +18,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#F3F5F9;overflow:
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 
-/* ضبط التخطيط بحيث يكون الشريط الجانبي يميناً والمحتوى يساراً بشكل ثابت */
+/* الشريط الجانبي يميناً والمحتوى يساراً بشكل ثابت ومستقر */
 .scr{position:fixed;inset:0;display:none;flex-direction:row;background:#F3F5F9;overflow:hidden;width:100vw;height:100vh}
 .scr.on{display:flex}
 
@@ -51,23 +51,48 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
 </head>
 <body>
 
-<!-- شابلون الشريط الجانبي المشترك -->
+<!-- شابلون الشريط الجانبي المشترك مع الأيقونات الأصلية -->
 <template id="sidebarTemplate">
   <div style="display:flex;align-items:center;gap:10px;padding:0 6px 20px">
     <div style="width:38px;height:38px;border-radius:10px;background:#0B5F58;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">ر</div>
     <b style="font-size:18px">رفيق المذاكرة</b>
   </div>
-  <button class="nav" data-go="home">🏠<span>الرئيسية</span></button>
-  <button class="nav" data-go="library">📚<span>المكتبة وملفات PDF</span></button>
-  <button class="nav" data-go="notebooks">📔<span>الدفاتر والملاحظات</span></button>
-  <button class="nav" data-go="schedule">📅<span>الجدول والتخطيط</span></button>
-  <button class="nav" data-go="quizzes">🎯<span>الاختبارات والبطاقات</span></button>
-  <button class="nav" data-go="recordings">🎙️<span>التسجيلات الصوتية</span></button>
-  <button class="nav" data-go="tools">🛠️<span>الأدوات والذكاء الاصطناعي</span></button>
-  <button class="nav" data-go="community">🌐<span>المجتمع الإبداعي</span></button>
+  <button class="nav" data-go="home">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    <span>الرئيسية</span>
+  </button>
+  <button class="nav" data-go="library">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4z"/><path d="M12 4h4l4 16h-4z"/></svg>
+    <span>المكتبة وملفات PDF</span>
+  </button>
+  <button class="nav" data-go="notebooks">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>
+    <span>الدفاتر والملاحظات</span>
+  </button>
+  <button class="nav" data-go="schedule">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    <span>الجدول والتخطيط</span>
+  </button>
+  <button class="nav" data-go="quizzes">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>
+    <span>الاختبارات والبطاقات</span>
+  </button>
+  <button class="nav" data-go="recordings">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    <span>التسجيلات الصوتية</span>
+  </button>
+  <button class="nav" data-go="tools">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+    <span>الأدوات والذكاء الاصطناعي</span>
+  </button>
+  <button class="nav" data-go="community">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>
+    <span>المجتمع الإبداعي</span>
+  </button>
   <div style="flex:1"></div>
   <div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#E4F2F0;color:#0B5F58;font-size:13px;line-height:1.5">
-    🔒 <span>مزامنة آمنة عبر iCloud</span>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <span>مزامنة آمنة عبر iCloud</span>
   </div>
 </template>
 
@@ -208,7 +233,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:18px}
   <h1>المجتمع الإبداعي والتعاون</h1>
   <div class="card" style="padding:30px;text-align:center;display:flex;flex-direction:column;gap:14px;max-width:600px;margin:auto">
     <h2>🤝 الغرفة العامة للمبدعين</h2>
-    <div class="mut">تواصل مع الطلاب والمبدعين حول العالم، شارك ملاحظاتك وتعاونی في الوقت الفعلي.</div>
+    <div class="mut">تواصل مع الطلاب والمبدعين حول العالم، شارك ملاحظاتك وتعاون في الوقت الفعلي.</div>
     <button class="btn pri" style="justify-content:center" onclick="alert('جاري الاتصال بغرفة المجتمع المشتركة...')">الانضمام للغرفة العامة</button>
   </div>
  </div>
