@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>رفيق المذاكرة - الاختبارات</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+</head>
+<body>
+<div class="layout">
+  <div class="side"></div>
+  <div class="main" id="qMain"></div>
+</div>
+
+<script type="module">
+  import { initSidebar } from './js/sidebar.js';
+  import { storeAction, esc } from './js/db.js';
+  import { generateAccurateQuestions } from './js/quiz-engine.js';
+
+  initSidebar('quizzes');
+  const qMain = document.getElementById('qMain');
+
+  async function initQuizzes() {
+    const files = await storeAction('files', 'readonly', 'getAll');
+    if (!files.length) {
+      qMain.innerHTML = `<h1>الاختبارات الذكية</h1><div class="card" style="padding:40px;text-align:center"><h2>لا توجد ملفات في المكتبة</h2><a href="library.html" class="btn pri">الذهاب للمكتبة</a></div>`;
+      return;
+    }
+
+    qMain.innerHTML = `
+      <h1>الاختبارات الذكية</h1>
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:16px;max-width:600px">
+        <label style="font-weight:600">اختر الملف لتوليد الأسئلة منه:</label>
+        <select id="quizFileSelect" class="inp">${files.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select>
+        <button class="btn pri" id="startQuizBtn">بدء الاختبار الآن</button>
+      </div>
+    `;
+
+    document.getElementById('startQuizBtn').onclick = async () => {
+      const file = files.find(f => f.id === document.getElementById('quizFileSelect').value);
+      qMain.innerHTML = `<div style="margin:auto;font-weight:600;">جاري استخراج الأسئلة بدقة من الملف...</div>`;
+
+      const blob = new Blob([file.data], { type: 'application/pdf' });
+      const doc = await pdfjsLib.getDocument(URL.createObjectURL(blob)).promise;
+      let fullText = '';
+      for (let i = 1; i <= doc.numPages; i++) {
+        const page = await doc.getPage(i);
+        const txt = await page.getTextContent();
+        fullText += ' ' + txt.items.map(item => item.str).join(' ');
+      }
+
+      const questions = generateAccurateQuestions(fullText, 5);
+      runSession(questions, 0, 0);
+    };
+  }
+
+  function runSession(questions, index, score) {
+    if (index >= questions.length) {
+      qMain.innerHTML = `<div class="card" style="margin:auto;padding:40px;text-align:center"><h1>انتهى الاختبار!</h1><h3>النتيجة: ${score} / ${questions.length}</h3><button class="btn pri" id="restartBtn">اختبار جديد</button></div>`;
+      document.getElementById('restartBtn').onclick = initQuizzes;
+      return;
+    }
+    const item = questions[index];
+    qMain.innerHTML = `
+      <b>السؤال ${index + 1} من ${questions.length}</b>
+      <div class="card" style="padding:24px;font-size:18px;font-weight:600;white-space:pre-line">${esc(item.q)}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:650px">
+        ${item.options.map(o => `<button class="opt" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}
+      </div>
+      <div id="expBox" class="card hide" style="padding:14px;background:#E4F2F0;max-width:650px"><b>المرجع:</b> ${esc(item.explanation)}</div>
+      <button id="nextBtn" class="btn pri hide" style="max-width:200px;">السؤال التالي</button>
+    `;
+
+    let answered = false;
+    document.querySelectorAll('.opt').forEach(btn => {
+      btn.onclick = () => {
+        if (answered) return;
+        answered = true;
+        if (btn.dataset.opt === item.answer) score++;
+        document.querySelectorAll('.opt').forEach(b => {
+          if (b.dataset.opt === item.answer) b.classList.add('ok');
+          else if (b === btn) b.classList.add('no');
+        });
+        document.getElementById('expBox').classList.remove('hide');
+        document.getElementById('nextBtn').classList.remove('hide');
+      };
+    });
+    document.getElementById('nextBtn').onclick = () => runSession(questions, index + 1, score);
+  }
+
+  initQuizzes();
+</script>
+</body>
+</html>
