@@ -45,16 +45,17 @@ document.addEventListener('click', e => {
   if(g){ e.preventDefault(); go(g.dataset.go); }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const tpl = document.getElementById('sidebarTemplate');
+// حقن القائمة الجانبية فوراً لأن السكريبت في نهاية الصفحة
+const tpl = document.getElementById('sidebarTemplate');
+if(tpl){
   document.querySelectorAll('.side').forEach(side => {
     if(!side.hasChildNodes()) side.appendChild(tpl.content.cloneNode(true));
   });
-  
-  initHome();
-  initPdfImporter();
-  initToolsAi();
-});
+}
+
+initHome();
+initPdfImporter();
+initToolsAi();
 
 let pdfState = { files: [], current: null, doc: null, fullTextCache: '' };
 function initPdfImporter(){
@@ -281,71 +282,70 @@ function setupDrawing(canvas, w, h){
   canvas.onmouseup = () => drawing = false;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const aiDr = document.getElementById('aiDr');
-  const thumbDr = document.getElementById('thumbDr');
-  
-  const bAI = document.getElementById('bAI');
-  if(bAI) bAI.onclick = () => { aiDr.classList.toggle('hide'); thumbDr.classList.add('hide'); };
-  
-  const closeAiDr = document.getElementById('closeAiDr');
-  if(closeAiDr) closeAiDr.onclick = () => aiDr.classList.add('hide');
-  
-  const btnThumbToggle = document.getElementById('btnThumbToggle');
-  if(btnThumbToggle) btnThumbToggle.onclick = () => { thumbDr.classList.toggle('hide'); aiDr.classList.add('hide'); };
+// تشغيل أدوات شاشة الدراسة عند تحميل العناصر
+const aiDr = document.getElementById('aiDr');
+const thumbDr = document.getElementById('thumbDr');
 
-  document.querySelectorAll('.tool-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.tool-btn').forEach(b => { b.style.background = 'transparent'; b.style.color = '#44506A'; });
-      btn.style.background = '#0B5F58'; btn.style.color = '#fff';
-      currentTool = btn.dataset.tool;
-    };
-  });
-  
-  const colorPicker = document.getElementById('colorPicker');
-  if(colorPicker) colorPicker.oninput = e => strokeColor = e.target.value;
+const bAI = document.getElementById('bAI');
+if(bAI) bAI.onclick = () => { aiDr.classList.toggle('hide'); thumbDr.classList.add('hide'); };
 
-  const studyAiSendBtn = document.getElementById('studyAiSendBtn');
-  if(studyAiSendBtn){
-    studyAiSendBtn.onclick = () => {
-      const inp = document.getElementById('studyAiInput');
-      const box = document.getElementById('studyAiChatBox');
-      const q = inp.value.trim(); if(!q) return;
-      box.innerHTML += `<div style="background:#0B5F58;color:#fff;padding:6px 10px;border-radius:8px;align-self:flex-end;">${esc(q)}</div>`;
-      inp.value = '';
-      setTimeout(() => {
-        box.innerHTML += `<div style="background:#fff;padding:6px 10px;border-radius:8px;align-self:flex-start;">بناءً على الملف الحالي، هذا جزء مهم لمراجعتك وتثبيت معلوماتك.</div>`;
-        box.scrollTop = box.scrollHeight;
-      }, 500);
-    };
-  }
+const closeAiDr = document.getElementById('closeAiDr');
+if(closeAiDr) closeAiDr.onclick = () => aiDr.classList.add('hide');
 
-  const internalGenQuizBtn = document.getElementById('internalGenQuizBtn');
-  if(internalGenQuizBtn){
-    internalGenQuizBtn.onclick = () => {
-      const questions = generateAccurateQuestions(pdfState.fullTextCache, 4);
-      const container = document.getElementById('internalQuizContainer');
-      let idx = 0;
-      function showQ(){
-        if(idx >= questions.length){ container.innerHTML = '<div style="color:#0B5F58;font-weight:700;text-align:center;">انتهى الاختبار!</div>'; return; }
-        const item = questions[idx];
-        container.innerHTML = `
-          <div style="font-size:12px;font-weight:700;">${esc(item.q)}</div>
-          ${item.options.map(o => `<button class="q-opt" data-val="${esc(o)}" style="background:#F3F5F9;border:1px solid #D5DBE7;padding:6px;border-radius:6px;text-align:right;font-size:11px;margin-top:4px;">${esc(o)}</button>`).join('')}
-          <button id="nxtQBtn" class="btn pri hide" style="height:26px;font-size:11px;margin-top:4px;">التالي</button>
-        `;
-        container.querySelectorAll('.q-opt').forEach(b => {
-          b.onclick = () => {
-            b.style.background = b.dataset.val === item.answer ? '#E4F2F0' : '#FDECEA';
-            container.querySelector('#nxtQBtn').classList.remove('hide');
-          };
-        });
-        container.querySelector('#nxtQBtn').onclick = () => { idx++; showQ(); };
-      }
-      showQ();
-    };
-  }
+const btnThumbToggle = document.getElementById('btnThumbToggle');
+if(btnThumbToggle) btnThumbToggle.onclick = () => { thumbDr.classList.toggle('hide'); aiDr.classList.add('hide'); };
+
+document.querySelectorAll('.tool-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tool-btn').forEach(b => { b.style.background = 'transparent'; b.style.color = '#44506A'; });
+    btn.style.background = '#0B5F58'; btn.style.color = '#fff';
+    currentTool = btn.dataset.tool;
+  };
 });
+
+const colorPicker = document.getElementById('colorPicker');
+if(colorPicker) colorPicker.oninput = e => strokeColor = e.target.value;
+
+const studyAiSendBtn = document.getElementById('studyAiSendBtn');
+if(studyAiSendBtn){
+  studyAiSendBtn.onclick = () => {
+    const inp = document.getElementById('studyAiInput');
+    const box = document.getElementById('studyAiChatBox');
+    const q = inp.value.trim(); if(!q) return;
+    box.innerHTML += `<div style="background:#0B5F58;color:#fff;padding:6px 10px;border-radius:8px;align-self:flex-end;">${esc(q)}</div>`;
+    inp.value = '';
+    setTimeout(() => {
+      box.innerHTML += `<div style="background:#fff;padding:6px 10px;border-radius:8px;align-self:flex-start;">بناءً على الملف الحالي، هذا جزء مهم لمراجعتك وتثبيت معلوماتك.</div>`;
+      box.scrollTop = box.scrollHeight;
+    }, 500);
+  };
+}
+
+const internalGenQuizBtn = document.getElementById('internalGenQuizBtn');
+if(internalGenQuizBtn){
+  internalGenQuizBtn.onclick = () => {
+    const questions = generateAccurateQuestions(pdfState.fullTextCache, 4);
+    const container = document.getElementById('internalQuizContainer');
+    let idx = 0;
+    function showQ(){
+      if(idx >= questions.length){ container.innerHTML = '<div style="color:#0B5F58;font-weight:700;text-align:center;">انتهى الاختبار!</div>'; return; }
+      const item = questions[idx];
+      container.innerHTML = `
+        <div style="font-size:12px;font-weight:700;">${esc(item.q)}</div>
+        ${item.options.map(o => `<button class="q-opt" data-val="${esc(o)}" style="background:#F3F5F9;border:1px solid #D5DBE7;padding:6px;border-radius:6px;text-align:right;font-size:11px;margin-top:4px;">${esc(o)}</button>`).join('')}
+        <button id="nxtQBtn" class="btn pri hide" style="height:26px;font-size:11px;margin-top:4px;">التالي</button>
+      `;
+      container.querySelectorAll('.q-opt').forEach(b => {
+        b.onclick = () => {
+          b.style.background = b.dataset.val === item.answer ? '#E4F2F0' : '#FDECEA';
+          container.querySelector('#nxtQBtn').classList.remove('hide');
+        };
+      });
+      container.querySelector('#nxtQBtn').onclick = () => { idx++; showQ(); };
+    }
+    showQ();
+  };
+}
 
 // ==========================================
 // 5. محرك توليد الاختبارات الدقيقة (Quiz Engine)
